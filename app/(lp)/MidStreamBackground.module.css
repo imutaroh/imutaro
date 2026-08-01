@@ -6,13 +6,16 @@
   pointer-events: none;
 }
 
+/* 静的な流線のレイヤ。
+   コンテンツが乗る中央では静かに、左右の余白では素の濃さで見せる。
+   上下端もフェードさせて帯の境界を切らない。
+   ※ このレイヤに動くものを入れないこと。mask 配下で毎フレーム再描画が起きると
+     マスク合成がやり直しになり、スクロールがカクつく(Issue #7) */
 .svg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  /* コンテンツが乗る中央では静かに、左右の余白では素の濃さで見せる。
-     上下端もフェードさせて帯の境界を切らない */
   mask-image:
     linear-gradient(
       to right,
@@ -35,6 +38,18 @@
   -webkit-mask-composite: source-in;
 }
 
+/* 光条のレイヤ。mask なし(左右の濃淡は SVG 側の linearGradient で再現)。
+   top / height は光条ごとにインラインで指定し、再描画面積を細帯に絞る */
+.svgFlow {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  /* 独自のコンポジタレイヤに昇格させ、メインレイヤとタイルを分ける。
+     これが無いと光条の毎フレーム無効化が同じタイル上の静的レイヤ(mask付き)を
+     巻き添えにし、マスク合成まで毎フレームやり直しになる */
+  will-change: transform;
+}
+
 .lineBase {
   fill: none;
   stroke: var(--color-border-dark);
@@ -43,16 +58,20 @@
   vector-effect: non-scaling-stroke;
 }
 
-/* 流線の上を走る光条 */
+/* 流線の上を走る光条。stroke(グラデーション)は SVG 側で光条ごとに指定 */
 .lineFlow {
   fill: none;
-  stroke: var(--color-accent-bright);
   stroke-width: 1.5;
   stroke-linecap: round;
   stroke-dasharray: 90 1010;
   opacity: 0.5;
   vector-effect: non-scaling-stroke;
   animation: streamFlow 16s linear infinite;
+}
+
+/* 帯が画面外の間はアニメを止め、先行ラスタライズの毎フレームやり直しを防ぐ */
+.wrap[data-active='false'] .lineFlow {
+  animation-play-state: paused;
 }
 
 @keyframes streamFlow {
@@ -74,7 +93,8 @@
 
 @media (max-width: 768px) {
   /* モバイルでも流線は見せる。コンテンツ幅いっぱいに文字が乗るぶん、全体をさらに淡く */
-  .svg {
+  .svg,
+  .svgFlow {
     opacity: 0.7;
   }
 }
