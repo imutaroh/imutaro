@@ -38,16 +38,15 @@ const ClickSpark: React.FC<ClickSparkProps> = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const parent = canvas.parentElement;
-    if (!parent) return;
-
     let resizeTimeout: ReturnType<typeof setTimeout>;
 
+    // canvas はビューポートサイズ(position: fixed)。
+    // 以前は親要素(=ページ全体、数千px)に合わせていたが、巨大な GPU テクスチャに
+    // なりモバイルや低電力モード端末のスクロール性能を圧迫するため縮小した(Issue #15)
     const resizeCanvas = () => {
-      const { width, height } = parent.getBoundingClientRect();
-      if (canvas.width !== width || canvas.height !== height) {
-        canvas.width = width;
-        canvas.height = height;
+      if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
       }
     };
 
@@ -56,13 +55,12 @@ const ClickSpark: React.FC<ClickSparkProps> = ({
       resizeTimeout = setTimeout(resizeCanvas, 100);
     };
 
-    const ro = new ResizeObserver(handleResize);
-    ro.observe(parent);
+    window.addEventListener('resize', handleResize);
 
     resizeCanvas();
 
     return () => {
-      ro.disconnect();
+      window.removeEventListener('resize', handleResize);
       clearTimeout(resizeTimeout);
     };
   }, []);
@@ -168,7 +166,7 @@ const ClickSpark: React.FC<ClickSparkProps> = ({
 
   return (
     <div className="relative w-full h-full" onClick={handleClick}>
-      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" />
+      <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none" />
       {children}
     </div>
   );

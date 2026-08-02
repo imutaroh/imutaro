@@ -485,31 +485,14 @@
   border-radius: 50%;
 }
 
-/* daily = 点灯、learning = 輪が脈動(進行中) */
+/* daily = 塗りつぶし、learning = 輪郭のみ。
+   脈動アニメは低電力モード端末で描画コストになり続けるため廃止(Issue #15) */
 .stackStatus[data-status='daily']::before {
   background-color: var(--color-accent);
 }
 
 .stackStatus[data-status='learning']::before {
   border: 1px solid var(--color-accent);
-  animation: statusPulse 2.4s ease-in-out infinite;
-}
-
-@keyframes statusPulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(0, 173, 216, 0.35);
-  }
-  50% {
-    box-shadow: 0 0 0 4px rgba(0, 173, 216, 0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .stackStatus[data-status='learning']::before {
-    animation: none;
-  }
-
 }
 
 .articles {

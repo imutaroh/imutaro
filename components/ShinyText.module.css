@@ -4,8 +4,11 @@
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  /* 150%(右外)→-50%(左外)へ移動 = 旧実装の progress 0→100 と同じ軌道 */
-  animation: shine linear infinite;
+  /* 150%(右外)→-50%(左外)へ移動 = 旧実装の progress 0→100 と同じ軌道。
+     無限ループは低電力モード端末で毎フレームの描画コストになり続けるため、
+     3回流したら停止する(Issue #15)。終了後は光が画面外の位置で止まり、
+     ただのグラデーションテキストとして見える */
+  animation: shine linear 3;
 }
 
 @keyframes shine {
