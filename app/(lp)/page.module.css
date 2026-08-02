@@ -397,6 +397,8 @@
   border-left: 1px dashed var(--color-border-dark);
 }
 
+/* スクロール連動のリビール(opacity 0→1 のスタガー)は、スクロール中に
+   「止まって見える」体感の原因になったため廃止。最初から表示する(Issue #13) */
 .logEntry {
   position: relative;
   display: flex;
@@ -404,16 +406,6 @@
   align-items: baseline;
   gap: 16px;
   padding: 14px 0;
-  opacity: 0;
-  transform: translateY(16px);
-  transition:
-    opacity 0.5s ease,
-    transform 0.5s ease;
-}
-
-.logEntryVisible {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 .logDot {
