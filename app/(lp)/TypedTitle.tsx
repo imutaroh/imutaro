@@ -119,10 +119,11 @@ export default function TypedTitle({ lines, className }: Props) {
   let offset = 0;
 
   return (
+    // リプレイはクリック時のみ。ホバー発火はスクロール中にカーソルが
+    // 見出しを横切っただけで作動し、表示が壊れたように見えるため廃止(Issue #13)
     <h1
       className={`${className ?? ''} ${styles.title}`}
       aria-label={lines.join('')}
-      onMouseEnter={replay}
       onClick={replay}
     >
       {lines.map((line, lineIndex) => {
