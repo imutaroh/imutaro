@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import ClickSpark from '@/components/ClickSpark';
 import BrandIcon from '@/components/BrandIcon';
+import HeroReveal from './HeroReveal';
 import styles from './layout.module.css';
 
 type Props = {
@@ -10,6 +11,16 @@ type Props = {
 export default function LpLayout({ children }: Props) {
   return (
     <ClickSpark sparkColor="#0087a8" sparkSize={9} sparkRadius={16} sparkCount={8}>
+      {/* 入場アニメ一時停止フラグ。初回描画の前に必ず実行されるよう
+          インラインで置く。解除は HeroReveal(フォント準備完了後、上限900ms)。
+          setTimeout はハイドレーションが遅い場合でも確実に外れる保険 */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html:
+            "document.documentElement.classList.add('js-hero-hold');setTimeout(function(){document.documentElement.classList.remove('js-hero-hold')},1600);",
+        }}
+      />
+      <HeroReveal />
       <header className={styles.header}>
         <Link href="/" className={styles.logo}>
           imutaro<span className={styles.logoTld}>.com</span>
