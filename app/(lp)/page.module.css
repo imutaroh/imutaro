@@ -42,6 +42,29 @@
   animation: fadeInUp 0.56s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* 起動直後はフォント到着待ちで初回描画が保留され、その間にアニメの時計だけが
+   進んで入場が飛んで見える。インラインスクリプトが html に付ける js-hero-hold の
+   間は一時停止し、フォント準備完了後に HeroReveal が外してから再生する(Issue #9)。
+   JS無効環境ではクラスが付かないため通常どおり再生される */
+:global(html.js-hero-hold) .heroItem1,
+:global(html.js-hero-hold) .heroItem2,
+:global(html.js-hero-hold) .heroItem3,
+:global(html.js-hero-hold) .heroItem4,
+:global(html.js-hero-hold) .heroItem5 {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* 動きを減らす設定ではアニメが実質即完了するため、保留せずすぐ表示する */
+  :global(html.js-hero-hold) .heroItem1,
+  :global(html.js-hero-hold) .heroItem2,
+  :global(html.js-hero-hold) .heroItem3,
+  :global(html.js-hero-hold) .heroItem4,
+  :global(html.js-hero-hold) .heroItem5 {
+    animation-play-state: running;
+  }
+}
+
 .heroItem1 {
   animation-delay: 0ms;
 }
