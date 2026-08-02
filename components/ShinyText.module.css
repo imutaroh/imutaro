@@ -1,0 +1,18 @@
+.shiny {
+  display: inline-block;
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* 150%(右外)→-50%(左外)へ移動 = 旧実装の progress 0→100 と同じ軌道 */
+  animation: shine linear infinite;
+}
+
+@keyframes shine {
+  from {
+    background-position: 150% center;
+  }
+  to {
+    background-position: -50% center;
+  }
+}
