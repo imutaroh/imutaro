@@ -37,8 +37,14 @@
 
 html,
 body {
-  max-width: 100vw;
-  overflow-x: hidden;
+  /* 装飾の横はみ出し(right:-180px の同心円など)を刈るための指定。
+     旧: max-width:100vw + overflow-x:hidden は、
+     ①100vw がスクロールバー幅を含み横はみ出し自体を生む
+     ②html と body が入れ子のスクロールコンテナ(computed: hidden auto)になり
+       スクロール連鎖に余計な段が入る(iOS Safari の momentum 阻害でも有名)
+     という二重のアンチパターンだったため、スクロールコンテナを作らない
+     overflow-x: clip に置換した(Issue #21) */
+  overflow-x: clip;
 }
 
 body {
