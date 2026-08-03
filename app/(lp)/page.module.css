@@ -329,7 +329,10 @@
   padding-bottom: 96px;
 }
 
-/* ページの結びにヒーローの同心円を淡く反響させるブックエンド */
+/* ページの結びにヒーローの同心円を淡く反響させるブックエンド。
+   フェードアウトは mask ではなく「背景色グラデーションを上に重ねる」方式
+   (mask はタイルラスタライズを重くするため全サイトで不使用。Issue #19)。
+   背景が単色(--color-bg)である前提に依存する */
 .sectionEnd::after {
   content: '';
   position: absolute;
@@ -339,13 +342,13 @@
   width: 520px;
   height: 520px;
   border-radius: 50%;
-  background: repeating-radial-gradient(
-    circle at center,
-    rgba(91, 101, 114, 0.22) 0 1px,
-    transparent 1px 52px
-  );
-  mask-image: radial-gradient(circle at center, #000 30%, transparent 72%);
-  -webkit-mask-image: radial-gradient(circle at center, #000 30%, transparent 72%);
+  background:
+    radial-gradient(circle at center, transparent 30%, var(--color-bg) 72%),
+    repeating-radial-gradient(
+      circle at center,
+      rgba(91, 101, 114, 0.22) 0 1px,
+      transparent 1px 52px
+    );
   pointer-events: none;
 }
 
