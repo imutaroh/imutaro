@@ -9,7 +9,9 @@
   padding-top: 16px;
 }
 
-/* PageHeadと同じ、LPのDotGridを静的に反響させるドットパターン */
+/* PageHeadと同じ、LPのDotGridを静的に反響させるドットパターン。
+   フェードアウトは mask ではなく「背景色グラデーションを上に重ねる」方式
+   (mask はタイルラスタライズを重くするため全サイトで不使用。Issue #19) */
 .head::before {
   content: '';
   position: absolute;
@@ -18,10 +20,12 @@
   right: -48px;
   width: 340px;
   height: 200px;
-  background-image: radial-gradient(circle, #d5dde3 2px, transparent 2px);
-  background-size: 26px 26px;
-  mask-image: radial-gradient(ellipse at top right, #000 20%, transparent 72%);
-  -webkit-mask-image: radial-gradient(ellipse at top right, #000 20%, transparent 72%);
+  background-image:
+    radial-gradient(ellipse at top right, transparent 20%, var(--color-bg) 72%),
+    radial-gradient(circle, #d5dde3 2px, transparent 2px);
+  background-size:
+    auto,
+    26px 26px;
   pointer-events: none;
 }
 
