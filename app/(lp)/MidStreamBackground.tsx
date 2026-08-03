@@ -4,8 +4,13 @@ import styles from './MidStreamBackground.module.css';
 // ヒーローの計器盤が「観測」なら、こちらは「日々流れていく学び」。
 // preserveAspectRatio="none" で帯全体に引き伸ばすため、
 // 線幅は vector-effect: non-scaling-stroke で一定に保つ。
-// 以前は光条が流線上を流れるアニメを持っていたが、毎フレームの再描画が
-// 低電力モード端末のひっかかりになるため廃止した(Issue #15)。
+//
+// 描画コストの経緯:
+// - 光条アニメは毎フレーム再描画になるため廃止(Issue #15)
+// - CSS mask も撤去(Issue #17)。mask はタイルのラスタライズを重くし、
+//   低性能・低電力モード端末では帯が画面に入るたびに引っかかりになる。
+//   「中央は淡く・両端は濃く」の濃淡は stroke の linearGradient で再現し、
+//   上下端のフェードは端の線の opacity 減衰で近似する
 const SAMPLE_XS = [-20, 110, 240, 370, 500, 630, 760, 890, 1020];
 
 function lineY(baseY: number, x: number, phase: number): number {
@@ -26,13 +31,35 @@ function smoothPath(points: { x: number; y: number }[]): string {
 }
 
 const LINE_COUNT = 7;
+
+// 旧・縦方向 mask(上下12%をフェード)の近似。帯の上下端に近い線ほど淡くする
+function verticalFade(baseY: number): number {
+  const ratio = baseY / 500;
+  if (ratio < 0.12) return ratio / 0.12;
+  if (ratio > 0.88) return (1 - ratio) / 0.12;
+  return 1;
+}
+
 const LINES = Array.from({ length: LINE_COUNT }, (_, i) => {
   const baseY = 50 + i * 66;
   const phase = i * 1.35;
   const points = SAMPLE_XS.map((x) => ({ x, y: lineY(baseY, x, phase) }));
   const accent = i % 3 === 1;
-  return { id: `stream-${i}`, d: smoothPath(points), accent };
+  return {
+    id: `stream-${i}`,
+    d: smoothPath(points),
+    accent,
+    fade: Math.round(verticalFade(baseY) * 100) / 100,
+  };
 });
+
+// 旧・横方向 mask と同じ濃淡: 両端 100%、中央(28%〜72%)は 30%
+const FADE_STOPS = [
+  { offset: '0', opacity: 1 },
+  { offset: '0.28', opacity: 0.3 },
+  { offset: '0.72', opacity: 0.3 },
+  { offset: '1', opacity: 1 },
+] as const;
 
 export default function MidStreamBackground() {
   return (
@@ -43,11 +70,49 @@ export default function MidStreamBackground() {
         preserveAspectRatio="none"
         role="presentation"
       >
+        <defs>
+          <linearGradient
+            id="midstream-base"
+            gradientUnits="userSpaceOnUse"
+            x1="0"
+            y1="0"
+            x2="1000"
+            y2="0"
+          >
+            {FADE_STOPS.map((stop) => (
+              <stop
+                key={stop.offset}
+                offset={stop.offset}
+                stopColor="var(--color-border-dark)"
+                stopOpacity={stop.opacity}
+              />
+            ))}
+          </linearGradient>
+          <linearGradient
+            id="midstream-accent"
+            gradientUnits="userSpaceOnUse"
+            x1="0"
+            y1="0"
+            x2="1000"
+            y2="0"
+          >
+            {FADE_STOPS.map((stop) => (
+              <stop
+                key={stop.offset}
+                offset={stop.offset}
+                stopColor="var(--color-accent-bright)"
+                stopOpacity={stop.opacity}
+              />
+            ))}
+          </linearGradient>
+        </defs>
         <g>
           {LINES.map((line) => (
             <path
               key={line.id}
               className={line.accent ? styles.lineAccent : styles.lineBase}
+              stroke={line.accent ? 'url(#midstream-accent)' : 'url(#midstream-base)'}
+              opacity={line.fade}
               d={line.d}
             />
           ))}
