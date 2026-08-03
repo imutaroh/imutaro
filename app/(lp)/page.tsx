@@ -38,7 +38,7 @@ const CONTACT_LINKS = [
   { label: 'Zenn', icon: 'zenn', href: 'https://zenn.dev/imu_imu', external: true },
   { label: 'note', icon: 'note', href: 'https://note.com/imutaroh', external: true },
   { label: 'X', icon: 'x', href: 'https://x.com/imutaroh', external: true },
-  { label: 'Email', icon: null, href: 'mailto:contact@example.com', external: false },
+  { label: 'Email', icon: null, href: 'mailto:imutaakihiro3@gmail.com', external: false },
 ] as const;
 
 export default async function Page() {
