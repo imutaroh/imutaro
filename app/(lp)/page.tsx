@@ -239,6 +239,7 @@ export default async function Page() {
                       alt=""
                       className={styles.externalThumb}
                       loading="lazy"
+                      decoding="async"
                     />
                   ) : (
                     <div className={styles.externalThumbFallback} aria-hidden="true">
