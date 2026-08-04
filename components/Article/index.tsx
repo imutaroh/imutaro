@@ -21,19 +21,22 @@ export default function Article({ data }: Props) {
       <div className={styles.meta}>
         {data.writer && (
           <div className={styles.writer}>
-            <picture>
-              <source
-                type="image/webp"
-                srcSet={`${data.writer?.image?.url}?fm=webp&fit=crop&w=48&h=48 1x, ${data.writer?.image?.url}?fm=webp&fit=crop&w=48&h=48&dpr=2 2x`}
-              />
-              <img
-                src={data.writer?.image?.url}
-                alt=""
-                className={styles.writerIcon}
-                width={data.writer?.image?.width}
-                height={data.writer?.image?.height}
-              />
-            </picture>
+            {/* image 未設定の writer では src="undefined" の壊れ画像になるため、URL があるときだけ描画 */}
+            {data.writer.image?.url && (
+              <picture>
+                <source
+                  type="image/webp"
+                  srcSet={`${data.writer.image.url}?fm=webp&fit=crop&w=48&h=48 1x, ${data.writer.image.url}?fm=webp&fit=crop&w=48&h=48&dpr=2 2x`}
+                />
+                <img
+                  src={data.writer.image.url}
+                  alt=""
+                  className={styles.writerIcon}
+                  width={data.writer.image.width}
+                  height={data.writer.image.height}
+                />
+              </picture>
+            )}
             <span className={styles.writerName}>{data.writer?.name}</span>
           </div>
         )}

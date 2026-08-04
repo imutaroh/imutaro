@@ -186,7 +186,8 @@ export default async function Page() {
       </section>
 
       <div className={styles.midBand}>
-        {/* 縦長S字のクロームリボン。シルバー帯の右端で見切れさせる装飾。
+        {/* 縦長S字のクロームリボン。シルバー帯の左端で見切れさせる装飾。
+            左右反転はしない(全素材の光源＝左上をヒーローと揃えるため)。
             縁処理は .midGlyphImg の multiply のみ(不透明グラデを重ねると背面の
             銀グラデーションを塗りつぶして矩形の継ぎ目を作るため併用しない)。
             ファーストビュー外なので next/image デフォルトの lazy で読み込む */}
@@ -196,8 +197,8 @@ export default async function Page() {
             alt=""
             width={864}
             height={1821}
-            // 表示は高さ420px固定 = 幅約200px。sizes で表示幅相当の変換画像を選ばせる
-            sizes="200px"
+            // 表示は高さ460px固定 = 幅約218px。sizes で表示幅相当の変換画像を選ばせる
+            sizes="220px"
             className={styles.midGlyphImg}
           />
         </div>
@@ -240,20 +241,7 @@ export default async function Page() {
         </div>
       </div>
 
-      <section className={`${styles.section} ${styles.articlesSection}`}>
-        {/* 液体クロームの雫。見出し右の余白に浮かべる装飾。
-            縁処理は multiply(.midGlyph と同じ方式)。lazy 読み込み */}
-        <div className={styles.articlesDrops} aria-hidden="true">
-          <Image
-            src="/metal-drops.png"
-            alt=""
-            width={1254}
-            height={1254}
-            // 表示幅は CSS の 200px 固定
-            sizes="200px"
-            className={styles.articlesDropsImg}
-          />
-        </div>
+      <section className={styles.section}>
         <div className={styles.sectionHead}>
           <p className={styles.sectionEyebrow}>( 04 / articles )</p>
           <h2 className={styles.sectionTitle}>
@@ -353,20 +341,6 @@ export default async function Page() {
       </div>
 
       <section className={`${styles.section} ${styles.sectionEnd}`}>
-        {/* 結び目のクロームリボン。見出し上の余白〜リスト右上に置き、右端で見切れさせる。
-            縁処理は .contactGlyphImg の multiply のみ(.midGlyph と同じ方式)。
-            ファーストビュー外なので next/image デフォルトの lazy で読み込む */}
-        <div className={styles.contactGlyph} aria-hidden="true">
-          <Image
-            src="/ribbon-glyph-a.png"
-            alt=""
-            width={1254}
-            height={1254}
-            // 表示幅は 260px 固定。sizes で表示幅相当の変換画像を選ばせる
-            sizes="260px"
-            className={styles.contactGlyphImg}
-          />
-        </div>
         <div className={styles.sectionHead}>
           <p className={styles.sectionEyebrow}>( {contactNumber} / contact )</p>
           <h2 className={styles.sectionTitle}>

@@ -10,9 +10,10 @@
   align-items: center;
   gap: 10px;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  /* eyebrow は LP と同じ 13px / ls 0.05em(DESIGN.md 3章の mono 規則) */
+  font-size: var(--fs-meta);
   color: var(--color-accent);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.05em;
   margin-bottom: 8px;
 }
 

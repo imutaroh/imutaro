@@ -28,7 +28,8 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.9rem;
+  /* LP ヘッダー(app/(lp)/layout.module.css)の .navLink と同じ UI 段 14px */
+  font-size: var(--fs-ui);
   color: var(--color-sub);
   transition: color 0.15s ease;
 }

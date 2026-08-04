@@ -90,9 +90,10 @@
 
 .eyebrow {
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-size: var(--fs-meta);
   color: var(--color-accent);
-  letter-spacing: 0.04em;
+  /* monoラベルの統一値(計器の銘板)。セクション側 .sectionEyebrow と揃える */
+  letter-spacing: 0.05em;
   margin-bottom: 24px;
 }
 
@@ -111,13 +112,18 @@
   font-weight: 700;
   font-family: var(--font-serif-stack);
   font-feature-settings: 'palt';
+  /* body の letter-spacing 0.02em の継承を遮断する保護。
+     フィット式の余裕(11.4em vs 分母11.6)は 0.02em×11文字=0.22em でほぼ食い潰される */
+  letter-spacing: 0;
   color: var(--color-ink);
 }
 
 .heroLead {
   margin-top: 24px;
   color: var(--color-sub);
-  font-size: 1.05rem;
+  font-size: var(--fs-lead);
+  /* 長文はゆったり(本文の 1.8 より1段開ける) */
+  line-height: 2;
   max-width: 40em;
 }
 
@@ -142,9 +148,11 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 24px;
+  /* 光学補正: フォントサイズを落とすぶん面で保つ */
+  padding: 13px 26px;
   border-radius: var(--border-radius);
-  font-size: 0.95rem;
+  /* Plex 500 は字が締まるので 14px でも十分濃い */
+  font-size: var(--fs-ui);
   font-weight: 500;
   transition:
     background-color 0.15s ease,
@@ -253,8 +261,8 @@
    mask はタイルラスタライズを重くするため全サイトで不使用(Issue #19)。
    PR #20 と同じ「背景色グラデーションを上に重ねる」方式で、
    背景が単色(--color-bg)である前提に依存する。
-   ※ 背面に描画物(流線・同心円など)がある場所では不透明グラデがそれを塗りつぶして
-     矩形の継ぎ目を作るため使わない(.midGlyph / .contactGlyph は multiply に一本化) */
+   ※ 背面に描画物(銀グラデ面など)がある場所では不透明グラデがそれを塗りつぶして
+     矩形の継ぎ目を作るため使わない(.midGlyph は multiply に一本化) */
 .ribbonFade::after {
   content: '';
   position: absolute;
@@ -297,7 +305,9 @@
   border-bottom: 1px solid var(--color-line);
   background-color: var(--color-code-bg);
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: var(--fs-caption);
+  /* monoラベル統一値 */
+  letter-spacing: 0.05em;
   color: var(--color-sub);
 }
 
@@ -313,7 +323,8 @@
   margin: 0;
   padding: 18px 24px;
   font-family: var(--font-mono);
-  font-size: 0.82rem;
+  /* letter-spacing は globals.css の code,pre で 0 に遮断済み */
+  font-size: var(--fs-meta);
   line-height: 1.75;
   color: var(--color-sub);
   overflow-x: auto;
@@ -336,20 +347,24 @@
   padding: 16px 20px;
   border-top: 1px solid var(--color-line);
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  /* 中身は URL = monoデータ段(13px / ls 0)。12px段の「フッタ」はサイトFooter(©表記)を指す */
+  font-size: var(--fs-meta);
+  letter-spacing: 0;
   color: var(--color-sub);
 }
 
 /* Learning Log〜Stack を包む全幅のストリーム帯。中のセクションを前面に出す */
 .midBand {
   position: relative;
-  /* 右端で見切れる .midGlyph を刈る(hidden ではなく clip。Issue #21) */
+  /* 左端で見切れる .midGlyph を刈る(hidden ではなく clip。Issue #21) */
   overflow: clip;
   /* 淡い銀青の金属面。「面で塗らない」原則の唯一の例外(DESIGN.md 5章・9章)。
      画像ではなく CSS グラデにして、スクロール中のラスタコストを増やさない */
   background: var(--bg-metal-band);
   border-top: 1px solid var(--color-line);
   border-bottom: 1px solid var(--color-line);
+  /* 下余白 実測約64px→約96px。上128pxとの律動 */
+  padding-bottom: 32px;
 }
 
 .midBand .section {
@@ -357,27 +372,43 @@
   z-index: 1;
 }
 
-/* 縦長S字リボン。流線(z-index: 0)より後段のDOMなので z-index auto のままでも
-   同じ層で前面に乗り、セクション本文(z-index: 1)の背面に沈む。
+/* 縦長S字リボン。ページ唯一の左置きとして銀帯の左端で深く見切れさせる
+   (可視幅 約98px)。左右反転(scaleX(-1))はしない: 全素材の光源が左上で
+   統一されており、反転するとヒーローリボンとハイライト方向が矛盾する。
    ※ z-index を指定しないこと: 指定するとここがスタッキング文脈になり、
      .midGlyphImg の mix-blend-mode の合成がこの箱の中に隔離されて
-     背面の流線と混ざらなくなる(=矩形ハローが復活する) */
+     背面と混ざらなくなる(=矩形ハローが復活する) */
 .midGlyph {
   position: absolute;
-  right: -64px;
-  top: calc(50% - 210px);
+  left: -120px;
+  top: calc(50% - 230px);
   pointer-events: none;
 }
 
 .midGlyphImg {
   display: block;
-  height: 420px;
+  height: 460px;
   width: auto;
-  /* 矩形背景を乗算で下地(単色bg + 流線)に溶かす。素材は白点を純白(#fff)に
-     レベル補正済みなので白地の乗算は恒等になり、流線が glyph の矩形内を
-     減衰なく通り抜ける(クロームの暗部は保持される)。
+  /* 矩形背景を乗算で下地(銀グラデ面)に溶かす。素材は白点を純白(#fff)に
+     レベル補正済みなので白地の乗算は恒等になり、背面の銀グラデが glyph の
+     矩形内を減衰なく通り抜ける(クロームの暗部は保持される)。
      mask 禁止(Issue #19)には抵触しない */
   mix-blend-mode: multiply;
+}
+
+/* 装飾の非表示理由をブレークポイントごとに明記する(規律):
+   midGlyph は高さ460px → 幅 864/1821×460 ≒ 218px、left:-120px で可視幅 約98px。
+   衝突相手は Learning Log の破線境界そのものではなく、そこからさらに左へ
+   約7.5px はみ出す .logDot のリング(left:-32.5px + .log の padding 28px
+   + border 1px + リング box-shadow 4px)。コンテンツ左余白 =
+   オーバーレイスクロールバー環境では 1201〜1203px の帯でリングに最大2px弱、
+   クラシックスクロールバー環境(Windows 等、メディアクエリ幅にバー約15px を含む)
+   では最大約8px 重なるが、セクション側が z-index:1 で glyph の上に描画される
+   ため装飾の見え方の問題に留まる。許容してカットオフは 1200px に置く */
+@media (max-width: 1200px) {
+  .midGlyph {
+    display: none;
+  }
 }
 
 .section {
@@ -425,36 +456,15 @@
 }
 
 .sectionEnd {
-  position: relative;
   padding-bottom: var(--space-section);
 }
 
-.articlesSection {
-  position: relative;
-}
-
-/* 液体クロームの雫。04 articles の見出し右の余白に浮かべる。
-   multiply を効かせるためラッパーに z-index を付けない(DESIGN.md 4章) */
-.articlesDrops {
-  position: absolute;
-  top: calc(var(--space-section) - 16px);
-  right: -32px;
-  pointer-events: none;
-}
-
-.articlesDropsImg {
-  display: block;
-  width: 200px;
-  height: auto;
-  mix-blend-mode: multiply;
-}
-
-/* 液体金属のストリーム。Contact 前の全幅ディバイダ。
+/* 液体金属のストリーム。Contact 前の全幅ディバイダ(ページ唯一の全幅音)。
    横長画像を帯状に切り抜く(object-fit)。overflow は clip(Issue #21) */
 .streamDivider {
   position: relative;
   margin-top: var(--space-section);
-  height: clamp(120px, 16vw, 240px);
+  height: clamp(140px, 18vw, 260px);
   overflow: clip;
 }
 
@@ -463,59 +473,29 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  /* うねりの最密部を左に寄せ、ヒーロー(右)偏重の解体に足す */
+  object-position: 20% 50%;
   mix-blend-mode: multiply;
 }
-
-@media (max-width: 768px) {
-  .articlesDrops {
-    display: none;
-  }
-}
-
-/* 結び目リボン。見出し上の余白〜リスト右上に置き、右へ深く見切れさせて
-   ヒーロー・ミッド帯と同じ「端で見切れて背景に溶ける」言語に揃える。
-   ※ z-index を指定しないこと(.midGlyph と同じ理由): 指定するとここが
-     スタッキング文脈(=合成の隔離グループ)になり、.contactGlyphImg の
-     mix-blend-mode が背面(ページ背景・同心円装飾)と混ざらず白矩形が残る。
-     positioned のため本文より前面に描画されるが、見出し・リスト本文とは
-     重ならない位置で、pointer-events: none のため操作も遮らない */
-.contactGlyph {
-  position: absolute;
-  top: 8px;
-  /* セクション幅(1040px)基準の固定値だと広い画面ではみ出しがマージンに吸収され、
-     結び目が丸ごと見えて浮いてしまう。ビューポート基準で常に右端から約80px
-     見切れさせ、ヒーロー・ミッド帯のリボンと同じ「端で見切れる」言語に揃える */
-  right: min(-110px, calc((1040px - 100vw) / 2 - 80px));
-  pointer-events: none;
-}
-
-.contactGlyphImg {
-  display: block;
-  width: 260px;
-  height: auto;
-  /* 矩形背景を乗算でページ背景と同心円装飾に溶かす(.midGlyphImg と同じ手法)。
-     素材は白点を純白(#fff)にレベル補正済みなので白地の乗算は恒等 */
-  mix-blend-mode: multiply;
-}
-
-/* ページの結びにヒーローの同心円を淡く反響させるブックエンド。
-   フェードアウトは mask ではなく「背景色グラデーションを上に重ねる」方式
-   (mask はタイルラスタライズを重くするため全サイトで不使用。Issue #19)。
-   背景が単色(--color-bg)である前提に依存する */
 
 .sectionHead {
   margin-bottom: 40px;
 }
 
+/* リーダー罫線: 参照サイトの「( About Us ) ─── 01」と同じ計測線の文法を、
+   既存語彙(ヘアライン+mono+括弧)だけで実現する。
+   ◉ ( 01 / about ) ────────── がカラム右端まで走り、
+   紙面に全セクション貫通の水平基準構造を与える */
 .sectionEyebrow {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  width: 100%;
   gap: 10px;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: var(--fs-meta);
   color: var(--color-accent);
-  letter-spacing: 0.02em;
+  /* monoラベル統一値(ヒーロー .eyebrow と揃える) */
+  letter-spacing: 0.05em;
   margin-bottom: 8px;
 }
 
@@ -528,13 +508,26 @@
   border: 1px solid var(--color-accent);
   background: radial-gradient(circle, var(--color-accent) 0 2px, transparent 2.5px);
   opacity: 0.8;
+  /* ::after(リーダー罫線)が flex:1 のため、狭い幅でダイヤルが潰れないよう固定
+     (Article 側のダイヤル実装と同じ) */
+  flex-shrink: 0;
+}
+
+/* リーダー罫線の線本体。flex gap 10px が加算され始点余白は実効34px
+   (実機スクショで広すぎれば 14px に詰める=実効24px) */
+.sectionEyebrow::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-line);
+  margin-left: 24px;
 }
 
 .sectionTitle {
   display: flex;
   align-items: baseline;
   gap: 14px;
-  font-size: 2.2rem;
+  font-size: var(--fs-h2);
   font-weight: 700;
   color: var(--color-ink);
 }
@@ -543,14 +536,21 @@
    Zen Old Mincho は 700 しか読み込んでいないため weight を明示する */
 .sectionNumber {
   font-family: var(--font-serif-stack);
-  font-size: 3rem;
+  font-size: var(--fs-number);
   font-weight: 700;
   line-height: 1;
   color: var(--color-accent);
 }
 
+.aboutBody {
+  font-size: var(--fs-lead);
+  max-width: 34em;
+}
+
 .aboutBody p {
   color: var(--color-ink);
+  /* 長文はゆったり(本文の 1.8 より1段開ける) */
+  line-height: 2;
   margin-bottom: 1.2em;
 }
 
@@ -573,7 +573,8 @@
   flex-wrap: wrap;
   align-items: baseline;
   gap: 16px;
-  padding: 14px 0;
+  /* 8pxグリッド */
+  padding: 16px 0;
 }
 
 .logDot {
@@ -581,8 +582,8 @@
   left: -32.5px;
   /* エントリ中央ではなく1行目(hash行)に固定する。テキストが折り返して2行に
      なっても点が行間に浮かず、他エントリの点と縦に揃う
-     (上padding 14px + 1行目の行ボックス 0.85rem×1.8 ≒ 24.5px の半分 ≒ 26px) */
-  top: 26px;
+     (上padding 16px + 1行目の行ボックス 13px×1.8 ≒ 23.4px の半分 ≒ 27.7px → 28px) */
+  top: 28px;
   transform: translateY(-50%);
   width: 8px;
   height: 8px;
@@ -596,13 +597,16 @@
 
 .logHash {
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-size: var(--fs-meta);
+  /* monoデータ。body 0.02em の継承を明示遮断 */
+  letter-spacing: 0;
   color: var(--color-accent);
 }
 
 .logDate {
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-size: var(--fs-meta);
+  letter-spacing: 0;
   color: var(--color-sub);
 }
 
@@ -645,7 +649,9 @@
   border: 1px solid var(--color-line);
   border-radius: 999px;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  /* monoピルは caption 段 + ラベル統一字間 */
+  font-size: var(--fs-caption);
+  letter-spacing: 0.05em;
   color: var(--color-sub);
 }
 
@@ -679,7 +685,8 @@
   justify-content: space-between;
   align-items: center;
   gap: 24px;
-  padding: 28px 8px;
+  /* 8pxグリッド・ゆとり方向へ */
+  padding: 32px 8px;
   margin: 0 -8px;
   border-radius: var(--border-radius);
   transition: background-color 0.15s ease;
@@ -703,8 +710,10 @@
 /* 行頭 index はセクション番号(.sectionNumber)と同じセリフの語彙で揃える */
 .articleIndex {
   font-family: var(--font-serif-stack);
-  font-size: 1.05rem;
+  font-size: var(--fs-lead);
   font-weight: 700;
+  /* Playfair 非対応ならサイレント無効(無害) */
+  font-variant-numeric: tabular-nums;
   color: var(--color-sub);
   opacity: 0.7;
   flex-shrink: 0;
@@ -726,6 +735,8 @@
   align-items: center;
   gap: 16px;
   flex-shrink: 0;
+  /* 日付の桁を縦に揃える */
+  font-variant-numeric: tabular-nums;
   color: var(--color-sub);
 }
 
@@ -735,7 +746,7 @@
   gap: 8px;
   margin-top: 32px;
   color: var(--color-accent);
-  font-size: 0.9rem;
+  font-size: var(--fs-ui);
 }
 
 .articlesMore:hover {
@@ -790,6 +801,10 @@
   background-color: var(--color-code-bg);
   border-bottom: 1px solid var(--color-line);
   font-family: var(--font-mono);
+  /* 出どころ表示のプレースホルダ = monoラベル統一段 12px / 0.05em
+     (未指定だと body 16px + ls 0.02em を継承して mono 2段規則から外れる) */
+  font-size: var(--fs-caption);
+  letter-spacing: 0.05em;
   color: var(--color-sub);
 }
 
@@ -803,10 +818,12 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  font-size: 0.92rem;
+  font-size: var(--fs-ui);
   font-weight: 500;
   line-height: 1.6;
-  min-height: 2.9em;
+  /* line-height 1.6 × 2行 = 3.2em。旧 2.9em では1行タイトルと2行タイトルで
+     メタ行の縦位置が 0.3em ズレて grid が波打っていた(バグ修正) */
+  min-height: 3.2em;
   color: var(--color-ink);
   transition: color 0.15s ease;
 }
@@ -839,7 +856,9 @@
   border: 1px solid var(--color-line);
   border-radius: 999px;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-caption);
+  /* monoラベル統一値 */
+  letter-spacing: 0.05em;
   color: var(--color-sub);
   flex-shrink: 0;
 }
@@ -859,7 +878,8 @@
   justify-content: space-between;
   align-items: baseline;
   gap: 24px;
-  padding: 28px 8px;
+  /* 8pxグリッド・ゆとり方向へ */
+  padding: 32px 8px;
   margin: 0 -8px;
   border-radius: var(--border-radius);
   transition: background-color 0.15s ease;
@@ -884,7 +904,10 @@
 
 .contactValue {
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-size: var(--fs-meta);
+  /* monoデータ(URL) */
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
   color: var(--color-sub);
 }
 
@@ -895,7 +918,7 @@
 }
 
 /* ヒーロー2カラムをやめて縦積み(タイトル → リボン90vw → リード → CTA)。
-   ミッド帯・Contact のリボン装飾は狭幅では本文に被るため出さない */
+   ミッド帯の glyph は 1200px 以下で既に非表示(前方のブロック参照) */
 @media (max-width: 768px) {
   .hero {
     padding: 48px 24px 64px;
@@ -914,11 +937,6 @@
        その順(タイトル90msとリード180msの間)に合わせる。デスクトップの360ms
        (右背面へ最後に入場)のままだと、表示済み要素の間へ割り込んで見える */
     animation-delay: 135ms;
-  }
-
-  .midGlyph,
-  .contactGlyph {
-    display: none;
   }
 }
 
@@ -944,7 +962,11 @@
     flex-wrap: wrap;
   }
 
-  .contactValue {
-    font-size: 0.8rem;
+  /* contactValue は URL データなのでモバイルでも 13px(--fs-meta)を維持する
+     (mono 2段規則: データ=13px / ラベル=12px。行は flex-wrap で折り返す) */
+
+  /* 線が短くなりすぎるため始点余白を詰める */
+  .sectionEyebrow::after {
+    margin-left: 16px;
   }
 }

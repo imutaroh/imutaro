@@ -5,6 +5,8 @@
   line-height: 16px;
   margin: 0;
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  /* monoデータ(日付)の統一段 13px。body の ls 0.02em は継承させない(DESIGN.md 3章) */
+  font-size: var(--fs-meta);
+  letter-spacing: 0;
   color: var(--color-sub);
 }

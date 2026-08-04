@@ -3,5 +3,7 @@
   text-align: center;
   color: var(--color-sub);
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  /* monoラベル統一段 12px / 0.05em */
+  font-size: var(--fs-caption);
+  letter-spacing: 0.05em;
 }

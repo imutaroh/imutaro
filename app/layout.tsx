@@ -1,6 +1,6 @@
 import {
   Playfair_Display,
-  Zen_Kaku_Gothic_New,
+  IBM_Plex_Sans_JP,
   Zen_Old_Mincho,
   IBM_Plex_Mono,
 } from 'next/font/google';
@@ -17,7 +17,11 @@ const playfair = Playfair_Display({
   variable: '--font-playfair',
 });
 
-const body = Zen_Kaku_Gothic_New({
+// 本文。メタデータの IBM Plex Mono と同一スーパーファミリーにして
+// 「機械の声(mono)と人間の声(sans)が同一骨格」に統一する。
+// italic は存在しない(将来 bold italic が必要になったら要再検討)。
+// 和文グリフは unicode-range 分割で必要時取得(旧 Zen Kaku と同じコスト構造)
+const body = IBM_Plex_Sans_JP({
   weight: ['400', '500', '700'],
   subsets: ['latin'],
   variable: '--font-body',
