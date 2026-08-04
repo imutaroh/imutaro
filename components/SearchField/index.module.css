@@ -7,7 +7,9 @@
   border-radius: var(--border-radius);
   background: #fff url('/search.svg') no-repeat 14px center;
   font-family: var(--font-mono);
-  font-size: 0.9rem;
+  /* monoデータ(検索クエリ入力)の統一段 13px / 字間0 */
+  font-size: var(--fs-meta);
+  letter-spacing: 0;
   color: var(--color-ink);
   transition: border-color 0.15s ease;
 }

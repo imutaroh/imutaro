@@ -19,7 +19,9 @@
   border: 1px solid transparent;
   border-radius: var(--border-radius);
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  /* monoデータ(ページ番号)の統一段 13px / 字間0 */
+  font-size: var(--fs-meta);
+  letter-spacing: 0;
   color: var(--color-sub);
   transition:
     color 0.15s ease,

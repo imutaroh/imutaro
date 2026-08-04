@@ -34,15 +34,18 @@ LP はその上に **「白い紙の上をクロームが流れる」** を重�
 
 | 役割 | フォント | 変数 | 使い所 |
 |---|---|---|---|
-| Display | Space Grotesk | `--font-display` | h1〜h6（globals.cssで自動適用） |
-| Serif Display | Zen Old Mincho (700のみ) | `--font-serif` | **大きな飾り文字専用**: ヒーロータイトル・セクション番号（`01.`）・記事行の index |
-| Body | Zen Kaku Gothic New | `--font-body` | 本文 |
+| Heading Serif | 欧文: Playfair Display (700) / 和文: Zen Old Mincho (700) の混植 | `--font-serif-stack`（実体は `--font-playfair` + `--font-serif`） | h1〜h6（globals.cssで全ページ自動適用）・セクション番号（`01.`）・記事行の index |
+| Body | IBM Plex Sans JP (400/500/700) | `--font-body` | 本文（mono と同一スーパーファミリー。「機械の声(mono)と人間の声(sans)が同一骨格」） |
 | Mono | IBM Plex Mono | `--font-mono` | **メタデータ全般**: eyebrow・日付・タグ・ハッシュ・ラベル・パンくず |
 
 原則:
+- **7段タイプスケール**（globals.css 定義: `--fs-caption` 12px / `--fs-meta` 13px / `--fs-ui` 14px / `--fs-body` 16px / `--fs-lead` 1.05rem / `--fs-h2` 2.2rem / `--fs-number` 3rem）。UI・ナビ・メタ・ラベルのフォントサイズはこの7段から選び、**これ以外を新設しない**。例外は2系統のみ: ①ブランドロゴ `.logo` 0.95rem（LP/ブログ共通ヘッダー） ②読み物系のディスプレイ/プロース文字（PageHead・記事タイトルの `clamp()`、記事本文 `.content` 内の見出し・本文・コード、ブログ一覧タイトル 1.1rem、リード 0.95rem、プロフィール文 0.85rem）— 720px 測度の可読性に最適化した既存値を維持し、7段の対象外とする
+- **mono の使用規則**: mono は 13px（データ: 日付・hash・URL・ページ番号・検索入力。letter-spacing 0）と 12px（ラベル/ピル/キャプション: タブ・バッジ・ステータス・サイトフッタの©表記・図注。letter-spacing 0.05em）の**2段のみ**。profile.json カードの脚注は中身が URL なので 13px 段。eyebrow は 13px / ls 0.05em。**700 にしない**。色は sub か accent のみ。例外はブランドロゴ `.logo`（0.95rem）と記事本文 `.content` 内のコード（プロース扱い: `pre code` 0.9rem / インライン 0.88em）
+- body は `letter-spacing: 0.02em`（Plex は字面がやや締まるため）。桁揃えが命の等幅には継承させず、`code, pre { letter-spacing: 0 }` で遮断する
+- palt は全見出し（h1-h6、globals.css で一括適用）。`.heroTitle` はフィット式の余裕を守るため `letter-spacing: 0` で body の字間継承から保護する
 - **mono = 機械が読む情報**（日付、タグ、ステータス、ID）。人間向けの文は body
-- **serif = 構図を作るディスプレイ文字**。本文や小さなメタ情報には使わない。700 しか読み込んでいないため必ず `font-weight: 700` を明示する
-- ヒーロータイトルは `--font-serif` + `font-feature-settings: 'palt'`、`line-height: 1.12`。サイズは「最長行の文字数がどの画面幅でも1行に収まる」よう `calc()` で導出する（page.module.css のコメント参照）
+- **serif = 見出しと構図を作るディスプレイ文字**。本文や小さなメタ情報には使わない。Playfair は欧文グリフのみ持ち、和文は自動的に Zen Old Mincho へフォールバックする（欧文=高コントラスト・和文=明朝の混植が意図）。どちらも 700 しか読み込んでいないため、見出しの `font-weight` を 700 未満にしない
+- ヒーロータイトルは `--font-serif-stack` + `font-feature-settings: 'palt'`、`line-height: 1.12`。サイズは「最長行の文字数がどの画面幅でも1行に収まる」よう `calc()` で導出する（page.module.css のコメント参照）
 - 見出しは `font-weight: 700`、本文リンクやリスト項目タイトルは `500`
 - 日本語見出しは `word-break: keep-all` + `text-wrap: balance` を検討
 
@@ -57,25 +60,29 @@ LP はその上に **「白い紙の上をクロームが流れる」** を重�
    ```
 2. **点とリング**: タイムラインのノード。`box-shadow: 0 0 0 3px var(--color-bg), 0 0 0 4px rgba(0,135,168,.35)`
 3. **ヘアライン罫線リスト**: `border-bottom: 1px solid var(--color-line)` で区切った行。hoverで `background: var(--color-code-bg)` ＋タイトルが accent に
+   - 変種 **リーダー罫線**: eyebrow の `::after`（`flex:1; height:1px; margin-left: 24px（≤640px は 16px）; background: var(--color-line)`）がカラム右端まで走る計測線。`◉ ( 01 / about ) ──────` の文法で、紙面に全セクション貫通の水平基準構造を与える
 4. **code-tab カード**: 上部にmonoのタブ（`--color-code-bg`地・点付き）を持つ枠線カード（profile.json カード）
-5. **mono ピル**: `border: 1px solid var(--color-line); border-radius: 999px; font-family: mono; font-size: .8rem`（タグ・ステータス用）
-6. **クロームリボン**: 白×青の流体ガラスを描いた静的な生成画像（`public/ribbon-*.png`、glyph は白点を純白 #fff にレベル補正済み）。LP のヒーロー右・ミッド帯右端・Contact 右に、`next/image` + 端の見切れで配置する。矩形の縁の馴染ませ方は背面で使い分ける: 背景が単色 `--color-bg` だけのヒーローは「背景色グラデーションの上掛け」（`.ribbonFade`。mask は禁止、PR #20 と同じ手法）、背面に描画物（流線・同心円）があるミッド帯・Contact は `mix-blend-mode: multiply` に一本化する（不透明グラデは背面を塗りつぶして矩形の継ぎ目を作るため併用しない。multiply を効かせるにはラッパーに z-index を付けずスタッキング文脈を作らないこと）
+5. **mono ピル**: `border: 1px solid var(--color-line); border-radius: 999px; font-family: mono; font-size: var(--fs-caption); letter-spacing: 0.05em`（タグ・ステータス用）
+6. **液体金属（このサイトのキービジュアル語彙）**: 白×青のクロームを描いた静的な生成画像ファミリー。使うのは3点 — リボン（`ribbon-hero.png`: ヒーロー右 / `ribbon-glyph-b.png`: ミッド帯**左端**・≤1200px 非表示[logDot リングとの接触回避、根拠は page.module.css のコメント]）、ストリーム（`metal-stream.png`: Contact 前の全幅ディバイダ・`object-position: 20% 50%` の左重心）。`metal-drops.png` と `ribbon-glyph-a.png` は**現在不使用の予備素材**。オーナーが「寂しい」と評価したときだけ**1点ずつ**復帰する — ribbon-glyph-a は Contact の右見切れ（`.sectionEnd` に `position: relative` を戻し、`.contactGlyph { position:absolute; top:8px; right:min(-110px, calc((1040px - 100vw)/2 - 80px)); }` / img `width:260px; mix-blend-mode:multiply` / ≤768px 非表示）、metal-drops は articles リスト末尾から滴る雫（`left:240px; bottom:-72px` / img `width:160px` / ≤768px 非表示。**見出し右には戻さない**）。**見切れの語彙は左右対称**（右見切れ=ヒーロー / 左見切れ=ミッド帯）。左右反転（`scaleX(-1)`）はしない（全素材の光源が左上で統一されており、反転するとハイライト方向が矛盾する）。いずれも `next/image` で配置し、ヒーロー以外は lazy。矩形の縁の馴染ませ方は背面で使い分ける: 背景が単色 `--color-bg` だけのヒーローは「背景色グラデーションの上掛け」（`.ribbonFade`。mask は禁止、PR #20 と同じ手法）、背面が単色でない箇所（銀グラデ面のミッド帯など）と単色上の小物は `mix-blend-mode: multiply` に一本化する（不透明グラデは背面を塗りつぶして矩形の継ぎ目を作るため併用しない。multiply を効かせるにはラッパーに z-index を付けずスタッキング文脈を作らないこと）。**1セクション1主役** — 同じ画面に金属素材を重ねすぎない
 7. **エディトリアルの括弧**: eyebrow を `( 01 / about )` の括弧形式で書く。ミニダイヤル ◉ とセットで使う
 
 ## 5. レイアウト・余白
 
 - コンテンツ最大幅: LP=1040px（hero=1200px）、記事本文=720px
 - セクション間: `--space-section`（128px、モバイル 80px。globals.css のトークンで一元管理）、見出しとコンテンツ間: 40px
-- ヘアライン行リストの行 padding: LP の記事・Contact 行のみ 28px（ゆとり優先）。Stack 行は 16px、ブログ一覧（ArticleListItem）は 24px 12px のままで、28px に統一しない
+- ヘアライン行リストの行 padding: LP の記事・Contact 行のみ 32px（ゆとり優先・8pxグリッド）。Stack 行は 16px、ブログ一覧（ArticleListItem）は 24px 12px のままで、32px に統一しない
+- ミッド帯の境界（hairline）は**呼吸ゾーンの中央**に置く: `--space-section` を境界の前後で折半し、帯の直前セクションに `padding-bottom: calc(var(--space-section) / 2)`（`.beforeBand`）、帯内セクションに同値の `padding-top`、帯自身に同値の `padding-bottom`、帯直後のセクションに同値の `padding-top`（`.afterBand`）を与える。境界線がコンテンツに張り付く／帯の中だけ間延びする、を防ぐ
 - 角丸: `--border-radius`(4px)。カードのみ 8px
 - 影は原則使わない。使うのは浮いているカードだけ（`0 24px 48px -32px rgba(26,35,48,.28)`）
+- 「面で塗らない」原則の**唯一の例外**はミッド帯（02 log / 03 stack）の淡い銀青メタリック面 `--bg-metal-band`（CSS グラデーション。画像は使わない）。他の場所に面を増やさない
 
 ## 6. セクション見出しの型
 
 ```
-◉ ( 01 / about )    ← eyebrow: mono 0.8rem, accent色, ミニダイヤル+括弧
-01. About           ← number: serif 3rem / 700 / accent（aria-hidden の装飾）
-                      title: 2.2rem / 700 / ink（番号の右に baseline 揃え）
+◉ ( 01 / about ) ──────  ← eyebrow: mono 13px(--fs-meta) / ls 0.05em / accent色,
+                            ミニダイヤル+括弧+リーダー罫線(::after がカラム右端まで)
+01. About                ← number: serif 3rem(--fs-number) / 700 / accent（aria-hidden の装飾）
+                           title: 2.2rem(--fs-h2) / 700 / ink（番号の右に baseline 揃え）
 ```
 番号は「ページ内の順序」を表すときだけ付ける。一覧ページ等では `/ blog` のようにラベルのみ。
 セリフの大きな番号は LP のセクション見出し専用（ブログ側の見出しには付けない）。
@@ -92,7 +99,7 @@ LP はその上に **「白い紙の上をクロームが流れる」** を重�
 
 | ページ | 演出 | 構成 |
 |---|---|---|
-| `/`（LP） | 有限・入力駆動のみ（TypedTitle のタイプ入場, fadeInUp スタッガ, ShinyText[3回で停止], ClickSpark[クリック駆動]） | hero（左テキスト + 右クロームリボン）+ セクション + リボン装飾（ミッド帯・Contact） |
+| `/`（LP） | 有限・入力駆動のみ（TypedTitle のタイプ入場, fadeInUp スタッガ, ShinyText[3回で停止], ClickSpark[クリック駆動]） | hero（左テキスト + 右クロームリボン）+ セクション + リボン装飾（ミッド帯左端）+ ストリーム（Contact 前） |
 | `/blog`, `/tags/*`, `/search` | 演出なし | eyebrow付きページ見出し + ヘアライン行リスト + monoピルのタグ |
 | `/articles/*` | 演出なし | mono メタ → 見出し → 本文720px。読みやすさ最優先 |
 | 404 | なし | mono `404` + 一言 + 帰りのリンク |

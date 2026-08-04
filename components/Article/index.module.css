@@ -34,9 +34,10 @@
   align-items: center;
   gap: 10px;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  /* eyebrow は LP と同じ 13px / ls 0.05em(DESIGN.md 3章の mono 規則) */
+  font-size: var(--fs-meta);
   color: var(--color-accent);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.05em;
   margin-bottom: 12px;
 }
 
@@ -91,7 +92,8 @@
 
 .writerName {
   margin-left: 12px;
-  font-size: 0.9rem;
+  /* メタ行のUI段 14px */
+  font-size: var(--fs-ui);
   color: var(--color-ink);
 }
 
@@ -174,6 +176,8 @@
   overflow-x: auto;
   padding: 16px;
   border-radius: var(--border-radius);
+  /* 記事プロースのコードは mono 2段規則(13/12px)の対象外。
+     720px 測度で読ませる本文の一部なので可読サイズを維持する(DESIGN.md 3章) */
   font-size: 0.9rem;
 }
 
@@ -185,7 +189,9 @@
   content: attr(data-filename);
   margin: 1em 0 0;
   font-family: var(--font-mono), menlo, inconsolata, monospace;
-  font-size: 0.8rem;
+  /* ファイル名タブは monoラベル統一段 12px / 0.05em(LP のカードタブと同じ) */
+  font-size: var(--fs-caption);
+  letter-spacing: 0.05em;
   color: var(--color-sub);
   padding: 4px 16px;
   border-radius: var(--border-radius) var(--border-radius) 0 0;
@@ -237,7 +243,9 @@
 }
 
 .content > figure figcaption {
-  font-size: 0.8rem;
+  /* 図注は monoラベル統一段 12px / 0.05em */
+  font-size: var(--fs-caption);
+  letter-spacing: 0.05em;
   font-family: var(--font-mono);
   color: var(--color-sub);
   margin-top: 0.5rem;
@@ -292,7 +300,7 @@
   .meta {
     padding-bottom: 20px;
     margin-bottom: 32px;
-    font-size: 0.9rem;
+    font-size: var(--fs-ui);
   }
 
   .writer {

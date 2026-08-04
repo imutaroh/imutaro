@@ -18,10 +18,38 @@
   /* セクション間の縦リズム。「区切りの大きさ」をトークンとして1箇所で持つ */
   --space-section: 128px;
 
-  /* 大きな飾り文字(ヒーロータイトル・セクション番号・行頭index)用セリフの
-     フォールバック込みスタック。body/h1-h6/code と同様、スタックはここに
-     一元化し、モジュール側は var(--font-serif-stack) を参照するだけにする */
-  --font-serif-stack: var(--font-serif), 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+  /* --- type scale (7段)。UI・ナビ・メタ・ラベルのフォントサイズはこの7段から
+     選び、これ以外を新設しない。例外は2系統のみ(DESIGN.md 3章):
+     ① ブランドロゴ .logo 0.95rem(LP/ブログ共通ヘッダー)
+     ② 読み物系のディスプレイ/プロース文字(記事・ブログのタイトル clamp()、
+        記事本文 .content 内の見出し・本文・コード、一覧タイトル・リード・
+        プロフィール文。720px 測度の可読性を優先し既存値を維持) --- */
+  --fs-caption: 0.75rem; /* 12px: monoピル・バッジ・カードタブ・サイトフッタ(©表記) */
+  --fs-meta: 0.8125rem; /* 13px: monoメタ(eyebrow・日付・hash・contactValue・cardCode・cardFooterのURL) */
+  --fs-ui: 0.875rem; /* 14px: ナビ・CTA・カード見出し・articlesMore */
+  --fs-body: 1rem; /* 16px: 本文 */
+  --fs-lead: 1.05rem; /* ヒーローリード・About本文・記事行index */
+  --fs-h2: 2.2rem; /* セクション見出し(≤640px は 1.8rem に上書き) */
+  --fs-number: 3rem; /* セリフのセクション番号(≤640px は 2.4rem に上書き) */
+
+  /* ミッド帯(02 log / 03 stack)専用の淡い銀青メタリック面。
+     1層目が斜めの光沢(シーン)、2層目が銀のベース。
+     「面で塗らない」原則の唯一の例外なので、他の場所で使わない */
+  --bg-metal-band:
+    linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0) 32%,
+      rgba(255, 255, 255, 0.7) 47%,
+      rgba(255, 255, 255, 0) 62%
+    ),
+    linear-gradient(160deg, #eef2f6 0%, #dfe7ee 42%, #f2f5f9 68%, #e3eaf1 100%);
+
+  /* 見出し・飾り文字用セリフのフォールバック込みスタック。先頭の Playfair は
+     欧文グリフしか持たないため、欧文=Playfair(高コントラスト)・和文=Zen Old
+     Mincho の混植になる。body/code と同様、スタックはここに一元化し、
+     モジュール側は var(--font-serif-stack) を参照するだけにする */
+  --font-serif-stack:
+    var(--font-playfair), var(--font-serif), 'Hiragino Mincho ProN', 'Yu Mincho', serif;
 
   /* --- legacy aliases (kept so existing component CSS modules pick up the new palette
      without a rewrite; new code should prefer the tokens above) --- */
@@ -67,6 +95,12 @@ body {
   background-color: var(--color-bg);
   color: var(--color-ink);
   line-height: 1.8;
+  /* IBM Plex Sans JP は字面がやや締まるため 2% 開けて可読性を確保 */
+  letter-spacing: 0.02em;
+  /* Plex 400 の細身の字面を意図した antialiased。macOS Firefox だけ
+     サブピクセルのまま太って見えないよう grayscale と常にペアで指定する */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 h1,
@@ -75,12 +109,19 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-display), var(--font-body), sans-serif;
+  /* 見出しはサイト全体でエディトリアルセリフ(欧文 Playfair / 和文明朝)。
+     本文・メタ情報(mono)には使わない。Zen Old Mincho は 700 しか読み込んで
+     いないため、見出しの font-weight を 700 未満に下げないこと */
+  font-family: var(--font-serif-stack);
+  /* 和文見出しのベタ組みの空きを詰める。従来ヒーローのみだった palt を全見出しへ */
+  font-feature-settings: 'palt';
 }
 
 code,
 pre {
   font-family: var(--font-mono), menlo, inconsolata, monospace;
+  /* body の letter-spacing 0.02em を桁揃えが命の等幅に継承させない */
+  letter-spacing: 0;
 }
 
 a {

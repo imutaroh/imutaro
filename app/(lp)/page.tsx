@@ -8,7 +8,6 @@ import ShinyText from '@/components/ShinyText';
 import BrandIcon from '@/components/BrandIcon';
 import LearningLog from './LearningLog';
 import TypedTitle from './TypedTitle';
-import MidStreamBackground from './MidStreamBackground';
 import styles from './page.module.css';
 
 const LATEST_ARTICLES_LIMIT = 3;
@@ -142,7 +141,7 @@ export default async function Page() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section className={`${styles.section} ${styles.beforeBand}`}>
         <div className={styles.sectionHead}>
           <p className={styles.sectionEyebrow}>( 01 / about )</p>
           <h2 className={styles.sectionTitle}>
@@ -187,10 +186,10 @@ export default async function Page() {
       </section>
 
       <div className={styles.midBand}>
-        <MidStreamBackground />
-        {/* 縦長S字のクロームリボン。ストリーム帯の右端で見切れさせる装飾。
-            縁処理は .midGlyphImg の multiply のみ(.ribbonFade を重ねると不透明グラデが
-            背面の流線を塗りつぶして矩形の継ぎ目を作るため併用しない)。
+        {/* 縦長S字のクロームリボン。シルバー帯の左端で見切れさせる装飾。
+            左右反転はしない(全素材の光源＝左上をヒーローと揃えるため)。
+            縁処理は .midGlyphImg の multiply のみ(不透明グラデを重ねると背面の
+            銀グラデーションを塗りつぶして矩形の継ぎ目を作るため併用しない)。
             ファーストビュー外なので next/image デフォルトの lazy で読み込む */}
         <div className={styles.midGlyph} aria-hidden="true">
           <Image
@@ -198,8 +197,8 @@ export default async function Page() {
             alt=""
             width={864}
             height={1821}
-            // 表示は高さ420px固定 = 幅約200px。sizes で表示幅相当の変換画像を選ばせる
-            sizes="200px"
+            // 表示は高さ460px固定 = 幅約218px。sizes で表示幅相当の変換画像を選ばせる
+            sizes="220px"
             className={styles.midGlyphImg}
           />
         </div>
@@ -242,7 +241,7 @@ export default async function Page() {
         </div>
       </div>
 
-      <section className={styles.section}>
+      <section className={`${styles.section} ${styles.afterBand}`}>
         <div className={styles.sectionHead}>
           <p className={styles.sectionEyebrow}>( 04 / articles )</p>
           <h2 className={styles.sectionTitle}>
@@ -328,21 +327,20 @@ export default async function Page() {
         </section>
       )}
 
+      {/* 液体金属のストリーム。Contact 前の全幅ディバイダ装飾。
+          縁処理は multiply。lazy 読み込み */}
+      <div className={styles.streamDivider} aria-hidden="true">
+        <Image
+          src="/metal-stream.png"
+          alt=""
+          width={1983}
+          height={793}
+          sizes="100vw"
+          className={styles.streamDividerImg}
+        />
+      </div>
+
       <section className={`${styles.section} ${styles.sectionEnd}`}>
-        {/* 結び目のクロームリボン。見出し上の余白〜リスト右上に置き、右端で見切れさせる。
-            縁処理は .contactGlyphImg の multiply のみ(.midGlyph と同じ方式)。
-            ファーストビュー外なので next/image デフォルトの lazy で読み込む */}
-        <div className={styles.contactGlyph} aria-hidden="true">
-          <Image
-            src="/ribbon-glyph-a.png"
-            alt=""
-            width={1254}
-            height={1254}
-            // 表示幅は 260px 固定。sizes で表示幅相当の変換画像を選ばせる
-            sizes="260px"
-            className={styles.contactGlyphImg}
-          />
-        </div>
         <div className={styles.sectionHead}>
           <p className={styles.sectionEyebrow}>( {contactNumber} / contact )</p>
           <h2 className={styles.sectionTitle}>

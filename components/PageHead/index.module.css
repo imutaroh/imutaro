@@ -5,34 +5,15 @@
   border-bottom: 1px solid var(--color-line);
 }
 
-/* LPのDotGridを静的に反響させるドットパターン(白×青)。
-   フェードアウトは mask ではなく「背景色グラデーションを上に重ねる」方式
-   (mask はタイルラスタライズを重くするため全サイトで不使用。Issue #19) */
-.head::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  top: -24px;
-  right: -48px;
-  width: 340px;
-  height: 200px;
-  background-image:
-    radial-gradient(ellipse at top right, transparent 20%, var(--color-bg) 72%),
-    radial-gradient(circle, #d5dde3 2px, transparent 2px);
-  background-size:
-    auto,
-    26px 26px;
-  pointer-events: none;
-}
-
 .eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 10px;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  /* eyebrow は LP と同じ 13px / ls 0.05em(DESIGN.md 3章の mono 規則) */
+  font-size: var(--fs-meta);
   color: var(--color-accent);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.05em;
   margin-bottom: 8px;
 }
 
@@ -67,11 +48,5 @@
   .head {
     padding: 8px 0 28px;
     margin-bottom: 36px;
-  }
-
-  .head::before {
-    right: -24px;
-    width: 220px;
-    height: 150px;
   }
 }
