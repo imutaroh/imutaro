@@ -58,7 +58,7 @@ LP はその上に **「白い紙の上をクロームが流れる」** を重�
 3. **ヘアライン罫線リスト**: `border-bottom: 1px solid var(--color-line)` で区切った行。hoverで `background: var(--color-code-bg)` ＋タイトルが accent に
 4. **code-tab カード**: 上部にmonoのタブ（`--color-code-bg`地・点付き）を持つ枠線カード（profile.json カード）
 5. **mono ピル**: `border: 1px solid var(--color-line); border-radius: 999px; font-family: mono; font-size: .8rem`（タグ・ステータス用）
-6. **クロームリボン**: 白×青の流体ガラスを描いた静的な生成画像（`public/ribbon-*.png`、glyph は白点を純白 #fff にレベル補正済み）。LP のヒーロー右・ミッド帯右端・Contact 右に、`next/image` + 端の見切れで配置する。矩形の縁の馴染ませ方は背面で使い分ける: 背景が単色 `--color-bg` だけのヒーローは「背景色グラデーションの上掛け」（`.ribbonFade`。mask は禁止、PR #20 と同じ手法）、背面に描画物（流線・同心円）があるミッド帯・Contact は `mix-blend-mode: multiply` に一本化する（不透明グラデは背面を塗りつぶして矩形の継ぎ目を作るため併用しない。multiply を効かせるにはラッパーに z-index を付けずスタッキング文脈を作らないこと）
+6. **液体金属（このサイトのキービジュアル語彙）**: 白×青のクロームを描いた静的な生成画像ファミリー。リボン（`public/ribbon-*.png`: ヒーロー右・ミッド帯右端・Contact 右）、雫（`metal-drops.png`: 04 articles 見出し右）、ストリーム（`metal-stream.png`: Contact 前の全幅ディバイダ）。いずれも `next/image` で配置し、ヒーロー以外は lazy。矩形の縁の馴染ませ方は背面で使い分ける: 背景が単色 `--color-bg` だけのヒーローは「背景色グラデーションの上掛け」（`.ribbonFade`。mask は禁止、PR #20 と同じ手法）、背面が単色でない箇所（銀グラデ面のミッド帯など）と単色上の小物は `mix-blend-mode: multiply` に一本化する（不透明グラデは背面を塗りつぶして矩形の継ぎ目を作るため併用しない。multiply を効かせるにはラッパーに z-index を付けずスタッキング文脈を作らないこと）。**1セクション1主役** — 同じ画面に金属素材を重ねすぎない
 7. **エディトリアルの括弧**: eyebrow を `( 01 / about )` の括弧形式で書く。ミニダイヤル ◉ とセットで使う
 
 ## 5. レイアウト・余白
@@ -68,6 +68,7 @@ LP はその上に **「白い紙の上をクロームが流れる」** を重�
 - ヘアライン行リストの行 padding: LP の記事・Contact 行のみ 28px（ゆとり優先）。Stack 行は 16px、ブログ一覧（ArticleListItem）は 24px 12px のままで、28px に統一しない
 - 角丸: `--border-radius`(4px)。カードのみ 8px
 - 影は原則使わない。使うのは浮いているカードだけ（`0 24px 48px -32px rgba(26,35,48,.28)`）
+- 「面で塗らない」原則の**唯一の例外**はミッド帯（02 log / 03 stack）の淡い銀青メタリック面 `--bg-metal-band`（CSS グラデーション。画像は使わない）。他の場所に面を増やさない
 
 ## 6. セクション見出しの型
 

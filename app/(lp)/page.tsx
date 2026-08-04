@@ -8,7 +8,6 @@ import ShinyText from '@/components/ShinyText';
 import BrandIcon from '@/components/BrandIcon';
 import LearningLog from './LearningLog';
 import TypedTitle from './TypedTitle';
-import MidStreamBackground from './MidStreamBackground';
 import styles from './page.module.css';
 
 const LATEST_ARTICLES_LIMIT = 3;
@@ -187,10 +186,9 @@ export default async function Page() {
       </section>
 
       <div className={styles.midBand}>
-        <MidStreamBackground />
-        {/* 縦長S字のクロームリボン。ストリーム帯の右端で見切れさせる装飾。
-            縁処理は .midGlyphImg の multiply のみ(.ribbonFade を重ねると不透明グラデが
-            背面の流線を塗りつぶして矩形の継ぎ目を作るため併用しない)。
+        {/* 縦長S字のクロームリボン。シルバー帯の右端で見切れさせる装飾。
+            縁処理は .midGlyphImg の multiply のみ(不透明グラデを重ねると背面の
+            銀グラデーションを塗りつぶして矩形の継ぎ目を作るため併用しない)。
             ファーストビュー外なので next/image デフォルトの lazy で読み込む */}
         <div className={styles.midGlyph} aria-hidden="true">
           <Image
@@ -242,7 +240,20 @@ export default async function Page() {
         </div>
       </div>
 
-      <section className={styles.section}>
+      <section className={`${styles.section} ${styles.articlesSection}`}>
+        {/* 液体クロームの雫。見出し右の余白に浮かべる装飾。
+            縁処理は multiply(.midGlyph と同じ方式)。lazy 読み込み */}
+        <div className={styles.articlesDrops} aria-hidden="true">
+          <Image
+            src="/metal-drops.png"
+            alt=""
+            width={1254}
+            height={1254}
+            // 表示幅は CSS の 200px 固定
+            sizes="200px"
+            className={styles.articlesDropsImg}
+          />
+        </div>
         <div className={styles.sectionHead}>
           <p className={styles.sectionEyebrow}>( 04 / articles )</p>
           <h2 className={styles.sectionTitle}>
@@ -327,6 +338,19 @@ export default async function Page() {
           </ul>
         </section>
       )}
+
+      {/* 液体金属のストリーム。Contact 前の全幅ディバイダ装飾。
+          縁処理は multiply。lazy 読み込み */}
+      <div className={styles.streamDivider} aria-hidden="true">
+        <Image
+          src="/metal-stream.png"
+          alt=""
+          width={1983}
+          height={793}
+          sizes="100vw"
+          className={styles.streamDividerImg}
+        />
+      </div>
 
       <section className={`${styles.section} ${styles.sectionEnd}`}>
         {/* 結び目のクロームリボン。見出し上の余白〜リスト右上に置き、右端で見切れさせる。

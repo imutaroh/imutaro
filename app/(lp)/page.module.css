@@ -345,6 +345,11 @@
   position: relative;
   /* 右端で見切れる .midGlyph を刈る(hidden ではなく clip。Issue #21) */
   overflow: clip;
+  /* 淡い銀青の金属面。「面で塗らない」原則の唯一の例外(DESIGN.md 5章・9章)。
+     画像ではなく CSS グラデにして、スクロール中のラスタコストを増やさない */
+  background: var(--bg-metal-band);
+  border-top: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
 }
 
 .midBand .section {
@@ -424,6 +429,50 @@
   padding-bottom: var(--space-section);
 }
 
+.articlesSection {
+  position: relative;
+}
+
+/* 液体クロームの雫。04 articles の見出し右の余白に浮かべる。
+   multiply を効かせるためラッパーに z-index を付けない(DESIGN.md 4章) */
+.articlesDrops {
+  position: absolute;
+  top: calc(var(--space-section) - 16px);
+  right: -32px;
+  pointer-events: none;
+}
+
+.articlesDropsImg {
+  display: block;
+  width: 200px;
+  height: auto;
+  mix-blend-mode: multiply;
+}
+
+/* 液体金属のストリーム。Contact 前の全幅ディバイダ。
+   横長画像を帯状に切り抜く(object-fit)。overflow は clip(Issue #21) */
+.streamDivider {
+  position: relative;
+  margin-top: var(--space-section);
+  height: clamp(120px, 16vw, 240px);
+  overflow: clip;
+}
+
+.streamDividerImg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  mix-blend-mode: multiply;
+}
+
+@media (max-width: 768px) {
+  .articlesDrops {
+    display: none;
+  }
+}
+
 /* 結び目リボン。見出し上の余白〜リスト右上に置き、右へ深く見切れさせて
    ヒーロー・ミッド帯と同じ「端で見切れて背景に溶ける」言語に揃える。
    ※ z-index を指定しないこと(.midGlyph と同じ理由): 指定するとここが
@@ -454,24 +503,6 @@
    フェードアウトは mask ではなく「背景色グラデーションを上に重ねる」方式
    (mask はタイルラスタライズを重くするため全サイトで不使用。Issue #19)。
    背景が単色(--color-bg)である前提に依存する */
-.sectionEnd::after {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  right: -180px;
-  bottom: -180px;
-  width: 520px;
-  height: 520px;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at center, transparent 30%, var(--color-bg) 72%),
-    repeating-radial-gradient(
-      circle at center,
-      rgba(91, 101, 114, 0.22) 0 1px,
-      transparent 1px 52px
-    );
-  pointer-events: none;
-}
 
 .sectionHead {
   margin-bottom: 40px;
