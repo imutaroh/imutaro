@@ -71,7 +71,7 @@ LP はその上に **「白い紙の上をクロームが流れる」** を重�
 - コンテンツ最大幅: LP=1040px（hero=1200px）、記事本文=720px
 - セクション間: `--space-section`（128px、モバイル 80px。globals.css のトークンで一元管理）、見出しとコンテンツ間: 40px
 - ヘアライン行リストの行 padding: LP の記事・Contact 行のみ 32px（ゆとり優先・8pxグリッド）。Stack 行は 16px、ブログ一覧（ArticleListItem）は 24px 12px のままで、32px に統一しない
-- ミッド帯（`--bg-metal-band`）の下余白は `padding-bottom: 32px` を足す（上 128px との律動）
+- ミッド帯の境界（hairline）は**呼吸ゾーンの中央**に置く: `--space-section` を境界の前後で折半し、帯の直前セクションに `padding-bottom: calc(var(--space-section) / 2)`（`.beforeBand`）、帯内セクションに同値の `padding-top`、帯自身に同値の `padding-bottom`、帯直後のセクションに同値の `padding-top`（`.afterBand`）を与える。境界線がコンテンツに張り付く／帯の中だけ間延びする、を防ぐ
 - 角丸: `--border-radius`(4px)。カードのみ 8px
 - 影は原則使わない。使うのは浮いているカードだけ（`0 24px 48px -32px rgba(26,35,48,.28)`）
 - 「面で塗らない」原則の**唯一の例外**はミッド帯（02 log / 03 stack）の淡い銀青メタリック面 `--bg-metal-band`（CSS グラデーション。画像は使わない）。他の場所に面を増やさない

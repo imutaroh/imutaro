@@ -363,13 +363,17 @@
   background: var(--bg-metal-band);
   border-top: 1px solid var(--color-line);
   border-bottom: 1px solid var(--color-line);
-  /* 下余白 実測約64px→約96px。上128pxとの律動 */
-  padding-bottom: 32px;
+  /* 帯の境界(hairline)をセクション間の呼吸ゾーン中央に置くため、
+     下側の余白 --space-section を帯の内(pb)と外(articles 側の pt)で折半する。
+     上側の折半は .beforeBand と .midBand .section の padding-top が担う */
+  padding-bottom: calc(var(--space-section) / 2);
 }
 
 .midBand .section {
   position: relative;
   z-index: 1;
+  /* 境界折半の内側ぶん(外側は .beforeBand の padding-bottom) */
+  padding-top: calc(var(--space-section) / 2);
 }
 
 /* 縦長S字リボン。ページ唯一の左置きとして銀帯の左端で深く見切れさせる
@@ -435,6 +439,12 @@
   .midGrid {
     grid-template-columns: 1fr;
   }
+
+  /* 縦積みになったら帯内の2セクション間は通常の律動に戻す
+     (折半の半分だと Log と Stack が近すぎる) */
+  .midGrid .section + .section {
+    padding-top: var(--space-section);
+  }
 }
 
 /* About本文と profile.json カードの2カラム */
@@ -457,6 +467,17 @@
 
 .sectionEnd {
   padding-bottom: var(--space-section);
+}
+
+/* 銀帯の境界(hairline)がセクション間の呼吸ゾーン中央に来るよう、
+   128px(--space-section)の余白を境界の前後で 64/64 に折半する。
+   これがないと境界線が直前のコンテンツに張り付き、帯の中だけが間延びする */
+.beforeBand {
+  padding-bottom: calc(var(--space-section) / 2);
+}
+
+.afterBand {
+  padding-top: calc(var(--space-section) / 2);
 }
 
 /* 液体金属のストリーム。Contact 前の全幅ディバイダ(ページ唯一の全幅音)。

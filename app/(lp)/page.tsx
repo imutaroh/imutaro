@@ -141,7 +141,7 @@ export default async function Page() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section className={`${styles.section} ${styles.beforeBand}`}>
         <div className={styles.sectionHead}>
           <p className={styles.sectionEyebrow}>( 01 / about )</p>
           <h2 className={styles.sectionTitle}>
@@ -241,7 +241,7 @@ export default async function Page() {
         </div>
       </div>
 
-      <section className={styles.section}>
+      <section className={`${styles.section} ${styles.afterBand}`}>
         <div className={styles.sectionHead}>
           <p className={styles.sectionEyebrow}>( 04 / articles )</p>
           <h2 className={styles.sectionTitle}>
