@@ -34,15 +34,14 @@ LP はその上に **「白い紙の上をクロームが流れる」** を重�
 
 | 役割 | フォント | 変数 | 使い所 |
 |---|---|---|---|
-| Display | Space Grotesk | `--font-display` | h1〜h6（globals.cssで自動適用） |
-| Serif Display | Zen Old Mincho (700のみ) | `--font-serif` | **大きな飾り文字専用**: ヒーロータイトル・セクション番号（`01.`）・記事行の index |
+| Heading Serif | 欧文: Playfair Display (700) / 和文: Zen Old Mincho (700) の混植 | `--font-serif-stack`（実体は `--font-playfair` + `--font-serif`） | h1〜h6（globals.cssで全ページ自動適用）・セクション番号（`01.`）・記事行の index |
 | Body | Zen Kaku Gothic New | `--font-body` | 本文 |
 | Mono | IBM Plex Mono | `--font-mono` | **メタデータ全般**: eyebrow・日付・タグ・ハッシュ・ラベル・パンくず |
 
 原則:
 - **mono = 機械が読む情報**（日付、タグ、ステータス、ID）。人間向けの文は body
-- **serif = 構図を作るディスプレイ文字**。本文や小さなメタ情報には使わない。700 しか読み込んでいないため必ず `font-weight: 700` を明示する
-- ヒーロータイトルは `--font-serif` + `font-feature-settings: 'palt'`、`line-height: 1.12`。サイズは「最長行の文字数がどの画面幅でも1行に収まる」よう `calc()` で導出する（page.module.css のコメント参照）
+- **serif = 見出しと構図を作るディスプレイ文字**。本文や小さなメタ情報には使わない。Playfair は欧文グリフのみ持ち、和文は自動的に Zen Old Mincho へフォールバックする（欧文=高コントラスト・和文=明朝の混植が意図）。どちらも 700 しか読み込んでいないため、見出しの `font-weight` を 700 未満にしない
+- ヒーロータイトルは `--font-serif-stack` + `font-feature-settings: 'palt'`、`line-height: 1.12`。サイズは「最長行の文字数がどの画面幅でも1行に収まる」よう `calc()` で導出する（page.module.css のコメント参照）
 - 見出しは `font-weight: 700`、本文リンクやリスト項目タイトルは `500`
 - 日本語見出しは `word-break: keep-all` + `text-wrap: balance` を検討
 

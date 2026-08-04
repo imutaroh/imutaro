@@ -18,10 +18,12 @@
   /* セクション間の縦リズム。「区切りの大きさ」をトークンとして1箇所で持つ */
   --space-section: 128px;
 
-  /* 大きな飾り文字(ヒーロータイトル・セクション番号・行頭index)用セリフの
-     フォールバック込みスタック。body/h1-h6/code と同様、スタックはここに
-     一元化し、モジュール側は var(--font-serif-stack) を参照するだけにする */
-  --font-serif-stack: var(--font-serif), 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+  /* 見出し・飾り文字用セリフのフォールバック込みスタック。先頭の Playfair は
+     欧文グリフしか持たないため、欧文=Playfair(高コントラスト)・和文=Zen Old
+     Mincho の混植になる。body/code と同様、スタックはここに一元化し、
+     モジュール側は var(--font-serif-stack) を参照するだけにする */
+  --font-serif-stack:
+    var(--font-playfair), var(--font-serif), 'Hiragino Mincho ProN', 'Yu Mincho', serif;
 
   /* --- legacy aliases (kept so existing component CSS modules pick up the new palette
      without a rewrite; new code should prefer the tokens above) --- */
@@ -75,7 +77,10 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-display), var(--font-body), sans-serif;
+  /* 見出しはサイト全体でエディトリアルセリフ(欧文 Playfair / 和文明朝)。
+     本文・メタ情報(mono)には使わない。Zen Old Mincho は 700 しか読み込んで
+     いないため、見出しの font-weight を 700 未満に下げないこと */
+  font-family: var(--font-serif-stack);
 }
 
 code,

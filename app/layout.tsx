@@ -1,5 +1,5 @@
 import {
-  Space_Grotesk,
+  Playfair_Display,
   Zen_Kaku_Gothic_New,
   Zen_Old_Mincho,
   IBM_Plex_Mono,
@@ -8,9 +8,13 @@ import { SITE_NAME, SITE_DESCRIPTION } from '@/constants';
 import Footer from '@/components/Footer';
 import './globals.css';
 
-const display = Space_Grotesk({
+// 見出し(h1-h6)の欧文用ディスプレイセリフ。和文グリフを持たないため、
+// 和文は --font-serif-stack の次順 Zen Old Mincho に自動フォールバックする
+// (欧文=Playfair / 和文=明朝 の混植が意図)。700 のみ読み込む
+const playfair = Playfair_Display({
+  weight: ['700'],
   subsets: ['latin'],
-  variable: '--font-display',
+  variable: '--font-playfair',
 });
 
 const body = Zen_Kaku_Gothic_New({
@@ -64,7 +68,7 @@ export default function RootLayout({ children }: Props) {
   return (
     <html
       lang="ja"
-      className={`${display.variable} ${body.variable} ${serif.variable} ${mono.variable}`}
+      className={`${playfair.variable} ${body.variable} ${serif.variable} ${mono.variable}`}
     >
       <body>
         {children}
