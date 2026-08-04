@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { getList } from '@/libs/microcms';
 import { getExternalArticles } from '@/libs/feeds';
 import PublishedDate from '@/components/Date';
@@ -56,12 +57,37 @@ export default async function Page() {
         <div className={styles.hero}>
           <div className={styles.heroMain}>
             <p className={`${styles.eyebrow} ${styles.heroItem1}`}>
-              <ShinyText text="imutaro — data engineer" color="#5b6572" shineColor="#00add8" speed={4} />
+              <ShinyText
+                text="( imutaro — data engineer )"
+                color="var(--color-sub)"
+                shineColor="var(--color-accent-bright)"
+                speed={4}
+              />
             </p>
             <TypedTitle
               lines={['周りの価値を、', '最大化するエンジニアへ']}
               className={`${styles.heroTitle} ${styles.heroItem2}`}
             />
+            {/* クロームリボン。デスクトップは右端に絶対配置してテキストの背面へ、
+                モバイル(<768px)はこの位置(タイトル直下)にそのまま流し込む。
+                heroItem5 として fadeInUp スタッガの最後に入場する */}
+            <div
+              className={`${styles.heroVisual} ${styles.ribbonFade} ${styles.heroItem5}`}
+              aria-hidden="true"
+            >
+              <Image
+                src="/ribbon-hero.png"
+                alt=""
+                width={1536}
+                height={1024}
+                priority
+                // 表示幅は CSS の min(58vw, 900px)(769〜1024px 帯は min(64vw, 900px)、
+                // モバイルは 90vw)。sizes を明示しないと密度記述子(1x/2x)の srcset になり
+                // 原寸級を配信してしまう(58vw=900px となる境界が 900/0.58 ≒ 1553px)
+                sizes="(max-width: 768px) 90vw, (max-width: 1024px) 64vw, (min-width: 1553px) 900px, 58vw"
+                className={styles.heroRibbon}
+              />
+            </div>
             <p className={`${styles.heroLead} ${styles.heroItem3}`}>
               2026年新卒のデータエンジニア。まだ道の途中だからこそ、データ基盤とAI活用に向き合いながら、日々の学びをここに記録しています。
             </p>
@@ -118,8 +144,13 @@ export default async function Page() {
 
       <section className={styles.section}>
         <div className={styles.sectionHead}>
-          <p className={styles.sectionEyebrow}>01 / about</p>
-          <h2 className={styles.sectionTitle}>About</h2>
+          <p className={styles.sectionEyebrow}>( 01 / about )</p>
+          <h2 className={styles.sectionTitle}>
+            <span className={styles.sectionNumber} aria-hidden="true">
+              01.
+            </span>
+            About
+          </h2>
         </div>
         <div className={styles.aboutGrid}>
           <div className={styles.aboutBody}>
@@ -157,20 +188,45 @@ export default async function Page() {
 
       <div className={styles.midBand}>
         <MidStreamBackground />
+        {/* 縦長S字のクロームリボン。ストリーム帯の右端で見切れさせる装飾。
+            縁処理は .midGlyphImg の multiply のみ(.ribbonFade を重ねると不透明グラデが
+            背面の流線を塗りつぶして矩形の継ぎ目を作るため併用しない)。
+            ファーストビュー外なので next/image デフォルトの lazy で読み込む */}
+        <div className={styles.midGlyph} aria-hidden="true">
+          <Image
+            src="/ribbon-glyph-b.png"
+            alt=""
+            width={864}
+            height={1821}
+            // 表示は高さ420px固定 = 幅約200px。sizes で表示幅相当の変換画像を選ばせる
+            sizes="200px"
+            className={styles.midGlyphImg}
+          />
+        </div>
 
         <div className={styles.midGrid}>
           <section className={styles.section}>
             <div className={styles.sectionHead}>
-              <p className={styles.sectionEyebrow}>02 / log</p>
-              <h2 className={styles.sectionTitle}>Learning Log</h2>
+              <p className={styles.sectionEyebrow}>( 02 / log )</p>
+              <h2 className={styles.sectionTitle}>
+                <span className={styles.sectionNumber} aria-hidden="true">
+                  02.
+                </span>
+                Learning Log
+              </h2>
             </div>
             <LearningLog entries={LOG_ENTRIES} />
           </section>
 
           <section className={styles.section}>
             <div className={styles.sectionHead}>
-              <p className={styles.sectionEyebrow}>03 / stack</p>
-              <h2 className={styles.sectionTitle}>Stack</h2>
+              <p className={styles.sectionEyebrow}>( 03 / stack )</p>
+              <h2 className={styles.sectionTitle}>
+                <span className={styles.sectionNumber} aria-hidden="true">
+                  03.
+                </span>
+                Stack
+              </h2>
             </div>
             <ul className={styles.stack}>
               {STACK_ENTRIES.map((item) => (
@@ -188,8 +244,13 @@ export default async function Page() {
 
       <section className={styles.section}>
         <div className={styles.sectionHead}>
-          <p className={styles.sectionEyebrow}>04 / articles</p>
-          <h2 className={styles.sectionTitle}>最新の記事</h2>
+          <p className={styles.sectionEyebrow}>( 04 / articles )</p>
+          <h2 className={styles.sectionTitle}>
+            <span className={styles.sectionNumber} aria-hidden="true">
+              04.
+            </span>
+            最新の記事
+          </h2>
         </div>
         <ul className={styles.articles}>
           {data.contents.map((article, index) => (
@@ -220,8 +281,13 @@ export default async function Page() {
       {externalArticles.length > 0 && (
         <section className={styles.section}>
           <div className={styles.sectionHead}>
-            <p className={styles.sectionEyebrow}>05 / zenn &amp; note</p>
-            <h2 className={styles.sectionTitle}>Zenn / note の記事</h2>
+            <p className={styles.sectionEyebrow}>( 05 / zenn &amp; note )</p>
+            <h2 className={styles.sectionTitle}>
+              <span className={styles.sectionNumber} aria-hidden="true">
+                05.
+              </span>
+              Zenn / note の記事
+            </h2>
           </div>
           <ul className={styles.externalGrid}>
             {externalArticles.map((article) => (
@@ -263,9 +329,28 @@ export default async function Page() {
       )}
 
       <section className={`${styles.section} ${styles.sectionEnd}`}>
+        {/* 結び目のクロームリボン。見出し上の余白〜リスト右上に置き、右端で見切れさせる。
+            縁処理は .contactGlyphImg の multiply のみ(.midGlyph と同じ方式)。
+            ファーストビュー外なので next/image デフォルトの lazy で読み込む */}
+        <div className={styles.contactGlyph} aria-hidden="true">
+          <Image
+            src="/ribbon-glyph-a.png"
+            alt=""
+            width={1254}
+            height={1254}
+            // 表示幅は 260px 固定。sizes で表示幅相当の変換画像を選ばせる
+            sizes="260px"
+            className={styles.contactGlyphImg}
+          />
+        </div>
         <div className={styles.sectionHead}>
-          <p className={styles.sectionEyebrow}>{contactNumber} / contact</p>
-          <h2 className={styles.sectionTitle}>Contact</h2>
+          <p className={styles.sectionEyebrow}>( {contactNumber} / contact )</p>
+          <h2 className={styles.sectionTitle}>
+            <span className={styles.sectionNumber} aria-hidden="true">
+              {contactNumber}.
+            </span>
+            Contact
+          </h2>
         </div>
         <ul className={styles.contact}>
           {CONTACT_LINKS.map((link) => (

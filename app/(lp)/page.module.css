@@ -11,25 +11,28 @@
 
 .heroOuter {
   position: relative;
-  overflow: hidden;
+  /* リボン(.heroVisual, z-index: -1)がこのセクションの外の要素の背面へ
+     潜らないよう、スタッキング文脈をここで閉じる */
+  isolation: isolate;
+  /* 右へ意図的にはみ出すリボンを刈る。スクロールコンテナを作らない clip を使う
+     (hidden での刈り取りは横はみ出し・スクロール連鎖の原因になるため禁止。Issue #21) */
+  overflow: clip;
 }
 
+/* 左寄せ2カラム構図: 左にテキストブロック、右背面にリボン(.heroVisual は
+   .heroOuter 基準の絶対配置なので、ここは positioned にしないこと) */
 .hero {
-  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   max-width: 1200px;
   margin: 0 auto;
-  /* ヘッダー込みで1画面に収まる高さに抑える */
-  padding: 88px 24px 104px;
-  text-align: center;
+  /* ヘッダー込みで1画面弱(CTAまで見える範囲で上下のゆとりを拡大) */
+  padding: 112px 24px 128px;
+  text-align: left;
 }
 
 .heroMain {
-  position: relative;
-  z-index: 1;
-  max-width: 760px;
   min-width: 0;
 }
 
@@ -94,23 +97,37 @@
 }
 
 .heroTitle {
-  /* 改行はテキスト側の \n で2行に固定している(SplitTextがpre-lineで尊重する)。
+  /* 改行はテキスト側の \n で2行に固定している(TypedTitleが行ごとにnowrapで保持)。
      2行目「最大化するエンジニアへ」(11文字)がどの画面幅でも折り返さないよう、
-     11文字ぶんが常に収まるサイズをvwから直接導出する */
-  font-size: min(3.8rem, 7vw);
-  line-height: 1.3;
+     「11文字 + タイプカーソル約0.3em ≒ 11.4em」が hero の内容幅
+     (100vw - 左右padding 48px)に収まるサイズを直接導出する。
+     分母は必要幅 11.4em に対して 11.6 とし、クラシックスクロールバー環境(Windows等)で
+     100vw が実内容幅よりスクロールバー幅(約15px)ぶん大きくなっても収まる余裕を持たせる。
+     上限は hero の最大内容幅 (1200px - 48px) ÷ 11.4 ≒ 6.3rem
+     (単純な vw 上限だと 11文字 × 9vw ≒ 99vw で収まらないため、この式でフィッティング。
+      palt で詰まるぶんは安全側の余裕になる) */
+  font-size: min(6.3rem, calc((100vw - 48px) / 11.6));
+  line-height: 1.12;
   font-weight: 700;
+  font-family: var(--font-serif-stack);
+  font-feature-settings: 'palt';
   color: var(--color-ink);
 }
 
-
 .heroLead {
   margin-top: 24px;
-  margin-left: auto;
-  margin-right: auto;
   color: var(--color-sub);
   font-size: 1.05rem;
   max-width: 40em;
+}
+
+/* 769〜1024pxの帯ではリード1行目の末尾がリボンのクローム曲線の高コントラスト部に
+   重なって騒がしいため、濃部に届く前に折り返す(1280pxと同じ「左端のフェード帯に
+   しか掛からない」見え方に揃える) */
+@media (max-width: 1024px) {
+  .heroLead {
+    max-width: 32em;
+  }
 }
 
 .heroCta {
@@ -118,7 +135,6 @@
   gap: 16px;
   margin-top: 40px;
   flex-wrap: wrap;
-  justify-content: center;
 }
 
 .ctaPrimary,
@@ -198,6 +214,57 @@
   transform: translateY(-2px);
 }
 
+/* --- chrome ribbon (静的な生成画像。動きは fadeInUp 入場のみ) --- */
+
+/* デスクトップ: テキストの背面(z-index: -1)で .heroOuter の右端に絶対配置し、
+   幅の約12%を意図的に右へはみ出させる(.heroOuter の overflow: clip が刈る)。
+   縦中央合わせを transform でやると fadeInUp の transform に上書きされるため、
+   top を計算で出す(画像高さ = 幅 × 1024/1536 = 幅 ÷ 1.5、その半分 = 幅 ÷ 3) */
+.heroVisual {
+  position: absolute;
+  z-index: -1;
+  /* リボン幅は「はみ出し量(right)」と「縦センター(top)」の計算にも使うため、
+     ローカルカスタムプロパティで1箇所に持つ(3箇所バラバラに直すと構図が崩れる) */
+  --ribbon-w: min(58vw, 900px);
+  width: var(--ribbon-w);
+  right: calc(var(--ribbon-w) * -0.12);
+  top: calc(50% - var(--ribbon-w) / 3);
+  pointer-events: none;
+}
+
+/* 769〜1024pxの帯では、リボンのループ最密部(明暗コントラストが最も高い部分)が
+   タイトル2行目・リード末尾と交差して騒がしいため、この帯だけ刈り取りを深くして
+   最密部を画面外へ送る。right/top の計算は --ribbon-w に集約済みなので、
+   ここを変えるだけで構図が保たれる(<768px の縦積み指定が後方でこれを上書きする) */
+@media (max-width: 1024px) {
+  .heroVisual {
+    --ribbon-w: min(64vw, 900px);
+    right: calc(var(--ribbon-w) * -0.22);
+  }
+}
+
+.heroRibbon {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* 生成画像(ほぼ白背景)の矩形の縁をページ背景に馴染ませる上掛け。
+   mask はタイルラスタライズを重くするため全サイトで不使用(Issue #19)。
+   PR #20 と同じ「背景色グラデーションを上に重ねる」方式で、
+   背景が単色(--color-bg)である前提に依存する。
+   ※ 背面に描画物(流線・同心円など)がある場所では不透明グラデがそれを塗りつぶして
+     矩形の継ぎ目を作るため使わない(.midGlyph / .contactGlyph は multiply に一本化) */
+.ribbonFade::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to right, var(--color-bg), transparent 12% 88%, var(--color-bg)),
+    linear-gradient(to bottom, var(--color-bg), transparent 12% 88%, var(--color-bg));
+  pointer-events: none;
+}
+
 /* --- hero profile card --- */
 
 .heroCard {
@@ -210,13 +277,16 @@
   border-radius: 8px;
   background-color: #fff;
   box-shadow: 0 24px 48px -32px rgba(26, 35, 48, 0.28);
-  transform: rotate(0.6deg);
-  transition: transform 0.25s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   overflow: hidden;
 }
 
+/* hover(入力駆動)のときだけ浮かせて傾ける。アイドル時は完全静止 */
 .heroCard:hover {
-  transform: rotate(0deg) translateY(-2px);
+  transform: translateY(-4px) rotate(-0.6deg);
+  box-shadow: 0 28px 56px -28px rgba(26, 35, 48, 0.38);
 }
 
 .cardTab {
@@ -273,6 +343,8 @@
 /* Learning Log〜Stack を包む全幅のストリーム帯。中のセクションを前面に出す */
 .midBand {
   position: relative;
+  /* 右端で見切れる .midGlyph を刈る(hidden ではなく clip。Issue #21) */
+  overflow: clip;
 }
 
 .midBand .section {
@@ -280,10 +352,33 @@
   z-index: 1;
 }
 
+/* 縦長S字リボン。流線(z-index: 0)より後段のDOMなので z-index auto のままでも
+   同じ層で前面に乗り、セクション本文(z-index: 1)の背面に沈む。
+   ※ z-index を指定しないこと: 指定するとここがスタッキング文脈になり、
+     .midGlyphImg の mix-blend-mode の合成がこの箱の中に隔離されて
+     背面の流線と混ざらなくなる(=矩形ハローが復活する) */
+.midGlyph {
+  position: absolute;
+  right: -64px;
+  top: calc(50% - 210px);
+  pointer-events: none;
+}
+
+.midGlyphImg {
+  display: block;
+  height: 420px;
+  width: auto;
+  /* 矩形背景を乗算で下地(単色bg + 流線)に溶かす。素材は白点を純白(#fff)に
+     レベル補正済みなので白地の乗算は恒等になり、流線が glyph の矩形内を
+     減衰なく通り抜ける(クロームの暗部は保持される)。
+     mask 禁止(Issue #19)には抵触しない */
+  mix-blend-mode: multiply;
+}
+
 .section {
   max-width: 1040px;
   margin: 0 auto;
-  padding: 72px 24px 0;
+  padding: var(--space-section) 24px 0;
 }
 
 /* Learning Log と Stack を横並びにして中盤の縦を圧縮する */
@@ -326,7 +421,33 @@
 
 .sectionEnd {
   position: relative;
-  padding-bottom: 96px;
+  padding-bottom: var(--space-section);
+}
+
+/* 結び目リボン。見出し上の余白〜リスト右上に置き、右へ深く見切れさせて
+   ヒーロー・ミッド帯と同じ「端で見切れて背景に溶ける」言語に揃える。
+   ※ z-index を指定しないこと(.midGlyph と同じ理由): 指定するとここが
+     スタッキング文脈(=合成の隔離グループ)になり、.contactGlyphImg の
+     mix-blend-mode が背面(ページ背景・同心円装飾)と混ざらず白矩形が残る。
+     positioned のため本文より前面に描画されるが、見出し・リスト本文とは
+     重ならない位置で、pointer-events: none のため操作も遮らない */
+.contactGlyph {
+  position: absolute;
+  top: 8px;
+  /* セクション幅(1040px)基準の固定値だと広い画面ではみ出しがマージンに吸収され、
+     結び目が丸ごと見えて浮いてしまう。ビューポート基準で常に右端から約80px
+     見切れさせ、ヒーロー・ミッド帯のリボンと同じ「端で見切れる」言語に揃える */
+  right: min(-110px, calc((1040px - 100vw) / 2 - 80px));
+  pointer-events: none;
+}
+
+.contactGlyphImg {
+  display: block;
+  width: 260px;
+  height: auto;
+  /* 矩形背景を乗算でページ背景と同心円装飾に溶かす(.midGlyphImg と同じ手法)。
+     素材は白点を純白(#fff)にレベル補正済みなので白地の乗算は恒等 */
+  mix-blend-mode: multiply;
 }
 
 /* ページの結びにヒーローの同心円を淡く反響させるブックエンド。
@@ -379,9 +500,22 @@
 }
 
 .sectionTitle {
-  font-size: 1.6rem;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  font-size: 2.2rem;
   font-weight: 700;
   color: var(--color-ink);
+}
+
+/* 番号を独立要素に格上げしたエディトリアルの型(01. About)。
+   Zen Old Mincho は 700 しか読み込んでいないため weight を明示する */
+.sectionNumber {
+  font-family: var(--font-serif-stack);
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-accent);
 }
 
 .aboutBody p {
@@ -414,7 +548,10 @@
 .logDot {
   position: absolute;
   left: -32.5px;
-  top: 50%;
+  /* エントリ中央ではなく1行目(hash行)に固定する。テキストが折り返して2行に
+     なっても点が行間に浮かず、他エントリの点と縦に揃う
+     (上padding 14px + 1行目の行ボックス 0.85rem×1.8 ≒ 24.5px の半分 ≒ 26px) */
+  top: 26px;
   transform: translateY(-50%);
   width: 8px;
   height: 8px;
@@ -511,7 +648,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 24px;
-  padding: 20px 8px;
+  padding: 28px 8px;
   margin: 0 -8px;
   border-radius: var(--border-radius);
   transition: background-color 0.15s ease;
@@ -532,9 +669,11 @@
   min-width: 0;
 }
 
+/* 行頭 index はセクション番号(.sectionNumber)と同じセリフの語彙で揃える */
 .articleIndex {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-family: var(--font-serif-stack);
+  font-size: 1.05rem;
+  font-weight: 700;
   color: var(--color-sub);
   opacity: 0.7;
   flex-shrink: 0;
@@ -689,7 +828,7 @@
   justify-content: space-between;
   align-items: baseline;
   gap: 24px;
-  padding: 20px 8px;
+  padding: 28px 8px;
   margin: 0 -8px;
   border-radius: var(--border-radius);
   transition: background-color 0.15s ease;
@@ -721,27 +860,46 @@
 @media (max-width: 900px) {
   .heroCard {
     max-width: 480px;
-    transform: none;
+  }
+}
+
+/* ヒーロー2カラムをやめて縦積み(タイトル → リボン90vw → リード → CTA)。
+   ミッド帯・Contact のリボン装飾は狭幅では本文に被るため出さない */
+@media (max-width: 768px) {
+  .hero {
+    padding: 48px 24px 64px;
   }
 
-  .heroCard:hover {
-    transform: translateY(-2px);
+  .heroVisual {
+    /* DOM 上タイトル直下に置いてあるため、通常フローに戻すだけで縦積みの正位置に入る。
+       static ではなく relative なのは .ribbonFade::after (inset: 0) の基準を自身に保つため。
+       relative では top/right がオフセットとして効いてしまうので auto に戻す */
+    position: relative;
+    top: auto;
+    right: auto;
+    width: 90vw;
+    margin: 20px 0 4px;
+    /* 縦積みでは視覚順がタイトル→リボン→リード→CTAになるため、入場スタッガも
+       その順(タイトル90msとリード180msの間)に合わせる。デスクトップの360ms
+       (右背面へ最後に入場)のままだと、表示済み要素の間へ割り込んで見える */
+    animation-delay: 135ms;
+  }
+
+  .midGlyph,
+  .contactGlyph {
+    display: none;
   }
 }
 
 @media (max-width: 640px) {
-  .hero {
-    min-height: auto;
-    padding: 40px 24px;
+  /* 最長見出し「05. Zenn / note の記事」が390pxで2行にぶら下がらないよう一段縮める */
+  .sectionTitle {
+    font-size: 1.8rem;
+    gap: 10px;
   }
 
-
-  .section {
-    padding: 64px 24px 0;
-  }
-
-  .sectionEnd {
-    padding-bottom: 64px;
+  .sectionNumber {
+    font-size: 2.4rem;
   }
 
   .articleLink,
