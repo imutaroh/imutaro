@@ -9,6 +9,12 @@ body {
   overflow-x: clip;
 }
 
+body {
+  background: #05070f;
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

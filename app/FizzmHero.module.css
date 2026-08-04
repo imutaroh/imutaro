@@ -1,0 +1,546 @@
+.stage {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background: #05070f;
+  color: #fff;
+  font-family: var(--font-jp), 'Hiragino Kaku Gothic ProN', sans-serif;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  /* 遷移時の zIndex 入れ替え（退場側を上へ）を各グループ内に閉じ込める。
+     これが無いと退場側 bg の zIndex:1 が別親のマーキーや瓶の上へ漏れて
+     「半透明の色被り→瓶が消える」中間フレームになる */
+  isolation: isolate;
+}
+
+/* 補色クロスフェードの泥色を隠す暗トーンのビート（GSAP が opacity を制御） */
+.veil {
+  position: absolute;
+  inset: 0;
+  background: #06070f;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* ---------- background ---------- */
+
+.bg {
+  position: absolute;
+  inset: 0;
+}
+
+.glow {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: min(115vh, 115vw);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  filter: blur(12px);
+}
+
+/* 瓶の足元の光だまり（切り抜き hero で失った床の照り返しの再構成） */
+.footGlow {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: min(96vh, 86vw);
+  height: 30vh;
+  transform: translateX(-50%);
+  filter: blur(10px);
+}
+
+/* ---------- marquee ---------- */
+
+.marqueeLine {
+  position: absolute;
+  top: 41%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+.mTrack {
+  display: flex;
+  width: max-content;
+  animation: marquee 38s linear infinite;
+  will-change: transform;
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.mSeq {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.mWord {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-marquee), serif;
+  font-size: clamp(76px, 17vw, 230px);
+  line-height: 1;
+  letter-spacing: 0.005em;
+  /* セパレータは廃止し、語間は余白で設計する */
+  padding-right: 0.42em;
+  /* グロー中心（明るい背景）の上でもコントラストが失速しないよう、暗い縁光を薄く敷く */
+  text-shadow: 0 4px 34px rgba(8, 6, 20, 0.4), 0 1px 3px rgba(8, 6, 20, 0.22);
+}
+
+/* 非アクティブフレーバーのマーキーは描画されないので走らせない */
+.mLayer[data-live='off'] .mTrack {
+  animation-play-state: paused;
+}
+
+/* ---------- bottle ---------- */
+
+/* hero はアルファ付き切り抜き（瓶＋スプラッシュ＋ハロのみ）なので矩形マスクは不要。
+   写真の下端だけ波・床に溶かす */
+.heroPos {
+  position: absolute;
+  left: 50%;
+  top: 47%;
+  height: min(96vh, 150vw);
+  aspect-ratio: 1403 / 1121;
+  transform: translate(-50%, -52%);
+}
+
+.hero {
+  display: block;
+  width: 100%;
+  height: 100%;
+  -webkit-mask-image: linear-gradient(to bottom, #000 88%, transparent 99.5%);
+  mask-image: linear-gradient(to bottom, #000 88%, transparent 99.5%);
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ---------- liquid floor ---------- */
+
+.floorLayer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.waveDrift {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 200%;
+  display: flex;
+  will-change: transform;
+}
+
+.wave {
+  display: block;
+  width: 50%;
+  height: 100%;
+  flex: none;
+}
+
+.waveBack {
+  height: clamp(120px, 21vh, 210px);
+  opacity: 0.75;
+  animation: waveDrift 44s linear infinite;
+}
+
+.waveFront {
+  height: clamp(84px, 15vh, 150px);
+  animation: waveDrift 26s linear infinite reverse;
+}
+
+@keyframes waveDrift {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ---------- floats ---------- */
+
+/* 被写界深度: front は個別に --spblur で前ボケ、back は減彩・減光で奥に沈める。
+   top は CSS 変数経由（モバイルで下部 UI と衝突する個体だけ --sp-top-m で逃がす） */
+.sprite {
+  position: absolute;
+  top: var(--sp-top);
+  display: block;
+  filter: blur(var(--spblur, 0px)) drop-shadow(0 18px 30px rgba(0, 0, 0, 0.35)) saturate(1.08)
+    brightness(1.05);
+  pointer-events: none;
+}
+
+.spriteBack {
+  filter: blur(var(--spblur, 0px)) drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3)) saturate(0.72)
+    brightness(0.84);
+  opacity: 0.9;
+}
+
+.sprite img {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+}
+
+/* ---------- vignette ---------- */
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(120% 120% at 50% 45%, transparent 55%, rgba(4, 2, 10, 0.5) 100%);
+}
+
+/* ---------- header ---------- */
+
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  z-index: 10;
+}
+
+.hLeft {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+}
+
+.logo {
+  font-family: var(--font-marquee), serif;
+  font-weight: 400;
+  font-size: 1.7rem;
+  letter-spacing: 0.06em;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.35);
+}
+
+/* ダミー nav（稼働サイトの密度を出すための静的ラベル） */
+.nav {
+  display: flex;
+  gap: 22px;
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+}
+
+.nav span {
+  opacity: 0.72;
+  cursor: pointer;
+  transition: opacity 0.25s;
+}
+
+.nav span:hover {
+  opacity: 1;
+}
+
+.hRight {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.headCta {
+  padding: 10px 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background 0.3s, transform 0.15s;
+}
+
+.headCta:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px);
+}
+
+.headCta:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.tagline {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  text-align: right;
+}
+
+.tagline span {
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+}
+
+.tagline small {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  opacity: 0.8;
+}
+
+/* ---------- bottom UI ---------- */
+
+.bottomBar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  padding: 22px 30px;
+  z-index: 10;
+}
+
+.card {
+  width: min(400px, 100%);
+  /* 明るい液面の上でも本文が読めるよう、ガラスはやや暗めに振る */
+  background: rgba(12, 10, 26, 0.34);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 18px;
+  padding: 16px 20px 14px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.3);
+}
+
+.cardBrand {
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.24em;
+  opacity: 0.75;
+  margin-bottom: 8px;
+}
+
+.cardSwap {
+  position: relative;
+  height: 124px;
+}
+
+.cardLayer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.cardTitleRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cardName {
+  font-family: var(--font-marquee), serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+}
+
+/* 価格はメタ行から昇格させて視覚的なアンカーにする */
+.cardPrice {
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  flex: none;
+}
+
+.cardJa {
+  font-size: 0.72rem;
+  color: var(--accent);
+  letter-spacing: 0.16em;
+  margin: 4px 0 8px;
+}
+
+.cardDesc {
+  font-size: 0.8rem;
+  line-height: 1.7;
+  opacity: 0.92;
+}
+
+.cardMeta {
+  margin-top: auto;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  opacity: 0.7;
+}
+
+/* 行動のアンカー（ダミー CTA）。accent に追従して再着色される */
+.cardActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.cardCta {
+  padding: 11px 24px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 70%, transparent);
+  background: color-mix(in srgb, var(--accent) 28%, rgba(10, 8, 20, 0.2));
+  color: #fff;
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.15s;
+}
+
+.cardCta:hover {
+  background: color-mix(in srgb, var(--accent) 44%, rgba(10, 8, 20, 0.2));
+  transform: translateY(-1px);
+}
+
+.cardCta:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.cardHint {
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  opacity: 0.6;
+}
+
+.switcher {
+  display: flex;
+  gap: 10px;
+}
+
+.swBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(10, 8, 20, 0.35);
+  color: #fff;
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: border-color 0.3s, background 0.3s, transform 0.15s;
+}
+
+.swBtn:hover {
+  transform: translateY(-2px);
+}
+
+.swBtn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.swActive {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.swDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: none;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.35);
+}
+
+/* ---------- mobile ---------- */
+
+@media (max-width: 720px) {
+  .header {
+    padding: 14px 16px;
+  }
+
+  /* 幅が足りないので nav とタグラインは落とし、ロゴ＋CTA ピルの2点に絞る */
+  .nav {
+    display: none;
+  }
+
+  .tagline {
+    display: none;
+  }
+
+  .headCta {
+    padding: 9px 16px;
+    font-size: 0.56rem;
+  }
+
+  /* 下部 UI が縦に積まれて背が伸びるぶん、瓶は少し小さく高い位置へ */
+  .heroPos {
+    height: min(56vh, 124vw);
+    top: 43%;
+  }
+
+  .marqueeLine {
+    top: 37%;
+  }
+
+  .sprite {
+    top: var(--sp-top-m);
+  }
+
+  .bottomBar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px 14px 18px;
+  }
+
+  .switcher {
+    order: -1;
+    justify-content: center;
+  }
+
+  .swBtn {
+    flex: 1;
+    justify-content: center;
+    padding: 10px 10px;
+    font-size: 0.64rem;
+  }
+
+  .card {
+    width: 100%;
+    padding: 14px 16px 12px;
+  }
+
+  .cardSwap {
+    height: 126px;
+  }
+
+  /* モバイルは瓶が小さく高い位置に来るので、液面を高くして足元とカード裏を埋める */
+  .waveBack {
+    height: min(34vh, 300px);
+  }
+
+  .waveFront {
+    height: min(26vh, 230px);
+  }
+}
