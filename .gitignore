@@ -38,3 +38,6 @@ next-env.d.ts
 
 playwright-report
 test-results
+# claude code / playwright の作業成果物
+.playwright-mcp/
+.claude/worktrees/
