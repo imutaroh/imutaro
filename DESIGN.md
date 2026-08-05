@@ -94,6 +94,7 @@ LP はその上に **「白い紙の上をクロームが流れる」** を重�
 - リンク矢印は `→` を span で持ち、hoverでスライド
 - `prefers-reduced-motion: reduce` を必ず尊重（globals.cssで一括対応済み）
 - focus-visible: `outline: 2px solid var(--color-accent)`（定義済み。塗りボタン上では ink に変える）
+- **ページ遷移（View Transitions）**: **入力駆動・有限のナビゲーション語彙として全ページ可**（8章の「演出なし」は滞在中の話であり、遷移は含まない）。記事一覧の行 → 記事詳細では、タイトルと日付を共有要素（`view-transition-name` を記事 id から一意生成。同名衝突すると VT ごと失敗する）として連続変形させる。時間・イージングは変形の規約と同じ **0.2s ease**（globals.css の `::view-transition-*` で一括指定）。実装は `document.startViewTransition` を包む自前の `TransitionLink` + `ViewTransitionManager`（Next の experimental.viewTransition は React 実験ビルドを要求するため使わない）。**feature-detect 必須**で非対応ブラウザは通常遷移に自動フォールバック、`prefers-reduced-motion: reduce` では発火しない。ブラウザ戻る/進むの逆方向モーフは Next 内部挙動（history state の `__NA`、popstate リスナー登録順）に依存するベストエフォート（順序逆転時は通常遷移に落ちる）。**Next アップグレード時は戻る/進む VT を目視確認する**。ナビゲーション完了が 800ms（`NAVIGATION_TIMEOUT_MS`）を超えた場合は VT を打ち切り、クロスフェード後にコンテンツが無遷移で差し替わる（低速回線での意図された劣化モード）
 
 ## 8. ページ別の適用方針
 
@@ -103,6 +104,9 @@ LP はその上に **「白い紙の上をクロームが流れる」** を重�
 | `/blog`, `/tags/*`, `/search` | 演出なし | eyebrow付きページ見出し + ヘアライン行リスト + monoピルのタグ |
 | `/articles/*` | 演出なし | mono メタ → 見出し → 本文720px。読みやすさ最優先 |
 | 404 | なし | mono `404` + 一言 + 帰りのリンク |
+
+※ 表の「演出なし」は**ページ滞在中**（アイドル・スクロール中）の話。ページ遷移そのもの
+（入力駆動・有限の View Transitions、7章参照）はナビゲーション語彙としてどのページでも使ってよい。
 
 ※ かつて LP にあった DotGrid・FluidCursor・SplashCursor（常駐 canvas）と SplitText（スクロール発火）は
 描画コスト・スクロール体感の問題で撤去済み（Issue #7, #13, #15）。**復活させない**。

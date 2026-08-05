@@ -2,7 +2,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getList } from '@/libs/microcms';
 import { getExternalArticles } from '@/libs/feeds';
+import { articleDateTransitionName, articleTitleTransitionName } from '@/libs/viewTransition';
 import PublishedDate from '@/components/Date';
+import TransitionLink from '@/components/TransitionLink';
 import TagList from '@/components/TagList';
 import ShinyText from '@/components/ShinyText';
 import BrandIcon from '@/components/BrandIcon';
@@ -254,18 +256,27 @@ export default async function Page() {
         <ul className={styles.articles}>
           {data.contents.map((article, index) => (
             <li className={styles.articleRow} key={article.id}>
-              <Link href={`/articles/${article.id}`} className={styles.articleLink}>
+              {/* ブログ一覧(ArticleListItem)と同じ View Transition 語彙:
+                  タイトル・日付が記事詳細の h1・日付へ連続変形する(名前は記事 id 由来で一意) */}
+              <TransitionLink href={`/articles/${article.id}`} className={styles.articleLink}>
                 <span className={styles.articleTitleGroup}>
                   <span className={styles.articleIndex}>
                     {String(index + 1).padStart(2, '0')}
                   </span>
-                  <span className={styles.articleTitle}>{article.title}</span>
+                  <span
+                    className={styles.articleTitle}
+                    style={{ viewTransitionName: articleTitleTransitionName(article.id) }}
+                  >
+                    {article.title}
+                  </span>
                 </span>
                 <span className={styles.articleMeta}>
-                  <PublishedDate date={article.publishedAt || article.createdAt} />
+                  <span style={{ viewTransitionName: articleDateTransitionName(article.id) }}>
+                    <PublishedDate date={article.publishedAt || article.createdAt} />
+                  </span>
                   <TagList tags={article.tags} hasLink={false} />
                 </span>
-              </Link>
+              </TransitionLink>
             </li>
           ))}
         </ul>
