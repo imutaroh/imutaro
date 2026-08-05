@@ -23,7 +23,6 @@
     "node": ">=24.x"
   },
   "dependencies": {
-    "@gsap/react": "^2.1.2",
     "@tailwindcss/postcss": "^4.3.2",
     "@types/node": "^24.1.0",
     "@types/react": "^19.2.10",
@@ -34,7 +33,6 @@
     "eslint": "^9.23.0",
     "eslint-config-next": "^15.5.18",
     "eslint-config-prettier": "^10.1.1",
-    "gsap": "^3.15.0",
     "highlight.js": "^11.7.0",
     "microcms-js-sdk": "^3.4.0",
     "next": "^15.5.18",
