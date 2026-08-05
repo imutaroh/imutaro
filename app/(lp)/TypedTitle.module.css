@@ -1,5 +1,14 @@
+/* クリックで打ち直し(音つき)が走る。ポインタのある環境では「押せる」ことが
+   分かるようにする(cursor: default のままだと総尺2.5秒の仕掛けが誰にも
+   発見されない)。タッチでは誤爆しやすいので既定のまま */
 .title {
   cursor: default;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .title {
+    cursor: pointer;
+  }
 }
 
 .line {
@@ -22,24 +31,20 @@
   margin-left: 0.12em;
   vertical-align: -0.08em;
   background-color: var(--color-accent);
-  /* 無限点滅は低電力モード端末で描画コストになり続けるため、
-     6回点滅したら点灯のまま止める(Issue #15) */
-  animation: typedCursorBlink 1.1s steps(2, start) 6;
+  /* キャレットは「打っている最中の記号」に限定する = 打鍵中(クリックでの打ち直し)
+     だけ点灯させ、それ以外は常に消しておく。
+     初期表示ではそもそも1文字もタイプしていない(visibleCount は最初から全文)ので、
+     入場中に点滅させるのは「打っていないのに打鍵の記号が出ている」状態でしかなく、
+     しかも可視の 800ms がちょうど渦の露出と重なる時間帯なので、teal のベタ矩形が
+     クロームの渦の真上に乗る(色相がリボンのティール縁と近く、構図の焦点で
+     いちばん安っぽい一点になる)。
+     アニメを持たないので、保留機構(js-hero-hold)への相乗りも reduce の
+     特別扱いも不要になる。幅は場所取りのため残す(display:inline-block のまま) */
+  visibility: hidden;
 }
 
-/* 打鍵中は点滅せず点灯したまま(実物のターミナルと同じ) */
+/* 打鍵中は点灯したまま(実物のターミナルと同じ)。
+   打ち終わって .cursorSolid が外れると、また消える */
 .cursorSolid {
-  animation: none;
-}
-
-@keyframes typedCursorBlink {
-  to {
-    visibility: hidden;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cursor {
-    animation: none;
-  }
+  visibility: visible;
 }

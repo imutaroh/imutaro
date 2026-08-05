@@ -4,10 +4,18 @@
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  /* ★静止時の位置は keyframes の**終点と同じ** -50% にする。
+     animation ショートハンドは fill-mode を none にリセットするので、
+     基底値を既定(0% 0%)のままにすると1パス終了と同時に光沢が巻き戻り、
+     background-size:200% との組み合わせで光のピークが要素の右3分の1に居座る
+     (実測: 1440px で「( imutaro — data engin」が灰・「eer )」がティールに割れ、
+      しかも % 指定なので幅によって割れ位置が変わる = 描画バグに見える)。
+     -50% では可視域がグラデの color 帯だけになるので、静止時は色が1色に戻る。 */
+  background-position: -50% center;
   /* 150%(右外)→-50%(左外)へ移動 = 旧実装の progress 0→100 と同じ軌道。
      無限ループは低電力モード端末で毎フレームの描画コストになり続けるため、
-     3回流したら停止する(Issue #15)。終了後は光が画面外の位置で止まり、
-     ただのグラデーションテキストとして見える */
+     既定は3回で停止する(Issue #15)。
+     回数は passes prop(インラインの animation-iteration-count)で上書きできる */
   animation: shine linear 3;
 }
 

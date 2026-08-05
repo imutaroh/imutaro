@@ -10,6 +10,7 @@ import ShinyText from '@/components/ShinyText';
 import BrandIcon from '@/components/BrandIcon';
 import LearningLog from './LearningLog';
 import TypedTitle from './TypedTitle';
+import HeroStage from './HeroStage';
 import styles from './page.module.css';
 
 const LATEST_ARTICLES_LIMIT = 3;
@@ -54,15 +55,23 @@ export default async function Page() {
 
   return (
     <>
-      <section className={styles.heroOuter}>
+      <HeroStage>
         <div className={styles.hero}>
           <div className={styles.heroMain}>
             <p className={`${styles.eyebrow} ${styles.heroItem1}`}>
+              {/* 銘板に光が1度だけ走る。入場の第1拍と尺を合わせる(1パス0.9s)。
+                  以前は 4s × 3回 = 12秒間 background-position を animate していて、
+                  background-clip:text はコンポジタに乗らず毎フレーム再ペイントするため
+                  「1.2秒で完全静止」を実際には破っていた */}
               <ShinyText
                 text="( imutaro — data engineer )"
                 color="var(--color-sub)"
                 shineColor="var(--color-accent-bright)"
-                speed={4}
+                speed={0.9}
+                passes={1}
+                // 保留(js-hero-hold)の対象に入れ、eyebrow の到着と同じ拍まで
+                // 光を遅らせるための専用クラス(page.module.css)
+                className={styles.heroShine}
               />
             </p>
             <TypedTitle
@@ -70,30 +79,41 @@ export default async function Page() {
               className={`${styles.heroTitle} ${styles.heroItem2}`}
             />
             {/* クロームリボン。デスクトップは右端に絶対配置してテキストの背面へ、
-                モバイル(<768px)はこの位置(タイトル直下)にそのまま流し込む。
-                heroItem5 として fadeInUp スタッガの最後に入場する */}
-            <div
-              className={`${styles.heroVisual} ${styles.ribbonFade} ${styles.heroItem5}`}
-              aria-hidden="true"
-            >
-              <Image
-                src="/ribbon-hero.png"
-                alt=""
-                width={1536}
-                height={1024}
-                priority
-                // 表示幅は CSS の min(58vw, 900px)(769〜1024px 帯は min(64vw, 900px)、
-                // モバイルは 90vw)。sizes を明示しないと密度記述子(1x/2x)の srcset になり
-                // 原寸級を配信してしまう(58vw=900px となる境界が 900/0.58 ≒ 1553px)
-                sizes="(max-width: 768px) 90vw, (max-width: 1024px) 64vw, (min-width: 1553px) 900px, 58vw"
-                className={styles.heroRibbon}
-              />
+                モバイル(<768px)はこの位置(タイトル直下)に流し込みつつ右へ見切れさせる。
+                3階建てなのは変形の担当を物理的に分けるため(HeroStage.tsx):
+                  .heroVisual  = 位置と刈り取り(静的)
+                  .ribbonPar   = ポインタ視差(x / y / rotate)
+                  .ribbonCoil  = 入場の巻き取りと CTA hover(rotate / scale)+ 縁のフェード
+                縁のフェード(.ribbonFade::after)は回転する箱の中に置く。外に出すと
+                回転中に画像の矩形角がフェード帯から飛び出して白い直線が見える。
+                .heroWipe は「注ぎ込み」のカーテン(CSS 既定 display:none、GSAP が起こす) */}
+            <div className={styles.heroVisual} data-hero="visual" aria-hidden="true">
+              <div className={styles.ribbonPar} data-hero="par">
+                <div className={`${styles.ribbonCoil} ${styles.ribbonFade}`} data-hero="coil">
+                  <Image
+                    src="/ribbon-hero.png"
+                    alt=""
+                    width={1672}
+                    height={941}
+                    priority
+                    // 表示幅は CSS の min(58vw, 900px)(769〜1024px 帯は min(56vw, 900px)、
+                    // モバイルは右へ見切れさせる 116vw)。sizes を明示しないと
+                    // 密度記述子(1x/2x)の srcset になり原寸級を配信してしまう
+                    // (58vw=900px となる境界が 900/0.58 ≒ 1553px)
+                    sizes="(max-width: 768px) 116vw, (max-width: 1024px) 56vw, (min-width: 1553px) 900px, 58vw"
+                    className={styles.heroRibbon}
+                  />
+                </div>
+              </div>
+              <div className={styles.heroWipe} data-hero="wipe" />
             </div>
             <p className={`${styles.heroLead} ${styles.heroItem3}`}>
               2026年新卒のデータエンジニア。まだ道の途中だからこそ、データ基盤とAI活用に向き合いながら、日々の学びをここに記録しています。
             </p>
             <div className={`${styles.heroCta} ${styles.heroItem4}`}>
-              <Link href="/blog" className={styles.ctaPrimary}>
+              {/* data-hero は HeroStage から掴むためのフック。CSS Modules のクラス名は
+                  ハッシュ化されるので、JS 側のセレクタには使えない */}
+              <Link href="/blog" className={styles.ctaPrimary} data-hero="cta-primary">
                 ブログを読む
                 <span className={styles.ctaArrow} aria-hidden="true">
                   →
@@ -141,7 +161,7 @@ export default async function Page() {
           </div>
 
         </div>
-      </section>
+      </HeroStage>
 
       <section className={`${styles.section} ${styles.beforeBand}`}>
         <div className={styles.sectionHead}>

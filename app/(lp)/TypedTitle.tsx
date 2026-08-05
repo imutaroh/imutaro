@@ -125,6 +125,15 @@ export default function TypedTitle({ lines, className }: Props) {
       className={`${className ?? ''} ${styles.title}`}
       aria-label={lines.join('')}
       onClick={replay}
+      // 見出しそのものが操作子なので、キーボードからも同じ体験に到達できるようにする。
+      // role は h1 のまま(button にすると見出し構造が消える)、Enter/Space で発火
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          replay();
+        }
+      }}
     >
       {lines.map((line, lineIndex) => {
         const start = offset;

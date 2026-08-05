@@ -155,6 +155,12 @@ ul {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    /* delay を潰さないと、尺は 0 でも「遅れて段階的に現れる」ハードカットが残る
+       (LP ヒーローの入場は 380〜680ms のスタッガを持つため、実質 0.7 秒かけて
+       4段でパッパッと出ていた)。負値にして最初のフレームで終わらせる。
+       ★LP 起点の追加だが全ページ意図的: 「reduce では段階表示をしない」は
+       サイト全体で正しい規範なので、LP スコープに絞らずここに置く */
+    animation-delay: -0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
