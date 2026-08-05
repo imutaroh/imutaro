@@ -6,6 +6,7 @@ import {
 } from 'next/font/google';
 import { SITE_NAME, SITE_DESCRIPTION } from '@/constants';
 import Footer from '@/components/Footer';
+import ViewTransitionManager from '@/components/ViewTransitionManager';
 import './globals.css';
 
 // 見出し(h1-h6)の欧文用ディスプレイセリフ。和文グリフを持たないため、
@@ -75,6 +76,8 @@ export default function RootLayout({ children }: Props) {
       className={`${playfair.variable} ${body.variable} ${serif.variable} ${mono.variable}`}
     >
       <body>
+        {/* View Transition の commit 検知 + 戻る/進むの逆方向モーフ(描画なし・全ページ共通) */}
+        <ViewTransitionManager />
         {children}
         <Footer />
       </body>

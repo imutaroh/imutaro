@@ -139,13 +139,38 @@ ul {
   outline-offset: 2px;
 }
 
+/* ページ遷移の共有要素モーフ(View Transitions、DESIGN.md 7章)。
+   時間・イージングは 7章の変形の規約(0.2s ease)に合わせる。
+   発火自体は JS 側(TransitionLink / ViewTransitionManager)で
+   feature-detect + reduced-motion をガード済み */
+::view-transition-group(*),
+::view-transition-old(*),
+::view-transition-new(*) {
+  animation-duration: 0.2s;
+  animation-timing-function: ease;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    /* delay を潰さないと、尺は 0 でも「遅れて段階的に現れる」ハードカットが残る
+       (LP ヒーローの入場は 380〜680ms のスタッガを持つため、実質 0.7 秒かけて
+       4段でパッパッと出ていた)。負値にして最初のフレームで終わらせる。
+       ★LP 起点の追加だが全ページ意図的: 「reduce では段階表示をしない」は
+       サイト全体で正しい規範なので、LP スコープに絞らずここに置く */
+    animation-delay: -0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /* VT 疑似要素は *::before/after に含まれないため個別に止める
+     (JS 側ガードが効かなかった場合の保険。即時スワップになる) */
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }

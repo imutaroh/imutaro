@@ -1,8 +1,9 @@
-import Link from 'next/link';
 import Image from 'next/image';
 import { Article } from '@/libs/microcms';
+import { articleDateTransitionName, articleTitleTransitionName } from '@/libs/viewTransition';
 import styles from './index.module.css';
 import TagList from '../TagList';
+import TransitionLink from '../TransitionLink';
 import PublishedDate from '../Date';
 
 type Props = {
@@ -13,7 +14,8 @@ type Props = {
 export default function ArticleListItem({ article, index }: Props) {
   return (
     <li className={styles.list}>
-      <Link href={`/articles/${article.id}`} className={styles.link}>
+      {/* 記事詳細へは View Transition 付きで遷移し、タイトル・日付を共有要素としてモーフさせる */}
+      <TransitionLink href={`/articles/${article.id}`} className={styles.link}>
         {index !== undefined && (
           <span className={styles.index}>{String(index + 1).padStart(3, '0')}</span>
         )}
@@ -48,18 +50,28 @@ export default function ArticleListItem({ article, index }: Props) {
           />
         )}
         <dl className={styles.content}>
-          <dt className={styles.title}>{article.title}</dt>
+          {/* view-transition-name は記事 id 由来で一意（同名衝突すると VT ごと失敗する）。
+              詳細ページ(components/Article)の h1・日付と同じ名前で対応付ける */}
+          <dt
+            className={styles.title}
+            style={{ viewTransitionName: articleTitleTransitionName(article.id) }}
+          >
+            {article.title}
+          </dt>
           <dd>
             <TagList tags={article.tags} hasLink={false} />
           </dd>
-          <dd className={styles.date}>
+          <dd
+            className={styles.date}
+            style={{ viewTransitionName: articleDateTransitionName(article.id) }}
+          >
             <PublishedDate date={article.publishedAt || article.createdAt} />
           </dd>
         </dl>
         <span className={styles.arrow} aria-hidden="true">
           →
         </span>
-      </Link>
+      </TransitionLink>
     </li>
   );
 }
