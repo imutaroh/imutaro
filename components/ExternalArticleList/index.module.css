@@ -1,0 +1,118 @@
+/* Zenn / note カードグリッド。LP の 05 セクションと /writings の両方で使う */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  list-style: none;
+}
+
+.card {
+  display: block;
+  height: 100%;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background-color: #fff;
+  overflow: hidden;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  border-color: var(--color-border-dark);
+  box-shadow: 0 16px 32px -20px rgba(26, 35, 48, 0.3);
+}
+
+.card:hover .title {
+  color: var(--color-accent);
+}
+
+.thumb {
+  display: block;
+  width: 100%;
+  /* HTML の height 属性に box の高さを奪われないようにする。
+     奪われると aspect-ratio が無視され(片方が auto のときしか効かない)、
+     枠が別比率になって object-fit が意図せず切り取る */
+  height: auto;
+  aspect-ratio: 1200 / 630;
+  /* サムネは切らずに全部見せる。Zenn(1200x630 / 726x381)も note(800x419)も
+     比率が約1.905 に正規化されているので、この枠では余白は出ない。
+     将来ちがう比率の画像が来たら、切れずに上下(または左右)に地が出る */
+  object-fit: contain;
+  background-color: var(--color-code-bg);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.thumbFallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1200 / 630;
+  background-color: var(--color-code-bg);
+  border-bottom: 1px solid var(--color-line);
+  font-family: var(--font-mono);
+  /* 出どころ表示のプレースホルダ = monoラベル統一段 12px / 0.05em
+     (未指定だと body 16px + ls 0.02em を継承して mono 2段規則から外れる) */
+  font-size: var(--fs-caption);
+  letter-spacing: 0.05em;
+  color: var(--color-sub);
+}
+
+.body {
+  display: block;
+  padding: 14px 16px 16px;
+}
+
+.title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: var(--fs-ui);
+  font-weight: 500;
+  line-height: 1.6;
+  /* line-height 1.6 × 2行 = 3.2em。旧 2.9em では1行タイトルと2行タイトルで
+     メタ行の縦位置が 0.3em ズレて grid が波打っていた(バグ修正) */
+  min-height: 3.2em;
+  color: var(--color-ink);
+  transition: color 0.15s ease;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+/* Zenn/note の出どころバッジ(monoピル) */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 12px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  /* monoラベル統一値 */
+  letter-spacing: 0.05em;
+  color: var(--color-sub);
+  flex-shrink: 0;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

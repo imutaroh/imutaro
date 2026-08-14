@@ -1,0 +1,22 @@
+/* カードグリッドが3カラムなので、記事本文用の 768px ではなく
+   LP のセクションと同じ 1040px の版面を使う */
+.main {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 24px var(--space-section);
+}
+
+.count {
+  margin-bottom: 24px;
+  font-family: var(--font-mono);
+  /* monoデータ段(件数)。ラベルの 12px / 0.05em ではない */
+  font-size: var(--fs-meta);
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-sub);
+}
+
+.empty {
+  padding: 48px 0;
+  color: var(--color-sub);
+}

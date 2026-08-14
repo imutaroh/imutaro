@@ -6,11 +6,16 @@ import PublishedDate from '@/components/Date';
 import TagList from '@/components/TagList';
 import ShinyText from '@/components/ShinyText';
 import BrandIcon from '@/components/BrandIcon';
+import ExternalArticleList from '@/components/ExternalArticleList';
 import LearningLog from './LearningLog';
 import TypedTitle from './TypedTitle';
 import styles from './page.module.css';
 
 const LATEST_ARTICLES_LIMIT = 3;
+
+// Zenn / note の表示件数。.externalGrid は3カラムなので3の倍数だと行が揃う。
+// フィードの総数がこれに満たない場合はある数だけ並ぶ(最終行が欠ける)
+const EXTERNAL_ARTICLES_LIMIT = 9;
 
 const LOG_ENTRIES = [
   { hash: 'e7a2f19', date: '2026-07', text: 'このブログを公開' },
@@ -46,7 +51,7 @@ export default async function Page() {
     getList({
       limit: LATEST_ARTICLES_LIMIT,
     }),
-    getExternalArticles(),
+    getExternalArticles(EXTERNAL_ARTICLES_LIMIT),
   ]);
   const contactNumber = externalArticles.length > 0 ? '06' : '05';
 
@@ -67,24 +72,22 @@ export default async function Page() {
               lines={['周りの価値を、', '最大化するエンジニアへ']}
               className={`${styles.heroTitle} ${styles.heroItem2}`}
             />
-            {/* クロームリボン。デスクトップは右端に絶対配置してテキストの背面へ、
-                モバイル(<768px)はこの位置(タイトル直下)にそのまま流し込む。
-                heroItem5 として fadeInUp スタッガの最後に入場する */}
-            <div
-              className={`${styles.heroVisual} ${styles.ribbonFade} ${styles.heroItem5}`}
-              aria-hidden="true"
-            >
+            {/* キャラクターのバスト。1:1 なので、タイトル(横幅を使い切るフィット式)の
+                下・リード文の右に空く帯にちょうど収まる。立ち姿(縦1.9倍)はここに
+                入らずタイトルを削る必要があったが、バストなら削らずに済む。
+                下端は胸で水平に切れているため、.heroVisual::after の背景色グラデで
+                紙に溶かす(mask は禁止。Issue #19)。
+                モバイル(<768px)はこの位置に流し込んで右寄せ */}
+            <div className={`${styles.heroVisual} ${styles.heroItem5}`} aria-hidden="true">
               <Image
-                src="/ribbon-hero.png"
+                src="/imutaro-icon.png"
                 alt=""
-                width={1536}
-                height={1024}
+                width={512}
+                height={512}
                 priority
-                // 表示幅は CSS の min(58vw, 900px)(769〜1024px 帯は min(64vw, 900px)、
-                // モバイルは 90vw)。sizes を明示しないと密度記述子(1x/2x)の srcset になり
-                // 原寸級を配信してしまう(58vw=900px となる境界が 900/0.58 ≒ 1553px)
-                sizes="(max-width: 768px) 90vw, (max-width: 1024px) 64vw, (min-width: 1553px) 900px, 58vw"
-                className={styles.heroRibbon}
+                // 表示幅は CSS の --hero-figure-w = min(24vw, 280px)(モバイルは 52vw)
+                sizes="(max-width: 768px) 52vw, (min-width: 1167px) 280px, 24vw"
+                className={styles.heroFigure}
               />
             </div>
             <p className={`${styles.heroLead} ${styles.heroItem3}`}>
@@ -167,6 +170,23 @@ export default async function Page() {
               <span className={styles.cardDot} />
               profile.json
             </div>
+            {/* 肖像は「このレコードの1フィールド」として扱う。カードの外へはみ出させると
+                JSON(機械が読むデータ)の見立てとキャラクターの語彙がぶつかるので、
+                枠付きの小窓 + ファイル名(mono)で中に収める。
+                カードの子にしておくことで .heroCard:hover の変形にも追従する */}
+            <div className={styles.cardAvatar}>
+              <span className={styles.cardAvatarThumb}>
+                <Image
+                  src="/imutaro-icon.png"
+                  alt=""
+                  width={512}
+                  height={512}
+                  sizes="96px"
+                  className={styles.cardAvatarImg}
+                />
+              </span>
+              <span className={styles.cardAvatarName}>imutaro.png</span>
+            </div>
             <pre className={styles.cardCode}>
               <span className={styles.cardLine}>{'{'}</span>
               {PROFILE_FIELDS.map((field, i) => (
@@ -185,24 +205,9 @@ export default async function Page() {
         </div>
       </section>
 
+      {/* ヒーローをキャラクターに置き換えたため、金属は「Contact 前のストリーム1点」に絞る。
+          ミッド帯の左端で見切れていたリボン(.midGlyph)はここで撤去した */}
       <div className={styles.midBand}>
-        {/* 縦長S字のクロームリボン。シルバー帯の左端で見切れさせる装飾。
-            左右反転はしない(全素材の光源＝左上をヒーローと揃えるため)。
-            縁処理は .midGlyphImg の multiply のみ(不透明グラデを重ねると背面の
-            銀グラデーションを塗りつぶして矩形の継ぎ目を作るため併用しない)。
-            ファーストビュー外なので next/image デフォルトの lazy で読み込む */}
-        <div className={styles.midGlyph} aria-hidden="true">
-          <Image
-            src="/ribbon-glyph-b.png"
-            alt=""
-            width={864}
-            height={1821}
-            // 表示は高さ460px固定 = 幅約218px。sizes で表示幅相当の変換画像を選ばせる
-            sizes="220px"
-            className={styles.midGlyphImg}
-          />
-        </div>
-
         <div className={styles.midGrid}>
           <section className={styles.section}>
             <div className={styles.sectionHead}>
@@ -288,57 +293,15 @@ export default async function Page() {
               Zenn / note の記事
             </h2>
           </div>
-          <ul className={styles.externalGrid}>
-            {externalArticles.map((article) => (
-              <li key={article.url}>
-                <a
-                  href={article.url}
-                  className={styles.externalCard}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {article.thumbnail ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={article.thumbnail}
-                      alt=""
-                      className={styles.externalThumb}
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  ) : (
-                    <div className={styles.externalThumbFallback} aria-hidden="true">
-                      {article.source === 'zenn' ? 'Zenn' : 'note'}
-                    </div>
-                  )}
-                  <span className={styles.externalBody}>
-                    <span className={styles.externalTitle}>{article.title}</span>
-                    <span className={styles.externalMeta}>
-                      <PublishedDate date={article.publishedAt} />
-                      <span className={styles.externalBadge} data-source={article.source}>
-                        {article.source === 'zenn' ? 'Zenn' : 'note'}
-                      </span>
-                    </span>
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
+          <ExternalArticleList articles={externalArticles} />
+          <Link href="/writings" className={styles.articlesMore}>
+            詳しく見る
+            <span className={styles.ctaArrow} aria-hidden="true">
+              →
+            </span>
+          </Link>
         </section>
       )}
-
-      {/* 液体金属のストリーム。Contact 前の全幅ディバイダ装飾。
-          縁処理は multiply。lazy 読み込み */}
-      <div className={styles.streamDivider} aria-hidden="true">
-        <Image
-          src="/metal-stream.png"
-          alt=""
-          width={1983}
-          height={793}
-          sizes="100vw"
-          className={styles.streamDividerImg}
-        />
-      </div>
 
       <section className={`${styles.section} ${styles.sectionEnd}`}>
         <div className={styles.sectionHead}>

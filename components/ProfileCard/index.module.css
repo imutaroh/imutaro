@@ -1,0 +1,406 @@
+/* /card — 1画面完結のプロフィールカード。
+   DESIGN.md の語彙(白×青・ヘアライン・mono メタ・◉括弧 eyebrow・液体金属)で組む。
+   参照元(社内図鑑)のダーク×虹ホロは、白地では mix-blend-mode: screen が効かないため
+   「白い紙の上をクロームが流れる」= multiply の銀帯に翻訳している(DESIGN.md 4-6)。 */
+
+.screen {
+  /* カードは常に1画面に収める。縦が足りない端末では幅ではなく高さから逆算する。
+     表に全情報(アイコン+名前+profile+リンク+導線)を載せるため、
+     トレカ比(17:12)では入りきらない。19:12 まで縦に伸ばしている */
+  --w: max(170px, min(90vw, 360px, calc((100dvh - 160px) * 12 / 20)));
+  --h: calc(var(--w) * 20 / 12);
+  --d: 10px;
+  --half: 5px;
+
+  /* クロームの銀。パレットに無い中間グレーなのでここに閉じ込める
+     (ミッド帯の --bg-metal-band は他所で使わない約束のため流用しない) */
+  --chrome-mid: rgba(196, 209, 221, 0.95);
+  --chrome-deep: rgba(158, 178, 196, 1);
+
+  height: 100dvh;
+  /* dvh 非対応ブラウザ向けの下敷き */
+  min-height: 100vh;
+  overflow: clip;
+  background-color: var(--color-code-bg);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+}
+
+.stage {
+  position: relative;
+  width: var(--w);
+  height: var(--h);
+  /* 1100 だと初期角度でも歪みが強く「傾いた」ではなく「歪んだ」に見える。
+     浅めにして、回したときだけ立体が立つようにする */
+  perspective: 1600px;
+  perspective-origin: 50% 45%;
+  /* ドラッグ回転をブラウザのスクロール・ダブルタップズームに奪われないようにする。
+     manipulation ではなく none にしないと横方向のパンが持っていかれる */
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.stage:active {
+  cursor: grabbing;
+}
+
+.stage:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 10px;
+  border-radius: 8px;
+}
+
+/* 浮いているカードの影(DESIGN.md 5章の唯一の影) */
+.stage::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -22px;
+  width: 62%;
+  height: 14px;
+  transform: translateX(-50%);
+  background: radial-gradient(50% 50% at 50% 50%, rgba(26, 35, 48, 0.28), transparent 72%);
+  pointer-events: none;
+}
+
+.card {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-line);
+  transform-style: preserve-3d;
+  display: flex;
+  flex-direction: column;
+}
+
+.front {
+  transform: translateZ(var(--half));
+}
+
+.back {
+  transform: rotateY(180deg) translateZ(var(--half));
+}
+
+/* ---- 厚み。側面はクロームの木口として銀グラデで塗る ---- */
+.side {
+  position: absolute;
+  border-radius: 2px;
+}
+
+.sideL,
+.sideR {
+  width: var(--d);
+  height: var(--h);
+  left: calc(50% - var(--half));
+  top: 0;
+  background: linear-gradient(180deg, #dbe3ea, #aebecc 45%, #eef2f6);
+}
+
+.sideT,
+.sideB {
+  width: var(--w);
+  height: var(--d);
+  left: 0;
+  top: calc(50% - var(--half));
+  background: linear-gradient(90deg, #dbe3ea, #aebecc 45%, #eef2f6);
+}
+
+.sideR {
+  transform: rotateY(90deg) translateZ(calc(var(--w) / 2));
+}
+.sideL {
+  transform: rotateY(-90deg) translateZ(calc(var(--w) / 2));
+}
+.sideT {
+  transform: rotateX(90deg) translateZ(calc(var(--h) / 2));
+}
+.sideB {
+  transform: rotateX(-90deg) translateZ(calc(var(--h) / 2));
+}
+
+/* ---- 内枠(ヘアラインのモチーフ) ---- */
+.frame {
+  position: absolute;
+  inset: 8px;
+  border: 1px solid var(--color-line);
+  border-radius: 4px;
+  transform: translateZ(1px);
+  pointer-events: none;
+}
+
+/* ---- クロームの帯。位置と濃さは JS が回転角から --sheen-pos / --sheen-lum に流す ---- */
+.sheen {
+  position: absolute;
+  inset: 0;
+  transform: translateZ(2px);
+  background-image: linear-gradient(
+    105deg,
+    rgba(255, 255, 255, 0) 24%,
+    var(--chrome-mid) 37%,
+    rgba(255, 255, 255, 0) 46%,
+    var(--chrome-deep) 55%,
+    rgba(255, 255, 255, 0) 68%
+  );
+  background-size: 260% 100%;
+  background-position: var(--sheen-pos, 50%) 50%;
+  opacity: var(--sheen-lum, 0.3);
+  /* 白地の上で銀を出す唯一の手。screen は白に対して無効(DESIGN.md 4-6) */
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+/* ---- 表: 1枚に全部載せるので、縦は「詰める」ではなく「配る」で組む ---- */
+.copy {
+  flex: 1;
+  min-height: 0;
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.portrait {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 余った縦をアイコンが吸う。下の情報が増えても割を食うのはアイコンだけ */
+  flex: 1;
+  min-height: 0;
+}
+
+.portraitImg {
+  width: auto;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  /* ドット絵なので補間させない */
+  image-rendering: pixelated;
+  /* 背景を抜いた図なので、影がないと紙に埋まって見える */
+  filter: drop-shadow(0 6px 10px rgba(26, 35, 48, 0.22));
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  letter-spacing: 0.05em;
+  color: var(--color-accent);
+}
+
+/* ミニダイヤル ◉(DESIGN.md 4章のモチーフ1) */
+.eyebrow::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid var(--color-accent);
+  background: radial-gradient(circle, var(--color-accent) 0 2px, transparent 2.5px);
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.name {
+  font-family: var(--font-serif-stack);
+  font-weight: 700;
+  font-size: var(--fs-h2);
+  line-height: 1.1;
+  color: var(--color-ink);
+}
+
+.role {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  letter-spacing: 0;
+  color: var(--color-sub);
+}
+
+.facts {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.factRow {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.factRow dt {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  letter-spacing: 0;
+  color: var(--color-accent);
+  width: 52px;
+  flex-shrink: 0;
+}
+
+.factRow dd {
+  font-size: var(--fs-ui);
+  color: var(--color-ink);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  flex-shrink: 0;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  letter-spacing: 0.05em;
+  color: var(--color-sub);
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.link:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.blogLink {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  letter-spacing: 0;
+  color: var(--color-accent);
+}
+
+/* ---- 裏: 情報を持たない面。織り地 + ◉ + サイト名だけ ---- */
+.weave {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(45deg, var(--color-line) 0 1px, transparent 1px 10px),
+    repeating-linear-gradient(-45deg, var(--color-line) 0 1px, transparent 1px 10px);
+  opacity: 0.55;
+}
+
+.backMark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  /* クロームの帯(.sheen, translateZ 2px)より前に出す。
+     子(.backQr)に translateZ を付けても、この箱が preserve-3d でないため
+     潰れて効かない。3D 文脈の直接の子であるここで上げる */
+  transform: translateZ(4px);
+}
+
+/* QR は白地・高コントラストでないと読めない。カード面(--color-bg)は
+   わずかに青みがあるので、白の板をきちんと敷いてから載せる
+   (帯を避ける Z 上げは親の .backMark が担当) */
+.backQr {
+  display: block;
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid var(--color-line);
+  border-radius: 6px;
+}
+
+.backQrImg {
+  display: block;
+  width: 148px;
+  height: 148px;
+  /* モジュールの縁を補間させない(ぼけると読み取り精度が落ちる) */
+  image-rendering: pixelated;
+}
+
+/* URL は「機械が読むデータ」の段: mono 13px / letter-spacing 0(DESIGN.md 3章)。
+   ラベルの 12px / 0.05em ではない */
+.backUrl {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  letter-spacing: 0;
+  color: var(--color-sub);
+}
+
+/* ---- 画面下の案内 ---- */
+.hint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  letter-spacing: 0.05em;
+  color: var(--color-sub);
+}
+
+.hintSep {
+  color: var(--color-line);
+}
+
+.fallback {
+  margin-top: -16px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  letter-spacing: 0;
+  color: var(--color-accent);
+}
+
+/* ---- 遷移の幕 ---- */
+.veil {
+  position: fixed;
+  inset: 0;
+  background-color: var(--color-bg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 700ms ease-in;
+  z-index: 10;
+}
+
+.veilOn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .veil {
+    transition: none;
+  }
+  .stage::after {
+    display: none;
+  }
+}

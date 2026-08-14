@@ -149,3 +149,22 @@ ul {
     scroll-behavior: auto !important;
   }
 }
+
+/* --- トップの幕(HomeGate)を出す予定の間だけ効く目隠し ---
+   クラス js-gate は app/(lp)/layout.tsx のインラインスクリプトが
+   初回描画の前に付ける。React が幕を描くまでの数フレーム、LP が見えて
+   そこへ幕が被さる「チラつき」を防ぐためだけの層。
+   幕を閉じる / 出さないと決まった時点で HomeGate がクラスを外す。
+   JS 無効ならクラス自体が付かないので、素の LP がそのまま読める */
+html.js-gate::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  /* 幕(.gate, z-index 70)より下、ページのどの要素より上 */
+  z-index: 60;
+  background-color: var(--color-code-bg);
+}
+
+html.js-gate body {
+  overflow: hidden;
+}
