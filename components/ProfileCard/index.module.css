@@ -268,41 +268,60 @@
   color: var(--color-ink);
 }
 
-.links {
+/* 使っている技術。LP の 03 Stack と同じ語彙（名前 + monoピルの状態）だが、
+   カードは面積が狭いので行ではなく折り返すピル列にする。
+   リンクではないので hover の色変化は付けない（押せると誤解させない） */
+.stack {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   list-style: none;
   flex-shrink: 0;
 }
 
-.link {
+.stackItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px 5px 10px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+}
+
+.stackName {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.stackStatus {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 10px;
-  border: 1px solid var(--color-line);
-  border-radius: 999px;
   font-family: var(--font-mono);
+  /* monoピルは caption 段 + ラベル統一字間 */
   font-size: var(--fs-caption);
   letter-spacing: 0.05em;
   color: var(--color-sub);
-  transition:
-    color 0.15s ease,
-    border-color 0.15s ease;
 }
 
-.link:hover {
-  color: var(--color-accent);
-  border-color: var(--color-accent);
+.stackStatus::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
 }
 
-.blogLink {
-  flex-shrink: 0;
-  font-family: var(--font-mono);
-  font-size: var(--fs-meta);
-  letter-spacing: 0;
-  color: var(--color-accent);
+/* daily = 塗りつぶし、learning = 輪郭のみ（LP の 03 Stack と同じ規則） */
+.stackStatus[data-status='daily']::before {
+  background-color: var(--color-accent);
+}
+
+.stackStatus[data-status='learning']::before {
+  border: 1px solid var(--color-accent);
 }
 
 /* ---- 裏: 情報を持たない面。織り地 + ◉ + サイト名だけ ---- */

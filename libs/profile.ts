@@ -3,14 +3,24 @@ import { calcAge } from './age';
 /** 年齢はここから毎回算出する。数値を直接書くと誕生日を跨いだ日から嘘になる */
 const BIRTHDAY = '2003-12-01';
 
-export const PROFILE_EMAIL = 'imutaakihiro3@gmail.com';
-
-export const PROFILE_LINKS = [
-  { label: 'GitHub', icon: 'github', href: 'https://github.com/imutaroh' },
-  { label: 'Zenn', icon: 'zenn', href: 'https://zenn.dev/imu_imu' },
-  { label: 'note', icon: 'note', href: 'https://note.com/imutaroh' },
-  { label: 'X', icon: 'x', href: 'https://x.com/imutaroh' },
+/**
+ * 使っている技術。LP の 03 Stack セクションとカードの両方がここを読む。
+ * 2箇所に書くと、片方だけ直して「LPとカードで言っていることが違う」が起きる。
+ * status は daily(日常的に使う) / learning(学習中) の2値。
+ * icon は BrandIcon の名前（simple-icons 由来）。
+ * 「SQL」は言語であってロゴを持たないため、実際に使っている製品名 BigQuery に置いた
+ */
+export const STACK_ENTRIES = [
+  { name: 'BigQuery', status: 'daily', icon: 'bigquery' },
+  { name: 'Go', status: 'learning', icon: 'go' },
+  { name: 'Claude Code', status: 'daily', icon: 'claude' },
 ] as const;
+
+export type StackEntry = {
+  name: string;
+  status: string;
+  icon: 'bigquery' | 'go' | 'claude';
+};
 
 export type ProfileFact = { key: string; value: string };
 
@@ -28,7 +38,7 @@ export function getProfileCardData() {
     { key: 'focus', value: 'data platform / AI' },
   ];
 
-  return { age, facts, links: [...PROFILE_LINKS] };
+  return { age, facts, stack: [...STACK_ENTRIES] };
 }
 
 /**

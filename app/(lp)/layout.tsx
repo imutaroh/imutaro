@@ -12,7 +12,7 @@ type Props = {
 };
 
 export default function LpLayout({ children }: Props) {
-  const { age, facts, links } = getProfileCardData();
+  const { age, facts, stack } = getProfileCardData();
 
   return (
     <ClickSpark sparkColor="#0087a8" sparkSize={9} sparkRadius={16} sparkCount={8}>
@@ -36,7 +36,7 @@ export default function LpLayout({ children }: Props) {
             "document.documentElement.classList.add('js-gate');setTimeout(function(){document.documentElement.classList.remove('js-gate')},3000);",
         }}
       />
-      <HomeGate age={age} facts={facts} links={links} url={QR_TARGET_LABEL} />
+      <HomeGate age={age} facts={facts} stack={stack} url={QR_TARGET_LABEL} />
       <HeroReveal />
       <header className={styles.header}>
         <Link href="/" className={styles.logo}>

@@ -4,15 +4,13 @@ import { useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ProfileCard from '@/components/ProfileCard';
-import type { ProfileFact } from '@/libs/profile';
+import type { ProfileFact, StackEntry } from '@/libs/profile';
 import styles from '@/components/ProfileCard/index.module.css';
-
-type LinkItem = { label: string; icon: 'github' | 'zenn' | 'note' | 'x'; href: string };
 
 type Props = {
   age: number;
   facts: ProfileFact[];
-  links: LinkItem[];
+  stack: StackEntry[];
   url: string;
 };
 

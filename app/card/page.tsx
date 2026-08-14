@@ -19,7 +19,7 @@ export const metadata = {
 export const revalidate = 3600;
 
 export default function CardPage() {
-  const { age, facts, links } = getProfileCardData();
+  const { age, facts, stack } = getProfileCardData();
 
-  return <CardScreen age={age} facts={facts} links={links} url={QR_TARGET_LABEL} />;
+  return <CardScreen age={age} facts={facts} stack={stack} url={QR_TARGET_LABEL} />;
 }

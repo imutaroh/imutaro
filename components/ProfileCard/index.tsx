@@ -2,18 +2,17 @@
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import BrandIcon from '@/components/BrandIcon';
-import { PROFILE_EMAIL } from '@/libs/profile';
+import type { StackEntry } from '@/libs/profile';
 import styles from './index.module.css';
 
 type Fact = { key: string; value: string };
-type LinkItem = { label: string; icon: 'github' | 'zenn' | 'note' | 'x'; href: string };
 
 type Props = {
   age: number;
   facts: Fact[];
-  links: LinkItem[];
+  /** 使っている技術。リンクではなく表示のみ */
+  stack: StackEntry[];
   /** 裏面に出す、このページ自身のURL(スキームなし) */
   url: string;
   /**
@@ -34,8 +33,6 @@ type Props = {
   nameAs?: 'h1' | 'p';
 };
 
-const EMAIL = PROFILE_EMAIL;
-
 /** ドラッグ量(px)→回転量(度)。1画面ぶんスワイプでおよそ1回転半 */
 const DRAG_TO_DEG = 0.6;
 /** これ未満の移動はドラッグではなくタップとみなす(px) */
@@ -54,7 +51,7 @@ const TILT_LIMIT = 16;
 export default function ProfileCard({
   age,
   facts,
-  links,
+  stack,
   url,
   onEnter,
   enterHint,
@@ -260,29 +257,22 @@ export default function ProfileCard({
                   </div>
                 ))}
               </dl>
-              <ul className={styles.links}>
-                {links.map((l) => (
-                  <li key={l.label}>
-                    <a
-                      href={l.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.link}
-                    >
-                      <BrandIcon name={l.icon} size={14} />
-                      {l.label}
-                    </a>
+              {/* 使っている技術。リンクではなく表示だけ。
+                  カードは幕としても使うので、面の中にサイト外へ飛ぶ導線を置かない
+                  (触った瞬間に離脱する) */}
+              <ul className={styles.stack}>
+                {stack.map((s) => (
+                  <li key={s.name} className={styles.stackItem}>
+                    <span className={styles.stackName}>
+                      <BrandIcon name={s.icon} size={14} />
+                      {s.name}
+                    </span>
+                    <span className={styles.stackStatus} data-status={s.status}>
+                      {s.status}
+                    </span>
                   </li>
                 ))}
-                <li>
-                  <a href={`mailto:${EMAIL}`} className={styles.link}>
-                    Email
-                  </a>
-                </li>
               </ul>
-              <Link href="/blog" className={styles.blogLink}>
-                ブログを読む <span aria-hidden="true">→</span>
-              </Link>
             </div>
             <div className={styles.frame} aria-hidden="true" />
             <div className={styles.sheen} aria-hidden="true" />
