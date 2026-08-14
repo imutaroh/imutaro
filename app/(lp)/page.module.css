@@ -11,9 +11,14 @@
 
 .heroOuter {
   position: relative;
-  /* リボン(.heroVisual, z-index: -1)がこのセクションの外の要素の背面へ
-     潜らないよう、スタッキング文脈をここで閉じる */
+  /* 図版がこのセクションの外の要素の背面へ潜らないよう、
+     スタッキング文脈をここで閉じる */
   isolation: isolate;
+
+  /* 右下に置くキャラクター(バスト)の幅。1:1 なのでこの値が高さでもある。
+     タイトルの下・リード文の右に空く帯(実測 約287px高)に収まる範囲で決める。
+     ここを大きくしすぎるとタイトル2行目の下端に頭がぶつかる */
+  --hero-figure-w: min(24vw, 280px);
   /* 右へ意図的にはみ出すリボンを刈る。スクロールコンテナを作らない clip を使う
      (hidden での刈り取りは横はみ出し・スクロール連鎖の原因になるため禁止。Issue #21) */
   overflow: clip;
@@ -106,7 +111,10 @@
      100vw が実内容幅よりスクロールバー幅(約15px)ぶん大きくなっても収まる余裕を持たせる。
      上限は hero の最大内容幅 (1200px - 48px) ÷ 11.4 ≒ 6.3rem
      (単純な vw 上限だと 11文字 × 9vw ≒ 99vw で収まらないため、この式でフィッティング。
-      palt で詰まるぶんは安全側の余裕になる) */
+      palt で詰まるぶんは安全側の余裕になる)
+     ※ 右のキャラクターは 1:1 のバストで、タイトル2行の「下」に収まる高さに
+       抑えてある(--hero-figure-w)。横幅を明け渡す必要がないので、
+       この式は全幅のまま維持する */
   font-size: min(6.3rem, calc((100vw - 48px) / 11.6));
   line-height: 1.12;
   font-weight: 700;
@@ -228,49 +236,37 @@
    幅の約12%を意図的に右へはみ出させる(.heroOuter の overflow: clip が刈る)。
    縦中央合わせを transform でやると fadeInUp の transform に上書きされるため、
    top を計算で出す(画像高さ = 幅 × 1024/1536 = 幅 ÷ 1.5、その半分 = 幅 ÷ 3) */
+/* 右下。横位置は .hero の内容右端(max-width 1200px + 左右padding 24px)に揃える。
+   縦は下端から積み上げるので、タイトルが大きくなる広い画面でも
+   「タイトルの下」という関係が保たれる */
 .heroVisual {
   position: absolute;
-  z-index: -1;
-  /* リボン幅は「はみ出し量(right)」と「縦センター(top)」の計算にも使うため、
-     ローカルカスタムプロパティで1箇所に持つ(3箇所バラバラに直すと構図が崩れる) */
-  --ribbon-w: min(58vw, 900px);
-  width: var(--ribbon-w);
-  right: calc(var(--ribbon-w) * -0.12);
-  top: calc(50% - var(--ribbon-w) / 3);
+  width: var(--hero-figure-w);
+  right: calc(max(0px, (100vw - 1200px) / 2) + 24px);
+  /* 1280px 以上ではタイトルが上限(100.8px)に達して最も背が高くなる。
+     40px だとタイトルの行ボックス下端と 9px 重なったため 24px まで下げた */
+  bottom: 24px;
   pointer-events: none;
 }
 
-/* 769〜1024pxの帯では、リボンのループ最密部(明暗コントラストが最も高い部分)が
-   タイトル2行目・リード末尾と交差して騒がしいため、この帯だけ刈り取りを深くして
-   最密部を画面外へ送る。right/top の計算は --ribbon-w に集約済みなので、
-   ここを変えるだけで構図が保たれる(<768px の縦積み指定が後方でこれを上書きする) */
-@media (max-width: 1024px) {
-  .heroVisual {
-    --ribbon-w: min(64vw, 900px);
-    right: calc(var(--ribbon-w) * -0.22);
-  }
+/* 下端(胸で水平に切れている)を紙に溶かす。mask はタイルラスタライズを重くするため
+   全サイトで不使用(Issue #19)。背景が単色 --color-bg である前提に依存する手法で、
+   ヒーローの地は単色なので成立する */
+.heroVisual::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 30%;
+  background: linear-gradient(to bottom, transparent, var(--color-bg) 88%);
+  pointer-events: none;
 }
 
-.heroRibbon {
+.heroFigure {
   display: block;
   width: 100%;
   height: auto;
-}
-
-/* 生成画像(ほぼ白背景)の矩形の縁をページ背景に馴染ませる上掛け。
-   mask はタイルラスタライズを重くするため全サイトで不使用(Issue #19)。
-   PR #20 と同じ「背景色グラデーションを上に重ねる」方式で、
-   背景が単色(--color-bg)である前提に依存する。
-   ※ 背面に描画物(銀グラデ面など)がある場所では不透明グラデがそれを塗りつぶして
-     矩形の継ぎ目を作るため使わない(.midGlyph は multiply に一本化) */
-.ribbonFade::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(to right, var(--color-bg), transparent 12% 88%, var(--color-bg)),
-    linear-gradient(to bottom, var(--color-bg), transparent 12% 88%, var(--color-bg));
-  pointer-events: none;
+  /* ドット絵なので補間させない */
+  image-rendering: pixelated;
 }
 
 /* --- hero profile card --- */
@@ -319,6 +315,45 @@
   flex-shrink: 0;
 }
 
+/* profile.json カードの avatar フィールド。枠付きの小窓 + ファイル名(mono)で
+   「このレコードの1項目」として扱う。カードの外へはみ出させると、
+   JSON(機械が読むデータ)の見立てとキャラクターの語彙がぶつかる */
+.cardAvatar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.cardAvatarThumb {
+  display: block;
+  flex-shrink: 0;
+  width: 88px;
+  height: 88px;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  border-radius: 4px;
+  background-color: var(--color-code-bg);
+}
+
+.cardAvatarImg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* ドット絵なので補間させない */
+  image-rendering: pixelated;
+}
+
+.cardAvatarName {
+  font-family: var(--font-mono);
+  /* monoデータ段(ファイル名)。ラベルの 12px / 0.05em ではない */
+  font-size: var(--fs-meta);
+  letter-spacing: 0;
+  color: var(--color-sub);
+}
+
 .cardCode {
   margin: 0;
   padding: 18px 24px;
@@ -356,7 +391,9 @@
 /* Learning Log〜Stack を包む全幅のストリーム帯。中のセクションを前面に出す */
 .midBand {
   position: relative;
-  /* 左端で見切れる .midGlyph を刈る(hidden ではなく clip。Issue #21) */
+  /* はみ出す装飾を刈る保険(hidden ではなく clip。Issue #21)。
+     左端で見切れていたリボン .midGlyph は撤去済みだが、帯の内側で
+     はみ出しが起きたときにページ全体へ波及させないため残す */
   overflow: clip;
   /* 淡い銀青の金属面。「面で塗らない」原則の唯一の例外(DESIGN.md 5章・9章)。
      画像ではなく CSS グラデにして、スクロール中のラスタコストを増やさない */
@@ -374,45 +411,6 @@
   z-index: 1;
   /* 境界折半の内側ぶん(外側は .beforeBand の padding-bottom) */
   padding-top: calc(var(--space-section) / 2);
-}
-
-/* 縦長S字リボン。ページ唯一の左置きとして銀帯の左端で深く見切れさせる
-   (可視幅 約98px)。左右反転(scaleX(-1))はしない: 全素材の光源が左上で
-   統一されており、反転するとヒーローリボンとハイライト方向が矛盾する。
-   ※ z-index を指定しないこと: 指定するとここがスタッキング文脈になり、
-     .midGlyphImg の mix-blend-mode の合成がこの箱の中に隔離されて
-     背面と混ざらなくなる(=矩形ハローが復活する) */
-.midGlyph {
-  position: absolute;
-  left: -120px;
-  top: calc(50% - 230px);
-  pointer-events: none;
-}
-
-.midGlyphImg {
-  display: block;
-  height: 460px;
-  width: auto;
-  /* 矩形背景を乗算で下地(銀グラデ面)に溶かす。素材は白点を純白(#fff)に
-     レベル補正済みなので白地の乗算は恒等になり、背面の銀グラデが glyph の
-     矩形内を減衰なく通り抜ける(クロームの暗部は保持される)。
-     mask 禁止(Issue #19)には抵触しない */
-  mix-blend-mode: multiply;
-}
-
-/* 装飾の非表示理由をブレークポイントごとに明記する(規律):
-   midGlyph は高さ460px → 幅 864/1821×460 ≒ 218px、left:-120px で可視幅 約98px。
-   衝突相手は Learning Log の破線境界そのものではなく、そこからさらに左へ
-   約7.5px はみ出す .logDot のリング(left:-32.5px + .log の padding 28px
-   + border 1px + リング box-shadow 4px)。コンテンツ左余白 =
-   オーバーレイスクロールバー環境では 1201〜1203px の帯でリングに最大2px弱、
-   クラシックスクロールバー環境(Windows 等、メディアクエリ幅にバー約15px を含む)
-   では最大約8px 重なるが、セクション側が z-index:1 で glyph の上に描画される
-   ため装飾の見え方の問題に留まる。許容してカットオフは 1200px に置く */
-@media (max-width: 1200px) {
-  .midGlyph {
-    display: none;
-  }
 }
 
 .section {
@@ -482,23 +480,6 @@
 
 /* 液体金属のストリーム。Contact 前の全幅ディバイダ(ページ唯一の全幅音)。
    横長画像を帯状に切り抜く(object-fit)。overflow は clip(Issue #21) */
-.streamDivider {
-  position: relative;
-  margin-top: var(--space-section);
-  height: clamp(140px, 18vw, 260px);
-  overflow: clip;
-}
-
-.streamDividerImg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  /* うねりの最密部を左に寄せ、ヒーロー(右)偏重の解体に足す */
-  object-position: 20% 50%;
-  mix-blend-mode: multiply;
-}
-
 .sectionHead {
   margin-bottom: 40px;
 }
@@ -774,116 +755,6 @@
   color: var(--color-accent-bright);
 }
 
-/* --- Zenn/note カードグリッド --- */
-
-.externalGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-}
-
-.externalCard {
-  display: block;
-  height: 100%;
-  border: 1px solid var(--color-line);
-  border-radius: 8px;
-  background-color: #fff;
-  overflow: hidden;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    border-color 0.15s ease;
-}
-
-.externalCard:hover {
-  transform: translateY(-3px);
-  border-color: var(--color-border-dark);
-  box-shadow: 0 16px 32px -20px rgba(26, 35, 48, 0.3);
-}
-
-.externalCard:hover .externalTitle {
-  color: var(--color-accent);
-}
-
-.externalThumb {
-  display: block;
-  width: 100%;
-  aspect-ratio: 1200 / 630;
-  object-fit: cover;
-  border-bottom: 1px solid var(--color-line);
-}
-
-.externalThumbFallback {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  aspect-ratio: 1200 / 630;
-  background-color: var(--color-code-bg);
-  border-bottom: 1px solid var(--color-line);
-  font-family: var(--font-mono);
-  /* 出どころ表示のプレースホルダ = monoラベル統一段 12px / 0.05em
-     (未指定だと body 16px + ls 0.02em を継承して mono 2段規則から外れる) */
-  font-size: var(--fs-caption);
-  letter-spacing: 0.05em;
-  color: var(--color-sub);
-}
-
-.externalBody {
-  display: block;
-  padding: 14px 16px 16px;
-}
-
-.externalTitle {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  font-size: var(--fs-ui);
-  font-weight: 500;
-  line-height: 1.6;
-  /* line-height 1.6 × 2行 = 3.2em。旧 2.9em では1行タイトルと2行タイトルで
-     メタ行の縦位置が 0.3em ズレて grid が波打っていた(バグ修正) */
-  min-height: 3.2em;
-  color: var(--color-ink);
-  transition: color 0.15s ease;
-}
-
-.externalMeta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-top: 10px;
-}
-
-@media (max-width: 900px) {
-  .externalGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 560px) {
-  .externalGrid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Zenn/note の出どころバッジ(monoピル) */
-.externalBadge {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 12px;
-  border: 1px solid var(--color-line);
-  border-radius: 999px;
-  font-family: var(--font-mono);
-  font-size: var(--fs-caption);
-  /* monoラベル統一値 */
-  letter-spacing: 0.05em;
-  color: var(--color-sub);
-  flex-shrink: 0;
-}
-
 /* --- contact --- */
 
 .contact {
@@ -938,25 +809,24 @@
   }
 }
 
-/* ヒーロー2カラムをやめて縦積み(タイトル → リボン90vw → リード → CTA)。
-   ミッド帯の glyph は 1200px 以下で既に非表示(前方のブロック参照) */
+/* ヒーロー2カラムをやめて縦積み(タイトル → キャラ52vw → リード → CTA) */
 @media (max-width: 768px) {
   .hero {
     padding: 48px 24px 64px;
   }
 
   .heroVisual {
-    /* DOM 上タイトル直下に置いてあるため、通常フローに戻すだけで縦積みの正位置に入る。
-       static ではなく relative なのは .ribbonFade::after (inset: 0) の基準を自身に保つため。
-       relative では top/right がオフセットとして効いてしまうので auto に戻す */
+    /* DOM 上タイトル直下に置いてあるため、通常フローに戻すだけで縦積みの正位置に入る */
     position: relative;
     top: auto;
     right: auto;
-    width: 90vw;
-    margin: 20px 0 4px;
-    /* 縦積みでは視覚順がタイトル→リボン→リード→CTAになるため、入場スタッガも
+    bottom: auto;
+    width: 52vw;
+    /* 縦積みでは右寄せにして、左のテキスト列との軸を作る */
+    margin: 20px 0 4px auto;
+    /* 縦積みでは視覚順がタイトル→キャラ→リード→CTAになるため、入場スタッガも
        その順(タイトル90msとリード180msの間)に合わせる。デスクトップの360ms
-       (右背面へ最後に入場)のままだと、表示済み要素の間へ割り込んで見える */
+       (最後に入場)のままだと、表示済み要素の間へ割り込んで見える */
     animation-delay: 135ms;
   }
 }

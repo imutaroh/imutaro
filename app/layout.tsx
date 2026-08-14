@@ -4,8 +4,7 @@ import {
   Zen_Old_Mincho,
   IBM_Plex_Mono,
 } from 'next/font/google';
-import { SITE_NAME, SITE_DESCRIPTION } from '@/constants';
-import Footer from '@/components/Footer';
+import { SITE_NAME, SITE_TITLE, SITE_DESCRIPTION } from '@/constants';
 import './globals.css';
 
 // 見出し(h1-h6)の欧文用ディスプレイセリフ。和文グリフを持たないため、
@@ -47,14 +46,15 @@ const mono = IBM_Plex_Mono({
 export const metadata = {
   metadataBase: new URL(process.env.BASE_URL || 'http://localhost:3000'),
   title: {
+    // 下層は `Blog | imutaro.com`、トップだけ説明を持つタイトルにする
     template: `%s | ${SITE_NAME}`,
-    default: SITE_NAME,
+    default: SITE_TITLE,
   },
   description: SITE_DESCRIPTION,
   openGraph: {
     title: {
       template: `%s | ${SITE_NAME}`,
-      default: SITE_NAME,
+      default: SITE_TITLE,
     },
     description: SITE_DESCRIPTION,
     images: '/ogp.png',
@@ -74,10 +74,10 @@ export default function RootLayout({ children }: Props) {
       lang="ja"
       className={`${playfair.variable} ${body.variable} ${serif.variable} ${mono.variable}`}
     >
-      <body>
-        {children}
-        <Footer />
-      </body>
+      {/* Footer は各ルートグループのレイアウト側で描く。
+          /card は1画面完結のためフッターを持たない — ここで全ページ共通に
+          描いてしまうと card だけスクロールが生まれる */}
+      <body>{children}</body>
     </html>
   );
 }

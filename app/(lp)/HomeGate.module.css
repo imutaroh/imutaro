@@ -1,0 +1,42 @@
+/* トップにかぶせる幕。中身は /card と同じ ProfileCard */
+.gate {
+  position: fixed;
+  inset: 0;
+  /* インラインスクリプトが敷く目隠し(html.js-gate::before, z-index 60)より前に出る */
+  z-index: 70;
+  background-color: var(--color-code-bg);
+  opacity: 1;
+  transition: opacity 0.4s ease;
+}
+
+.closing {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 逃げ道。遷移ではなく幕を外すだけなので button で持つ。
+   ProfileCard の .screen(flex column) の子として通常フローに置く
+   — 絶対配置にすると位置の基準が祖先の position 次第で崩れる */
+.skip {
+  margin-top: -16px;
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  letter-spacing: 0;
+  color: var(--color-accent);
+}
+
+.skip:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gate {
+    transition: none;
+  }
+}
