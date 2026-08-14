@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getList } from '@/libs/microcms';
 import { getExternalArticles } from '@/libs/feeds';
+import { STACK_ENTRIES } from '@/libs/profile';
 import PublishedDate from '@/components/Date';
 import TagList from '@/components/TagList';
 import ShinyText from '@/components/ShinyText';
@@ -22,12 +23,6 @@ const LOG_ENTRIES = [
   { hash: 'c41b8d3', date: '2026-05', text: 'Goの学習を開始' },
   { hash: 'a09c5e2', date: '2026-04', text: '新卒データエンジニアとして入社' },
   { hash: '1f0d7b4', date: '2026-03', text: '大学卒業' },
-];
-
-const STACK_ENTRIES = [
-  { name: 'SQL', status: 'daily' },
-  { name: 'Go', status: 'learning' },
-  { name: 'Claude Code', status: 'daily' },
 ];
 
 const PROFILE_FIELDS = [
@@ -235,7 +230,12 @@ export default async function Page() {
             <ul className={styles.stack}>
               {STACK_ENTRIES.map((item) => (
                 <li className={styles.stackRow} key={item.name}>
-                  <span className={styles.stackName}>{item.name}</span>
+                  <span className={styles.stackName}>
+                    {/* 技術ロゴ。currentColor で描くので ink 一色に落ちる
+                        (原色のロゴを並べると白×青の紙面から浮く) */}
+                    <BrandIcon name={item.icon} size={18} />
+                    {item.name}
+                  </span>
                   <span className={styles.stackStatus} data-status={item.status}>
                     {item.status}
                   </span>

@@ -63,4 +63,10 @@
     gap: 16px;
     flex-wrap: wrap;
   }
+
+  /* スマホでは SNS アイコンを畳む。同じリンクが LP の Contact セクションにあり、
+     狭いヘッダーで重複させる価値がない。Blog は重複ではないので残す */
+  .navIcon {
+    display: none;
+  }
 }

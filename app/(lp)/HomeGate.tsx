@@ -2,15 +2,13 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import ProfileCard from '@/components/ProfileCard';
-import type { ProfileFact } from '@/libs/profile';
+import type { ProfileFact, StackEntry } from '@/libs/profile';
 import styles from './HomeGate.module.css';
-
-type LinkItem = { label: string; icon: 'github' | 'zenn' | 'note' | 'x'; href: string };
 
 type Props = {
   age: number;
   facts: ProfileFact[];
-  links: LinkItem[];
+  stack: StackEntry[];
   url: string;
 };
 

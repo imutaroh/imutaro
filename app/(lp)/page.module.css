@@ -639,6 +639,9 @@
 }
 
 .stackName {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
   color: var(--color-ink);
   font-weight: 500;
 }
