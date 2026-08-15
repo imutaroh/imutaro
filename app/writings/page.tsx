@@ -1,4 +1,5 @@
-import { getExternalArticles } from '@/libs/feeds';
+import Link from 'next/link';
+import { getExternalArticles, type ExternalSource } from '@/libs/feeds';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PageHead from '@/components/PageHead';
@@ -9,6 +10,14 @@ import styles from './page.module.css';
 // RSS が返す範囲を全部拾う。Zenn / note 側の返却上限を超える件数は
 // そもそも取得できないため、ここでの上限は「事実上の無制限」の意味
 const ALL = 1000;
+
+// LP の 05 セクションは Zenn / note を分けて見せるが、こちらは詳細先。
+// クエリでの絞り込みはあっても既定は「すべて」= 両方見える状態を保つ(C案)
+const TABS: { key: ExternalSource | 'all'; label: string }[] = [
+  { key: 'all', label: 'すべて' },
+  { key: 'zenn', label: 'Zenn' },
+  { key: 'note', label: 'note' },
+];
 
 export const metadata = {
   title: 'Zenn / note',
@@ -24,11 +33,20 @@ export const metadata = {
 // フィードの fetch 自体が revalidate 3600 なので、ページも同じ周期で作り直す
 export const revalidate = 3600;
 
-export default async function WritingsPage() {
-  const articles = await getExternalArticles(ALL);
+type Props = {
+  searchParams: Promise<{ source?: string }>;
+};
 
-  const zennCount = articles.filter((a) => a.source === 'zenn').length;
-  const noteCount = articles.length - zennCount;
+export default async function WritingsPage({ searchParams }: Props) {
+  const { source: sourceParam } = await searchParams;
+  const source: ExternalSource | 'all' =
+    sourceParam === 'zenn' || sourceParam === 'note' ? sourceParam : 'all';
+
+  const allArticles = await getExternalArticles(ALL);
+  const articles = source === 'all' ? allArticles : allArticles.filter((a) => a.source === source);
+
+  const zennCount = allArticles.filter((a) => a.source === 'zenn').length;
+  const noteCount = allArticles.length - zennCount;
 
   return (
     <>
@@ -39,10 +57,22 @@ export default async function WritingsPage() {
           title="Zenn / note"
           lead="Zenn と note で公開しているものの一覧です。記事のほか、Zenn の本も含みます。"
         />
-        {articles.length > 0 ? (
+        {allArticles.length > 0 ? (
           <>
+            <nav className={styles.tabs} aria-label="出どころで絞り込み">
+              {TABS.map((tab) => (
+                <Link
+                  key={tab.key}
+                  href={tab.key === 'all' ? '/writings' : `/writings?source=${tab.key}`}
+                  className={styles.tab}
+                  data-active={source === tab.key}
+                >
+                  {tab.label}
+                </Link>
+              ))}
+            </nav>
             <p className={styles.count}>
-              {articles.length} 件（Zenn {zennCount} / note {noteCount}）
+              {articles.length} 件{source === 'all' && `（Zenn ${zennCount} / note ${noteCount}）`}
             </p>
             <ExternalArticleList articles={articles} priority />
           </>

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { getList } from '@/libs/microcms';
-import { getExternalArticles } from '@/libs/feeds';
+import { getExternalArticlesGrouped } from '@/libs/feeds';
 import { STACK_ENTRIES } from '@/libs/profile';
 import PublishedDate from '@/components/Date';
 import TagList from '@/components/TagList';
@@ -14,9 +14,9 @@ import styles from './page.module.css';
 
 const LATEST_ARTICLES_LIMIT = 3;
 
-// Zenn / note の表示件数。.externalGrid は3カラムなので3の倍数だと行が揃う。
-// フィードの総数がこれに満たない場合はある数だけ並ぶ(最終行が欠ける)
-const EXTERNAL_ARTICLES_LIMIT = 9;
+// Zenn / note を別ブロックで見せるため、ソースごとに件数を揃える。
+// .externalGrid は3カラムなので、6件で2行ぴったりに収まる
+const EXTERNAL_ARTICLES_PER_SOURCE_LIMIT = 6;
 
 const LOG_ENTRIES = [
   { hash: 'e7a2f19', date: '2026-07', text: 'このブログを公開' },
@@ -42,13 +42,15 @@ const CONTACT_LINKS = [
 ] as const;
 
 export default async function Page() {
-  const [data, externalArticles] = await Promise.all([
+  const [data, externalArticlesGrouped] = await Promise.all([
     getList({
       limit: LATEST_ARTICLES_LIMIT,
     }),
-    getExternalArticles(EXTERNAL_ARTICLES_LIMIT),
+    getExternalArticlesGrouped(EXTERNAL_ARTICLES_PER_SOURCE_LIMIT),
   ]);
-  const contactNumber = externalArticles.length > 0 ? '06' : '05';
+  const externalArticlesCount =
+    externalArticlesGrouped.zenn.length + externalArticlesGrouped.note.length;
+  const contactNumber = externalArticlesCount > 0 ? '06' : '05';
 
   return (
     <>
@@ -282,7 +284,7 @@ export default async function Page() {
         </Link>
       </section>
 
-      {externalArticles.length > 0 && (
+      {externalArticlesCount > 0 && (
         <section className={styles.section}>
           <div className={styles.sectionHead}>
             <p className={styles.sectionEyebrow}>( 05 / zenn &amp; note )</p>
@@ -293,13 +295,38 @@ export default async function Page() {
               Zenn / note の記事
             </h2>
           </div>
-          <ExternalArticleList articles={externalArticles} />
-          <Link href="/writings" className={styles.articlesMore}>
-            詳しく見る
-            <span className={styles.ctaArrow} aria-hidden="true">
-              →
-            </span>
-          </Link>
+          <div className={styles.externalGroups}>
+            {externalArticlesGrouped.zenn.length > 0 && (
+              <div className={styles.externalGroup}>
+                <p className={styles.externalGroupTitle}>
+                  <BrandIcon name="zenn" size={16} />
+                  Zenn
+                </p>
+                <ExternalArticleList articles={externalArticlesGrouped.zenn} />
+                <Link href="/writings?source=zenn" className={styles.articlesMore}>
+                  もっと見る
+                  <span className={styles.ctaArrow} aria-hidden="true">
+                    →
+                  </span>
+                </Link>
+              </div>
+            )}
+            {externalArticlesGrouped.note.length > 0 && (
+              <div className={styles.externalGroup}>
+                <p className={styles.externalGroupTitle}>
+                  <BrandIcon name="note" size={16} />
+                  note
+                </p>
+                <ExternalArticleList articles={externalArticlesGrouped.note} />
+                <Link href="/writings?source=note" className={styles.articlesMore}>
+                  もっと見る
+                  <span className={styles.ctaArrow} aria-hidden="true">
+                    →
+                  </span>
+                </Link>
+              </div>
+            )}
+          </div>
         </section>
       )}
 

@@ -6,6 +6,39 @@
   padding: 0 24px var(--space-section);
 }
 
+/* すべて/Zenn/noteの絞り込み。既定は「すべて」= 両方見える状態(トップの分割
+   ブロックとは違い、ここは常に両方へのアクセスを保つ) */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.tab {
+  padding: 6px 16px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  letter-spacing: 0.05em;
+  color: var(--color-sub);
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.tab:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.tab[data-active='true'] {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+
 .count {
   margin-bottom: 24px;
   font-family: var(--font-mono);

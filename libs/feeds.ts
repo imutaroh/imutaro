@@ -52,3 +52,20 @@ export async function getExternalArticles(limit = 6): Promise<ExternalArticle[]>
     .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
     .slice(0, limit);
 }
+
+// LP の 05 セクションは Zenn / note を別ブロックで見せるため、
+// 混在ソートしてから間引く getExternalArticles だと件数が偏る
+// (例: 上位 limit 件が片方のソースに固まると、もう片方が 0 件になる)。
+// ソースごとに独立してソート・間引く。
+export async function getExternalArticlesGrouped(
+  limitPerSource = 3,
+): Promise<Record<ExternalSource, ExternalArticle[]>> {
+  const results = await Promise.all(FEEDS.map((f) => fetchFeed(f.source, f.url)));
+  const grouped = {} as Record<ExternalSource, ExternalArticle[]>;
+  FEEDS.forEach((f, i) => {
+    grouped[f.source] = results[i]
+      .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+      .slice(0, limitPerSource);
+  });
+  return grouped;
+}
