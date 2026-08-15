@@ -25,12 +25,12 @@ test.describe('トップページ', () => {
     }
   });
 
-  test('ブログ一覧への導線が機能する', async ({ page }) => {
-    const blogLink = page.locator('a[href="/blog"]').first();
-    await blogLink.scrollIntoViewIfNeeded();
-    await expect(blogLink).toBeVisible();
-    await blogLink.click();
-    await expect(page).toHaveURL(/\/blog/);
+  test('Zenn / note 一覧への導線が機能する', async ({ page }) => {
+    const writingsLink = page.locator('a[href="/writings"]').first();
+    await writingsLink.scrollIntoViewIfNeeded();
+    await expect(writingsLink).toBeVisible();
+    await writingsLink.click();
+    await expect(page).toHaveURL(/\/writings/);
   });
 });
 

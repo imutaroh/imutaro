@@ -43,9 +43,20 @@ export default function LpLayout({ children }: Props) {
           imutaro<span className={styles.logoTld}>.com</span>
         </Link>
         <nav className={styles.nav}>
-          <Link href="/blog" className={styles.navLink}>
-            Blog
+          <Link href="/writings" className={styles.navLink}>
+            Writings
           </Link>
+          {/* 自前の書き物置き場は Obsidian Publish に移した(旧: このサイトの /blog)。
+              別ホストなので Link ではなく素の a で外部リンク扱いにする。
+              640px 以下で畳まれるのは .navIcon だけなので、これはスマホでも残る */}
+          <a
+            href="https://notes.imutaro.com"
+            className={styles.navLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Notes
+          </a>
           <a
             href="https://zenn.dev/imu_imu"
             className={styles.navIcon}

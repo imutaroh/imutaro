@@ -1,18 +1,13 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { getList } from '@/libs/microcms';
 import { getExternalArticlesGrouped } from '@/libs/feeds';
 import { STACK_ENTRIES } from '@/libs/profile';
-import PublishedDate from '@/components/Date';
-import TagList from '@/components/TagList';
 import ShinyText from '@/components/ShinyText';
 import BrandIcon from '@/components/BrandIcon';
 import ExternalArticleList from '@/components/ExternalArticleList';
 import LearningLog from './LearningLog';
 import TypedTitle from './TypedTitle';
 import styles from './page.module.css';
-
-const LATEST_ARTICLES_LIMIT = 3;
 
 // Zenn / note を別ブロックで見せるため、ソースごとに件数を揃える。
 // .externalGrid は3カラムなので、6件で2行ぴったりに収まる
@@ -42,15 +37,12 @@ const CONTACT_LINKS = [
 ] as const;
 
 export default async function Page() {
-  const [data, externalArticlesGrouped] = await Promise.all([
-    getList({
-      limit: LATEST_ARTICLES_LIMIT,
-    }),
-    getExternalArticlesGrouped(EXTERNAL_ARTICLES_PER_SOURCE_LIMIT),
-  ]);
+  const externalArticlesGrouped = await getExternalArticlesGrouped(
+    EXTERNAL_ARTICLES_PER_SOURCE_LIMIT,
+  );
   const externalArticlesCount =
     externalArticlesGrouped.zenn.length + externalArticlesGrouped.note.length;
-  const contactNumber = externalArticlesCount > 0 ? '06' : '05';
+  const contactNumber = externalArticlesCount > 0 ? '05' : '04';
 
   return (
     <>
@@ -91,8 +83,8 @@ export default async function Page() {
               2026年新卒のデータエンジニア。まだ道の途中だからこそ、データ基盤とAI活用に向き合いながら、日々の学びをここに記録しています。
             </p>
             <div className={`${styles.heroCta} ${styles.heroItem4}`}>
-              <Link href="/blog" className={styles.ctaPrimary}>
-                ブログを読む
+              <Link href="/writings" className={styles.ctaPrimary}>
+                記事を読む
                 <span className={styles.ctaArrow} aria-hidden="true">
                   →
                 </span>
@@ -248,49 +240,17 @@ export default async function Page() {
         </div>
       </div>
 
-      <section className={`${styles.section} ${styles.afterBand}`}>
-        <div className={styles.sectionHead}>
-          <p className={styles.sectionEyebrow}>( 04 / articles )</p>
-          <h2 className={styles.sectionTitle}>
-            <span className={styles.sectionNumber} aria-hidden="true">
-              04.
-            </span>
-            最新の記事
-          </h2>
-        </div>
-        <ul className={styles.articles}>
-          {data.contents.map((article, index) => (
-            <li className={styles.articleRow} key={article.id}>
-              <Link href={`/articles/${article.id}`} className={styles.articleLink}>
-                <span className={styles.articleTitleGroup}>
-                  <span className={styles.articleIndex}>
-                    {String(index + 1).padStart(2, '0')}
-                  </span>
-                  <span className={styles.articleTitle}>{article.title}</span>
-                </span>
-                <span className={styles.articleMeta}>
-                  <PublishedDate date={article.publishedAt || article.createdAt} />
-                  <TagList tags={article.tags} hasLink={false} />
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <Link href="/blog" className={styles.articlesMore}>
-          すべての記事
-          <span className={styles.ctaArrow} aria-hidden="true">
-            →
-          </span>
-        </Link>
-      </section>
-
+      {/* CMS記事セクション(旧04)を撤去したため、midBand 直後になったこのセクションが
+          afterBand(帯の下の半分余白)を引き継ぐ。フィード取得失敗でここが消えたときは
+          Contact が帯直後に繰り上がるので、afterBand も番号も Contact 側へ渡す
+          (下の contactNumber と同じ条件で分岐している) */}
       {externalArticlesCount > 0 && (
-        <section className={styles.section}>
+        <section className={`${styles.section} ${styles.afterBand}`}>
           <div className={styles.sectionHead}>
-            <p className={styles.sectionEyebrow}>( 05 / zenn &amp; note )</p>
+            <p className={styles.sectionEyebrow}>( 04 / zenn &amp; note )</p>
             <h2 className={styles.sectionTitle}>
               <span className={styles.sectionNumber} aria-hidden="true">
-                05.
+                04.
               </span>
               Zenn / note の記事
             </h2>
@@ -330,7 +290,11 @@ export default async function Page() {
         </section>
       )}
 
-      <section className={`${styles.section} ${styles.sectionEnd}`}>
+      <section
+        className={`${styles.section} ${styles.sectionEnd} ${
+          externalArticlesCount > 0 ? '' : styles.afterBand
+        }`}
+      >
         <div className={styles.sectionHead}>
           <p className={styles.sectionEyebrow}>( {contactNumber} / contact )</p>
           <h2 className={styles.sectionTitle}>

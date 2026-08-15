@@ -9,9 +9,19 @@ export default function Header() {
         imutaro<span className={styles.logoTld}>.com</span>
       </Link>
       <nav className={styles.nav}>
-        <Link href="/blog" className={styles.navLink}>
-          Blog
+        <Link href="/writings" className={styles.navLink}>
+          Writings
         </Link>
+        {/* 自前の書き物置き場は Obsidian Publish(notes.imutaro.com)。
+            LP 側のヘッダー(app/(lp)/layout.tsx)と並びを揃えること */}
+        <a
+          href="https://notes.imutaro.com"
+          className={styles.navLink}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Notes
+        </a>
         <a
           href="https://zenn.dev/imu_imu"
           className={styles.navIcon}
