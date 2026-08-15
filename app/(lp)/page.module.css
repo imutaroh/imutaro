@@ -677,74 +677,6 @@
   border: 1px solid var(--color-accent);
 }
 
-.articles {
-  border-top: 1px solid var(--color-line);
-}
-
-.articleRow {
-  border-bottom: 1px solid var(--color-line);
-}
-
-.articleLink {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 24px;
-  /* 8pxグリッド・ゆとり方向へ */
-  padding: 32px 8px;
-  margin: 0 -8px;
-  border-radius: var(--border-radius);
-  transition: background-color 0.15s ease;
-}
-
-.articleLink:hover {
-  background-color: var(--color-code-bg);
-}
-
-.articleLink:hover .articleTitle {
-  color: var(--color-accent);
-}
-
-.articleTitleGroup {
-  display: flex;
-  align-items: baseline;
-  gap: 16px;
-  min-width: 0;
-}
-
-/* 行頭 index はセクション番号(.sectionNumber)と同じセリフの語彙で揃える */
-.articleIndex {
-  font-family: var(--font-serif-stack);
-  font-size: var(--fs-lead);
-  font-weight: 700;
-  /* Playfair 非対応ならサイレント無効(無害) */
-  font-variant-numeric: tabular-nums;
-  color: var(--color-sub);
-  opacity: 0.7;
-  flex-shrink: 0;
-  transition: color 0.15s ease;
-}
-
-.articleLink:hover .articleIndex {
-  color: var(--color-accent);
-}
-
-.articleTitle {
-  color: var(--color-ink);
-  font-weight: 500;
-  transition: color 0.15s ease;
-}
-
-.articleMeta {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-shrink: 0;
-  /* 日付の桁を縦に揃える */
-  font-variant-numeric: tabular-nums;
-  color: var(--color-sub);
-}
-
 /* Zenn / note を別ブロックで縦に並べる(C案: LP側は分割、詳細は /writings で
    両方見える)。ソースごとに件数を揃えているため(libs/feeds.ts)、
    グリッド自体はどちらも1行で揃う */
@@ -855,7 +787,7 @@
 }
 
 @media (max-width: 640px) {
-  /* 最長見出し「05. Zenn / note の記事」が390pxで2行にぶら下がらないよう一段縮める */
+  /* 最長見出し「04. Zenn / note の記事」が390pxで2行にぶら下がらないよう一段縮める */
   .sectionTitle {
     font-size: 1.8rem;
     gap: 10px;
@@ -865,15 +797,10 @@
     font-size: 2.4rem;
   }
 
-  .articleLink,
   .contactLink {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
-  }
-
-  .articleMeta {
-    flex-wrap: wrap;
   }
 
   /* contactValue は URL データなのでモバイルでも 13px(--fs-meta)を維持する
