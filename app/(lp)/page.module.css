@@ -745,6 +745,26 @@
   color: var(--color-sub);
 }
 
+/* Zenn / note を別ブロックで縦に並べる(C案: LP側は分割、詳細は /writings で
+   両方見える)。ソースごとに件数を揃えているため(libs/feeds.ts)、
+   グリッド自体はどちらも1行で揃う */
+.externalGroups {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.externalGroupTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-ui);
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
 .articlesMore {
   display: inline-flex;
   align-items: center;
