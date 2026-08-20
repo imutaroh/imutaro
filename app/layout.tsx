@@ -59,6 +59,11 @@ export const metadata = {
     description: SITE_DESCRIPTION,
     images: '/ogp.png',
   },
+  // card 指定が無いと X などで小サムネ表示になる。title/description/images は
+  // openGraph から自動で引き継がれる
+  twitter: {
+    card: 'summary_large_image',
+  },
   alternates: {
     canonical: '/',
   },
