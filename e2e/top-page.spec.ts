@@ -1,13 +1,16 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('トップページ', () => {
-  // トップは読み込むたびにカードの幕(HomeGate)がかぶさる。
-  // ここの3件は幕ではなく LP 本体の検証なので、先に幕を開けてから始める。
-  // 幕そのものの挙動は下の describe で検証する
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    await page.getByRole('button', { name: /サイトを見る/ }).click();
-    await expect(page.getByRole('button', { name: /プロフィールカード/ })).toBeHidden();
+  });
+
+  test('カードを挟まず、最初から LP が表示される', async ({ page }) => {
+    await expect(page.getByRole('button', { name: /プロフィールカード/ })).toHaveCount(0);
+
+    // 本文がそのままスクロールできる
+    await page.mouse.wheel(0, 400);
+    await expect.poll(() => page.evaluate(() => Math.round(window.scrollY))).toBeGreaterThan(0);
   });
 
   test('ヒーロー見出しが表示される', async ({ page }) => {
@@ -34,33 +37,12 @@ test.describe('トップページ', () => {
   });
 });
 
-test.describe('トップの幕(カード)', () => {
-  const gate = (page: import('@playwright/test').Page) =>
-    page.getByRole('button', { name: /プロフィールカード/ });
-
-  test('初回訪問で出て、逃げ道のボタンで開ける', async ({ page }) => {
-    await page.goto('/');
-    await expect(gate(page)).toBeVisible();
-
-    // 幕が出ている間は本文をスクロールさせない
-    await expect
-      .poll(() => page.evaluate(() => getComputedStyle(document.body).overflow))
-      .toBe('hidden');
-
-    await page.getByRole('button', { name: /サイトを見る/ }).click();
-    await expect(gate(page)).toBeHidden();
-
-    // 閉じたらスクロールが戻る
-    await page.mouse.wheel(0, 400);
-    await expect.poll(() => page.evaluate(() => Math.round(window.scrollY))).toBeGreaterThan(0);
-  });
-
-  test('カードをドラッグしても閉じず、裏(QR)まで回せる', async ({ browser }) => {
-    // スマホ相当。ドラッグの touchmove を「スクロール＝先へ進みたい」と誤認して
-    // 幕が閉じると、カードを回せず裏の QR に辿り着けなくなる
+test.describe('/card', () => {
+  test('カードをドラッグで回して裏(QR)まで出せる', async ({ browser }) => {
+    // スマホ相当。touchmove がスクロールに奪われると、カードを回せず裏の QR に辿り着けない
     const ctx = await browser.newContext({ hasTouch: true, viewport: { width: 390, height: 844 } });
     const page = await ctx.newPage();
-    await page.goto('/');
+    await page.goto('/card');
 
     const stage = page.locator('[data-card-stage]').first();
     await expect(stage).toBeVisible();
@@ -69,7 +51,10 @@ test.describe('トップの幕(カード)', () => {
     const cy = box.y + box.height / 2;
 
     const cdp = await ctx.newCDPSession(page);
-    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: cx, y: cy }] });
+    await cdp.send('Input.dispatchTouchEvent', {
+      type: 'touchStart',
+      touchPoints: [{ x: cx, y: cy }],
+    });
     for (let i = 1; i <= 10; i++) {
       await cdp.send('Input.dispatchTouchEvent', {
         type: 'touchMove',
@@ -78,8 +63,6 @@ test.describe('トップの幕(カード)', () => {
     }
     await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
 
-    // 幕は開いたまま、かつカードが実際に回っていること
-    await expect(gate(page)).toBeVisible();
     const spin = await page.evaluate(() => {
       const el = document.querySelector('[data-card-stage] > div') as HTMLElement | null;
       const m = el?.style.transform.match(/rotateY\((-?[\d.]+)deg\)/);
@@ -87,25 +70,6 @@ test.describe('トップの幕(カード)', () => {
     });
     expect(spin).toBeGreaterThan(90);
 
-    await ctx.close();
-  });
-
-  test('読み込み直すと毎回また出る（状態を保存しない）', async ({ page }) => {
-    await page.goto('/');
-    await page.getByRole('button', { name: /サイトを見る/ }).click();
-    await expect(gate(page)).toBeHidden();
-
-    await page.reload();
-    await expect(gate(page)).toBeVisible();
-  });
-
-  test('JS が無い環境では幕が出ず、LP がそのまま読める', async ({ browser }) => {
-    const ctx = await browser.newContext({ javaScriptEnabled: false });
-    const page = await ctx.newPage();
-    await page.goto('/');
-    await expect(
-      page.getByRole('heading', { level: 1, name: '周りの価値を、最大化するエンジニアへ' }),
-    ).toBeVisible();
     await ctx.close();
   });
 });

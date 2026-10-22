@@ -17,7 +17,7 @@ type Props = {
   url: string;
   /**
    * ダブルタップ / Enter で「入る」ときの処理。
-   * `/card` はトップへ遷移、トップの幕は幕を外す、と呼び出し側で意味が変わる。
+   * 何をするかは呼び出し側が決める(`/card` はトップへ遷移)。
    * 演出(回転+拡大+白幕)が終わってから呼ばれる
    */
   onEnter: () => void;
@@ -26,9 +26,8 @@ type Props = {
   /** 操作に気づかない人・操作したくない人のための逃げ道 */
   fallback: ReactNode;
   /**
-   * 名前を見出しとして出すか。`/card` はこのカードがページ本体なので h1、
-   * トップの幕は LP の h1（ヒーロー見出し）が別にあるので p にする。
-   * h1 が2つあると、DOM 上先に来る幕のほうがページの主見出しに読めてしまう
+   * 名前を見出しとして出すか。`/card` はこのカードがページ本体なので h1。
+   * 別に h1 を持つページへ重ねて置くときは p にする(h1 を2つにしない)
    */
   nameAs?: 'h1' | 'p';
 };
@@ -222,8 +221,7 @@ export default function ProfileCard({
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
         onKeyDown={onKeyDown}
-        // 幕(HomeGate)が「スクロールしたら開く」の判定でカードのドラッグを
-        // 横取りしないよう、掴む対象をこの目印で見分けられるようにする
+        // e2e がカード(掴む対象)を特定するための目印
         data-card-stage=""
         role="button"
         tabIndex={0}
@@ -258,7 +256,7 @@ export default function ProfileCard({
                 ))}
               </dl>
               {/* 使っている技術。リンクではなく表示だけ。
-                  カードは幕としても使うので、面の中にサイト外へ飛ぶ導線を置かない
+                  カードは回して遊ぶ面なので、面の中にサイト外へ飛ぶ導線を置かない
                   (触った瞬間に離脱する) */}
               <ul className={styles.stack}>
                 {stack.map((s) => (
