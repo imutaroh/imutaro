@@ -25,8 +25,7 @@ export type StackEntry = {
 export type ProfileFact = { key: string; value: string };
 
 /**
- * カードに出す値。`/card`（単独ページ）とトップの幕（HomeGate）の両方から呼ぶ。
- * 片方だけ直して内容がズレるのを防ぐため、ここに集約する。
+ * カードに出す値（`/card`）。LP の Stack と同じ配列を読むため、ここに集約する。
  */
 export function getProfileCardData() {
   const age = calcAge(BIRTHDAY);

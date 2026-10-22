@@ -445,6 +445,33 @@
   }
 }
 
+/* 04 Apps。帯の中だが、上は 02/03 の2カラムなので帯の境界ではない。
+   折半(.midBand .section の半分)ではなく通常の律動で離す */
+.midBand .appsSection {
+  padding-top: var(--space-section);
+}
+
+/* Dock(components/Dock)の大きさ。Dock 側の .dock(1クラス)に勝たせるため2クラスで指定する。
+   1列に11個 + hover の拡大ぶん(≒ 12個ぶん)が内容幅(画面幅 − 左右 padding 48px −
+   トレイの内側と枠 ≒ 64px)に収まる大きさを導出し、56px で頭打ちにする */
+.appsSection .appsDock {
+  --icon: min(56px, calc((100vw - 112px) / 12));
+
+  /* 拡大したアイコンは上へはみ出すので、そのぶん見出しから離す */
+  margin-top: calc(var(--icon) * 0.5);
+}
+
+@media (max-width: 640px) {
+  /* スマホは1段4個で折り返す(components/Dock)。4個ぶんが内容幅(画面幅 − 左右 padding 48px −
+     間3つ 30px − トレイの内側と枠 26px)に収まる大きさ。
+     拡大ぶんの余白は要らない(タッチでは拡大しない) */
+  .appsSection .appsDock {
+    --icon: min(64px, calc((100vw - 104px) / 4));
+
+    margin-top: 0;
+  }
+}
+
 /* About本文と profile.json カードの2カラム */
 .aboutGrid {
   display: grid;
