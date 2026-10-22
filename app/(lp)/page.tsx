@@ -253,7 +253,7 @@ export default async function Page() {
             </h2>
           </div>
           <Dock className={styles.appsDock} />
-          <Link href="/apps" className={styles.articlesMore}>
+          <Link href="/apps" className={`${styles.articlesMore} ${styles.appsMore}`}>
             大きく見る
             <span className={styles.ctaArrow} aria-hidden="true">
               →
