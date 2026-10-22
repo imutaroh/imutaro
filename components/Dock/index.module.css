@@ -1,0 +1,133 @@
+/* Dock 本体。/apps と LP の 04 Apps が共有する。
+   参照元(mydock)のパステルのグラデ背景とすりガラスのトレイは持ち込まず、
+   DESIGN.md の語彙(白い紙・ヘアライン・mono ピル)に翻訳している。
+   アイコンだけは原色のまま出す: アプリの絵柄そのものが情報なので、
+   技術スタックのロゴのように ink 一色に落とすと何のアプリか分からなくなる */
+
+/* トレイ。角丸は DESIGN.md のカード 8px ではなく --icon に比例させる:
+   アイコン自体の角丸(squircle)と揃えないと「Dock」に見えない */
+.dock {
+  /* アイコン1つの基準サイズ。呼び出し側のクラスで上書きする */
+  --icon: 56px;
+  /* hover 時の拡大率(本体 / 隣) */
+  --zoom: 1.5;
+  --zoom-near: 1.22;
+  --gap: calc(var(--icon) / 14);
+
+  list-style: none;
+  /* ul は既定で横幅いっぱいに広がるので、中身の幅に縮める */
+  width: fit-content;
+  max-width: 100%;
+  padding: calc(var(--icon) * 0.18) calc(var(--icon) * 0.2) calc(var(--icon) * 0.1);
+  border: 1px solid var(--color-line);
+  border-radius: calc(var(--icon) * 0.36);
+  background-color: var(--color-bg);
+  /* 1画面に1つの浮いたカードとして、DESIGN.md の影をそのまま使う */
+  box-shadow: 0 24px 48px -32px rgba(26, 35, 48, 0.28);
+
+  display: flex;
+  align-items: flex-end;
+  gap: var(--gap);
+}
+
+.item {
+  --scale: 1;
+
+  position: relative;
+  /* 幅だけを広げて隣を押しのけ、高さは据え置く(トレイの高さを揺らさない)。
+     拡大した絵は transform で上へはみ出させる */
+  width: calc(var(--icon) * var(--scale));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gap);
+  transition: width 0.2s ease;
+}
+
+.link {
+  position: relative;
+  display: block;
+  width: var(--icon);
+  height: var(--icon);
+  border-radius: calc(var(--icon) * 0.22);
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: scale(var(--scale));
+  transform-origin: 50% 100%;
+  transition: transform 0.2s ease;
+}
+
+/* 起動中の点。Dock の文法そのまま、色は sub */
+.dot {
+  width: max(4px, calc(var(--icon) / 16));
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: var(--color-sub);
+}
+
+/* 名前の吹き出し(mono ピル)。拡大後のアイコンのさらに上に出す */
+.label {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  bottom: calc(var(--icon) * var(--scale) + 8px);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  padding: 2px 10px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background-color: var(--color-bg);
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  letter-spacing: 0.05em;
+  color: var(--color-ink);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.15s ease,
+    bottom 0.2s ease;
+}
+
+.link:focus-visible .label {
+  opacity: 1;
+}
+
+/* 拡大はマウスのある環境だけ。タッチでは hover が「押した後に残る」ので出さない */
+@media (hover: hover) and (pointer: fine) {
+  .item:hover {
+    --scale: var(--zoom);
+  }
+
+  /* 左右の隣も少しだけ大きくして、Dock の「波」を作る */
+  .item:has(+ .item:hover),
+  .item:hover + .item {
+    --scale: var(--zoom-near);
+  }
+
+  .item:hover .label {
+    opacity: 1;
+  }
+}
+
+/* スマホ: 1列だと入らないので、トレイごと折り返して1段4個で積む(11個 → 4・4・3)。
+   幅任せに折り返すと 5・5・1 のように最後の1個が孤立するので、トレイの幅を4個ぶん
+   (アイコン4つ + 間3つ + 内側 24px + 枠 2px)で頭打ちにする */
+@media (max-width: 640px) {
+  .dock {
+    --gap: 10px;
+
+    max-width: min(100%, calc(var(--icon) * 4 + var(--gap) * 3 + 26px));
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 14px 12px 10px;
+  }
+}

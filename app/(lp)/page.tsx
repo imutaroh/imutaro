@@ -5,6 +5,7 @@ import { STACK_ENTRIES } from '@/libs/profile';
 import ShinyText from '@/components/ShinyText';
 import BrandIcon from '@/components/BrandIcon';
 import ExternalArticleList from '@/components/ExternalArticleList';
+import Dock from '@/components/Dock';
 import LearningLog from './LearningLog';
 import TypedTitle from './TypedTitle';
 import styles from './page.module.css';
@@ -42,7 +43,7 @@ export default async function Page() {
   );
   const externalArticlesCount =
     externalArticlesGrouped.zenn.length + externalArticlesGrouped.note.length;
-  const contactNumber = externalArticlesCount > 0 ? '05' : '04';
+  const contactNumber = externalArticlesCount > 0 ? '06' : '05';
 
   return (
     <>
@@ -238,6 +239,27 @@ export default async function Page() {
             </ul>
           </section>
         </div>
+
+        {/* 技術(03 Stack)の隣に、毎日叩いている道具を置く。/apps と同じ Dock を小さめに出し、
+            大きく見たい人は /apps へ。帯の中だが2カラムの外なので全幅 */}
+        <section className={`${styles.section} ${styles.appsSection}`}>
+          <div className={styles.sectionHead}>
+            <p className={styles.sectionEyebrow}>( 04 / apps )</p>
+            <h2 className={styles.sectionTitle}>
+              <span className={styles.sectionNumber} aria-hidden="true">
+                04.
+              </span>
+              Apps
+            </h2>
+          </div>
+          <Dock className={styles.appsDock} />
+          <Link href="/apps" className={styles.articlesMore}>
+            大きく見る
+            <span className={styles.ctaArrow} aria-hidden="true">
+              →
+            </span>
+          </Link>
+        </section>
       </div>
 
       {/* CMS記事セクション(旧04)を撤去したため、midBand 直後になったこのセクションが
@@ -247,10 +269,10 @@ export default async function Page() {
       {externalArticlesCount > 0 && (
         <section className={`${styles.section} ${styles.afterBand}`}>
           <div className={styles.sectionHead}>
-            <p className={styles.sectionEyebrow}>( 04 / zenn &amp; note )</p>
+            <p className={styles.sectionEyebrow}>( 05 / zenn &amp; note )</p>
             <h2 className={styles.sectionTitle}>
               <span className={styles.sectionNumber} aria-hidden="true">
-                04.
+                05.
               </span>
               Zenn / note の記事
             </h2>

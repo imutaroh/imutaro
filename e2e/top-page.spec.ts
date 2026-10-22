@@ -23,7 +23,7 @@ test.describe('トップページ', () => {
   });
 
   test('主要セクションが表示される', async ({ page }) => {
-    for (const section of ['About', 'Learning Log', 'Stack', 'Contact']) {
+    for (const section of ['About', 'Learning Log', 'Stack', 'Apps', 'Contact']) {
       await expect(page.getByRole('heading', { level: 2, name: section })).toBeVisible();
     }
   });
@@ -34,6 +34,16 @@ test.describe('トップページ', () => {
     await expect(writingsLink).toBeVisible();
     await writingsLink.click();
     await expect(page).toHaveURL(/\/writings/);
+  });
+
+  test('Apps に Dock が出て、/apps へ大きく見に行ける', async ({ page }) => {
+    const apps = page.locator('section', {
+      has: page.getByRole('heading', { level: 2, name: 'Apps' }),
+    });
+    await expect(apps.getByRole('link', { name: 'Ghostty', exact: true })).toBeVisible();
+
+    await apps.getByRole('link', { name: /大きく見る/ }).click();
+    await expect(page).toHaveURL(/\/apps$/);
   });
 });
 
