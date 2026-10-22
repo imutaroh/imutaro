@@ -1,29 +1,38 @@
 /* Dock 本体。/apps と LP の 04 Apps が共有する。
-   参照元(mydock)のパステルのグラデ背景とすりガラスのトレイは持ち込まず、
-   DESIGN.md の語彙(白い紙・ヘアライン・mono ピル)に翻訳している。
+   トレイは macOS の Dock に寄せたガラスの板(Issue #40 で5案から選定)。
    アイコンだけは原色のまま出す: アプリの絵柄そのものが情報なので、
    技術スタックのロゴのように ink 一色に落とすと何のアプリか分からなくなる */
 
 /* トレイ。角丸は DESIGN.md のカード 8px ではなく --icon に比例させる:
-   アイコン自体の角丸(squircle)と揃えないと「Dock」に見えない */
+   アイコン自体の角丸(squircle)と揃えないと「Dock」に見えない。
+   ガラスは「半透明の白の重ね塗り + 上辺の光の線 + 重ねた影」で作る。
+   本物のすりガラス(backdrop-filter)は使わない: 下が滑らかなグラデ(銀の帯)なので
+   ぼかしても見た目はほぼ変わらず、スクロール中の描画コストだけが増える */
 .dock {
   /* アイコン1つの基準サイズ。呼び出し側のクラスで上書きする */
   --icon: 56px;
   /* hover 時の拡大率(本体 / 隣) */
   --zoom: 1.5;
   --zoom-near: 1.22;
-  --gap: calc(var(--icon) / 14);
+  --gap: calc(var(--icon) / 9);
 
   list-style: none;
   /* ul は既定で横幅いっぱいに広がるので、中身の幅に縮める */
   width: fit-content;
   max-width: 100%;
-  padding: calc(var(--icon) * 0.18) calc(var(--icon) * 0.2) calc(var(--icon) * 0.1);
-  border: 1px solid var(--color-line);
-  border-radius: calc(var(--icon) * 0.36);
-  background-color: var(--color-bg);
-  /* 1画面に1つの浮いたカードとして、DESIGN.md の影をそのまま使う */
-  box-shadow: 0 24px 48px -32px rgba(26, 35, 48, 0.28);
+  padding: calc(var(--icon) * 0.16) calc(var(--icon) * 0.16) calc(var(--icon) * 0.1);
+  border-radius: calc(var(--icon) * 0.44);
+  /* 白を半透明にして、下の銀の帯をうっすら透かす */
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.5) 100%);
+  /* 上から順に: 上辺の光の線 / 内側の縁(ガラスの厚み) /
+     外側の輪郭(border ではなく影で引くと、紙に描いた枠ではなく物の縁に見える) /
+     接地の影 / 遠くに落ちる柔らかい影 */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.55),
+    0 0 0 0.5px rgba(26, 35, 48, 0.14),
+    0 2px 6px -2px rgba(26, 35, 48, 0.1),
+    0 22px 44px -22px rgba(26, 35, 48, 0.34);
 
   display: flex;
   align-items: flex-end;
@@ -57,7 +66,27 @@
   outline-offset: 2px;
 }
 
+/* アイコンの影。macOS のアイコンは本体の周りの透明な余白に自前の影を持つが、
+   public/apps の画像はその余白ごと切り落としてあるので、ここで戻す。
+   filter: drop-shadow は描画レイヤーを増やすので使わず、アイコンの後ろに
+   同じ角丸(squircle ≒ 22.5%)の下敷きを置いて box-shadow を付ける。
+   img と同じ拡大を当てるので、膨らんでも影がずれない */
+.link::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 22.5%;
+  box-shadow:
+    0 1px 1.5px rgba(26, 35, 48, 0.16),
+    0 3px 8px -3px rgba(26, 35, 48, 0.3);
+  transform: scale(var(--scale));
+  transform-origin: 50% 100%;
+  transition: transform 0.2s ease;
+}
+
 .icon {
+  /* 影の下敷き(.link::before)より前に出す */
+  position: relative;
   display: block;
   width: 100%;
   height: 100%;
@@ -66,12 +95,12 @@
   transition: transform 0.2s ease;
 }
 
-/* 起動中の点。Dock の文法そのまま、色は sub */
+/* 起動中の点。Dock の文法そのまま。ガラスの上で沈まないよう ink を半透明で */
 .dot {
-  width: max(4px, calc(var(--icon) / 16));
+  width: 4px;
   aspect-ratio: 1;
   border-radius: 50%;
-  background-color: var(--color-sub);
+  background-color: rgba(26, 35, 48, 0.6);
 }
 
 /* 名前の吹き出し(mono ピル)。拡大後のアイコンのさらに上に出す */
