@@ -15,6 +15,12 @@
     "html_handling": "auto-trailing-slash",
     // 無いパスには dist/404.html を 404 で返す
     "not_found_handling": "404-page"
-  }
-  // 独自ドメイン(imutaro.com / www.imutaro.com)は、本番を切り替えるときに routes で足す
+  },
+  // imutaro.com をこの Worker の独自ドメインにする。DNS レコードと証明書は Cloudflare が自動で作る。
+  // 同じ名前の DNS レコードを手で作ってあると付けられない(code 100117)。
+  // 2026-10-23 の切り替えでは、Vercel 向けの A レコードを消してから付けた。
+  // www.imutaro.com → imutaro.com と uses.imutaro.com → /uses は、Cloudflare のリダイレクトルールで転送している
+  "routes": [{ "pattern": "imutaro.com", "custom_domain": true }],
+  // *.workers.dev の URL は使わない(本番と同じ中身が別の URL でも見えてしまうため)
+  "workers_dev": false
 }
