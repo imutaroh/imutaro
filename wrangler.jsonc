@@ -1,0 +1,20 @@
+// Cloudflare Workers の設定。このサイトは「静的ファイルだけを配る Worker」として置く。
+// Worker のコード(main)を持たないので、リクエストは全部 Cloudflare の静的配信が直接返す。
+// 静的ファイルへのリクエストは無料で、回数の上限も無い。
+//
+//   go run ./cmd/build   # dist/ を書き出す
+//   npx wrangler deploy  # dist/ を Cloudflare に上げる
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "imutaro",
+  // 実行環境の版を日付で固定する。上げるときは Cloudflare の変更履歴を見てから
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    // apps.html を /apps で返し、/apps/ と /apps.html は /apps へ転送する(既定の挙動を明示)
+    "html_handling": "auto-trailing-slash",
+    // 無いパスには dist/404.html を 404 で返す
+    "not_found_handling": "404-page"
+  }
+  // 独自ドメイン(imutaro.com / www.imutaro.com)は、本番を切り替えるときに routes で足す
+}

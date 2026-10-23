@@ -1,0 +1,68 @@
+{{/* 複数のページで使う部品。呼び出し側は dict で値を渡す。
+     例: {{template "dock" dict "Apps" .Data.Apps "Class" "lp-apps-dock" "Sizes" "84px" "Loading" "lazy"}} */}}
+
+{{/* 使っているアプリの Dock(/apps と LP の 04 Apps)。
+     マウスを乗せたときの拡大は CSS(dock.css)だけで行う。JS は持たない。
+     Sizes は「表示上の最大の幅」。ブラウザが画面の解像度と見比べて srcset から画像を選ぶ */}}
+{{define "dock"}}
+<ul class="dock {{.Class}}">
+  {{- range .Apps}}
+  <li class="dock-item">
+    <a href="{{.Href}}" class="dock-link" target="_blank" rel="noopener noreferrer">
+      {{- /* 名前の吹き出し。読み上げは画像の alt が担うので隠す */}}
+      <span class="dock-label" aria-hidden="true">{{.Name}}</span>
+      <img src="/apps/{{.ID}}-258.png" srcset="/apps/{{.ID}}-176.png 176w, /apps/{{.ID}}-258.png 258w" sizes="{{$.Sizes}}" alt="{{.Name}}" width="258" height="258" class="dock-icon" loading="{{$.Loading}}" decoding="async">
+    </a>
+    {{- /* 起動中を示す Dock の点。ここでは「常用している」の印 */}}
+    <span class="dock-dot" aria-hidden="true"></span>
+  </li>
+  {{- end}}
+</ul>
+{{end}}
+
+{{/* Zenn / note の記事カード(LP の 05 と /writings)。
+     サムネイルは外部(Zenn / note の CDN)の画像なので、そのまま読み込む。
+     width/height はレイアウトのずれを防ぐための比率の宣言で、CSS の aspect-ratio と必ず揃える */}}
+{{define "articles"}}
+<ul class="ext-grid">
+  {{- range .Articles}}
+  <li>
+    <a href="{{.URL}}" class="ext-card" target="_blank" rel="noopener noreferrer">
+      {{- if .Thumbnail}}
+      <img src="{{.Thumbnail}}" alt="" width="1200" height="630" class="ext-thumb" loading="{{if $.Priority}}eager{{else}}lazy{{end}}" decoding="async">
+      {{- else}}
+      <div class="ext-thumb-fallback" aria-hidden="true">{{.Source.Label}}</div>
+      {{- end}}
+      <span class="ext-body">
+        <span class="ext-title">{{.Title}}</span>
+        <span class="ext-meta">
+          {{- template "pubdate" .PublishedAt}}
+          <span class="ext-badge" data-source="{{.Source}}">{{.Source.Label}}</span>
+        </span>
+      </span>
+    </a>
+  </li>
+  {{- end}}
+</ul>
+{{end}}
+
+{{define "pubdate"}}<span class="pubdate-date"><img src="/clock.svg" alt="" width="16" height="16">{{date .}}</span>{{end}}
+
+{{/* 下層ページの見出し(◉ eyebrow + タイトル + リード) */}}
+{{define "pagehead"}}
+<div class="ph-head">
+  <p class="ph-eyebrow">{{.Eyebrow}}</p>
+  <h1 class="ph-title">{{.Title}}</h1>
+  {{- if .Lead}}
+  <p class="ph-lead">{{.Lead}}</p>
+  {{- end}}
+</div>
+{{end}}
+
+{{/* LP のセクション見出し: ◉ ( 01 / about ) ──── と、セリフの番号 + 見出し */}}
+{{define "section-head"}}
+<div class="lp-section-head">
+  <p class="lp-section-eyebrow">( {{.Number}} / {{.Label}} )</p>
+  <h2 class="lp-section-title"><span class="lp-section-number" aria-hidden="true">{{.Number}}.</span>{{.Title}}</h2>
+</div>
+{{end}}

@@ -1,0 +1,74 @@
+/* Next.js 版(CSS Modules)の components/Header/index.module.css から移植。クラス名には接頭辞 hdr- を付け、ファイル間の衝突を避ける */
+
+.hdr-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.hdr-logo {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-ink);
+  letter-spacing: 0.02em;
+}
+
+.hdr-logo-tld {
+  color: var(--color-accent);
+}
+
+.hdr-nav {
+  display: flex;
+  gap: 24px;
+}
+
+.hdr-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  /* ナビは UI 段 14px */
+  font-size: var(--fs-ui);
+  color: var(--color-sub);
+  transition: color 0.15s ease;
+}
+
+.hdr-nav-link:hover {
+  color: var(--color-accent);
+}
+
+.hdr-nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--color-sub);
+  transition: color 0.15s ease;
+}
+
+.hdr-nav-icon:hover {
+  color: var(--color-accent);
+}
+
+@media (max-width: 640px) {
+  .hdr-header {
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    padding: 16px 24px;
+  }
+
+  .hdr-nav {
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  /* スマホでは SNS アイコンを畳む。同じリンクが LP の Contact セクションにあり、
+     狭いヘッダーで重複させる価値がない。Blog は重複ではないので残す */
+  .hdr-nav-icon {
+    display: none;
+  }
+}

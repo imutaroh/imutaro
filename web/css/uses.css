@@ -1,0 +1,98 @@
+/* /uses — 毎日使っている道具。
+   DESIGN.md の語彙だけで組む: ヘアラインで区切った行(モチーフ3)、見出しはセリフ、名前は body の 500 */
+
+.uses-main {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 24px var(--space-section);
+}
+
+.uses-group + .uses-group {
+  margin-top: 64px;
+}
+
+/* 分類の見出し。LP のセクション見出し(番号付き)より一段小さくし、番号は付けない
+   (番号は「ページ内の順序」に意味があるときだけ。DESIGN.md 6章) */
+.uses-group-title {
+  margin-bottom: 16px;
+  font-size: 1.5rem;
+  line-height: 1.3;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.uses-list {
+  border-top: 1px solid var(--color-line);
+}
+
+/* 名前 | 使い方 の2列。名前の列幅を揃えると、使い方の文が縦に並んで読みやすい */
+.uses-row {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 8px 32px;
+  align-items: baseline;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.uses-name {
+  font-weight: 500;
+  color: var(--color-ink);
+  transition: color 0.15s ease;
+}
+
+a.uses-name:hover {
+  color: var(--color-accent);
+}
+
+.uses-note {
+  color: var(--color-sub);
+  font-size: var(--fs-ui);
+  line-height: 1.9;
+}
+
+/* アプリの分類は、行の代わりに Dock を置く。LP の 04 Apps と同じ大きさ・同じく中央寄せ */
+.uses-apps .uses-dock {
+  --icon: min(56px, calc((100vw - 56px) / 13.4));
+
+  /* 拡大したアイコンと名前の吹き出しは上へはみ出すので、そのぶん見出しから離す */
+  margin-top: calc(var(--icon) * 0.5 + 16px);
+  margin-inline: auto;
+}
+
+.uses-more {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin: 24px auto 0;
+  color: var(--color-accent);
+  font-size: var(--fs-ui);
+}
+
+.uses-more:hover {
+  color: var(--color-accent-bright);
+}
+
+.uses-more-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.uses-more:hover .uses-more-arrow {
+  transform: translateX(4px);
+}
+
+@media (max-width: 640px) {
+  .uses-row {
+    grid-template-columns: 1fr;
+    padding: 16px 0;
+  }
+
+  /* スマホの Dock は1段4個で折り返す(dock.css)。4個ぶんが内容幅に収まる大きさ */
+  .uses-apps .uses-dock {
+    --icon: min(64px, calc((100vw - 104px) / 4));
+
+    margin-top: 0;
+  }
+}

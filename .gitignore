@@ -1,19 +1,11 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# 書き出したサイト(go run ./cmd/build の出力)
+/dist/
 
-# dependencies
+# dependencies(e2e テストと wrangler だけ)
 /node_modules
-/.pnp
-.pnp.js
 
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
+# wrangler の手元の状態
+/.wrangler/
 
 # misc
 .DS_Store
@@ -21,20 +13,13 @@
 
 # debug
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
 
 # local env files
 .env*.local
 .env
 
-# vercel
+# vercel(移行前の Vercel プロジェクトとのひも付け。切り替えが済んだら消してよい)
 .vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
 
 playwright-report
 test-results

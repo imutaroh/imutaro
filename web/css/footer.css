@@ -1,0 +1,11 @@
+/* Next.js 版(CSS Modules)の components/Footer/index.module.css から移植。クラス名には接頭辞 ftr- を付け、ファイル間の衝突を避ける */
+
+.ftr-footer {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--color-sub);
+  font-family: var(--font-mono);
+  /* monoラベル統一段 12px / 0.05em */
+  font-size: var(--fs-caption);
+  letter-spacing: 0.05em;
+}

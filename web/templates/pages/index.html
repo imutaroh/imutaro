@@ -1,0 +1,125 @@
+{{/* トップページ(LP)。値は internal/site/pages.go の LPData */}}
+{{define "content"}}
+{{- /* クリックした所に火花を散らす canvas(spark.js)。画面に固定し、クリックは素通しする */}}
+<canvas class="spark-canvas" data-spark aria-hidden="true"></canvas>
+<main>
+  <section class="lp-hero-outer">
+    <div class="lp-hero">
+      <div class="lp-hero-main">
+        <p class="lp-eyebrow lp-hero-item1">
+          {{- /* 文字の上を光沢が3回横切って止まる(shiny.css)。色はトークンを使い、角度と速さはここで決める */}}
+          <span class="shiny" style="background-image: linear-gradient(120deg, var(--color-sub) 0%, var(--color-sub) 35%, var(--color-accent-bright) 50%, var(--color-sub) 65%, var(--color-sub) 100%); animation-duration: 4s">( imutaro — data engineer )</span>
+        </p>
+        {{- /* ターミナル風の見出し。クリックすると末尾から消えて打ち直される(hero.js)。
+             読み上げは aria-label の全文で行い、1文字ずつの span は隠す */}}
+        <h1 class="lp-hero-title lp-hero-item2 tt-title" aria-label="{{.Data.Title}}" data-typed>
+          {{- range .Data.TitleLines}}<span class="tt-line" aria-hidden="true">{{range .Chars}}<span class="tt-char">{{.}}</span>{{end}}{{if .Last}}<span class="tt-cursor" data-typed-cursor></span>{{end}}</span>{{end -}}
+        </h1>
+        {{- /* キャラクターのバスト。1:1 なので、タイトルの下・リード文の右に空く帯にちょうど収まる。
+             下端は胸で水平に切れているため、.lp-hero-visual::after の背景色グラデで紙に溶かす(mask は禁止。Issue #19)。
+             モバイル(<768px)はこの位置に流し込んで右寄せ */}}
+        <div class="lp-hero-visual lp-hero-item5" aria-hidden="true">
+          <img src="/imutaro-icon-512.png" alt="" width="512" height="512" fetchpriority="high" class="lp-hero-figure">
+        </div>
+        <p class="lp-hero-lead lp-hero-item3">2026年新卒のデータエンジニア。まだ道の途中だからこそ、データ基盤とAI活用に向き合いながら、日々の学びをここに記録しています。</p>
+        <div class="lp-hero-cta lp-hero-item4">
+          <a href="/writings" class="lp-cta-primary">記事を読む<span class="lp-cta-arrow" aria-hidden="true">→</span></a>
+          <div class="lp-cta-icons">
+            <a href="https://github.com/imutaroh" class="lp-cta-icon" target="_blank" rel="noopener noreferrer" aria-label="GitHub">{{icon "github" 18}}</a>
+            <a href="https://zenn.dev/imu_imu" class="lp-cta-icon" target="_blank" rel="noopener noreferrer" aria-label="Zenn">{{icon "zenn" 18}}</a>
+            <a href="https://note.com/imutaroh" class="lp-cta-icon" target="_blank" rel="noopener noreferrer" aria-label="note">{{icon "note" 18}}</a>
+            <a href="https://x.com/imutaroh" class="lp-cta-icon" target="_blank" rel="noopener noreferrer" aria-label="X">{{icon "x" 18}}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="lp-section lp-before-band">
+    {{template "section-head" dict "Number" "01" "Label" "about" "Title" "About"}}
+    <div class="lp-about-grid">
+      <div class="lp-about-body">
+        <p>福岡で、D2Cのデータ基盤を作って活用しながらAIを推進していくチームで働いています。 Claude Codeのようなエージェント型のツールをどう日々の業務に組み込むかを試行錯誤するのが好きです。</p>
+        <p>学んだことをそのままにせず記録して公開するのは、後から自分で見返せるようにするためと、 同じところでつまずいている誰かの役に立てばという理由からです。</p>
+      </div>
+      {{- /* 肖像は「このレコードの1フィールド」として扱う。カードの外へはみ出させると
+           JSON(機械が読むデータ)の見立てとキャラクターの語彙がぶつかるので、枠付きの小窓 + ファイル名で中に収める。
+           <pre> の中は改行や空白がそのまま表示されるので、1行に詰めて書く */}}
+      <div class="lp-hero-card" aria-hidden="true">
+        <div class="lp-card-tab"><span class="lp-card-dot"></span>profile.json</div>
+        <div class="lp-card-avatar">
+          <span class="lp-card-avatar-thumb"><img src="/imutaro-icon-176.png" alt="" width="176" height="176" loading="lazy" decoding="async" class="lp-card-avatar-img"></span>
+          <span class="lp-card-avatar-name">imutaro.png</span>
+        </div>
+        <pre class="lp-card-code"><span class="lp-card-line">{</span>{{range .Data.About}}<span class="lp-card-line">  <span class="lp-card-key">&#34;{{.Key}}&#34;</span>: <span class="lp-card-value">&#34;{{.Value}}&#34;</span>{{if not .Last}},{{end}}</span>{{end}}<span class="lp-card-line">}</span></pre>
+        <div class="lp-card-footer">github.com/imutaroh</div>
+      </div>
+    </div>
+  </section>
+
+  {{- /* 02 Log / 03 Stack / 04 Apps を包む銀の帯 */}}
+  <div class="lp-mid-band">
+    <div class="lp-mid-grid">
+      <section class="lp-section">
+        {{template "section-head" dict "Number" "02" "Label" "log" "Title" "Learning Log"}}
+        <ol class="lp-log">
+          {{- range .Data.Log}}
+          <li class="lp-log-entry"><span class="lp-log-dot" aria-hidden="true"></span><span class="lp-log-hash">{{.Hash}}</span><span class="lp-log-date">{{.Date}}</span><span class="lp-log-text">{{.Text}}</span></li>
+          {{- end}}
+        </ol>
+      </section>
+
+      <section class="lp-section">
+        {{template "section-head" dict "Number" "03" "Label" "stack" "Title" "Stack"}}
+        <ul class="lp-stack">
+          {{- range .Data.Stack}}
+          {{- /* 技術ロゴは currentColor で描くので ink 一色に落ちる(原色のロゴを並べると白×青の紙面から浮く) */}}
+          <li class="lp-stack-row"><span class="lp-stack-name">{{icon .Icon 18}}{{.Name}}</span><span class="lp-stack-status" data-status="{{.Status}}">{{.Status}}</span></li>
+          {{- end}}
+        </ul>
+      </section>
+    </div>
+
+    {{- /* 技術(03 Stack)の隣に、毎日叩いている道具を置く。/apps と同じ Dock を小さめに出し、
+         大きく見たい人は /apps へ。帯の中だが2カラムの外なので全幅 */}}
+    <section class="lp-section lp-apps-section">
+      {{template "section-head" dict "Number" "04" "Label" "apps" "Title" "Apps"}}
+      {{template "dock" dict "Apps" .Data.Apps "Class" "lp-apps-dock" "Sizes" "84px" "Loading" "lazy"}}
+      <a href="/apps" class="lp-articles-more lp-apps-more">大きく見る<span class="lp-cta-arrow" aria-hidden="true">→</span></a>
+    </section>
+  </div>
+
+  {{- /* 記事が1件も無い回(-allow-empty-feeds でのビルド)はセクションごと出さず、
+       Contact が帯の直後に繰り上がる(番号と afterBand の余白も Contact 側へ渡す) */}}
+  {{- if .Data.HasArticles}}
+  <section class="lp-section lp-after-band">
+    {{template "section-head" dict "Number" "05" "Label" "zenn & note" "Title" "Zenn / note の記事"}}
+    <div class="lp-external-groups">
+      {{- if .Data.Zenn}}
+      <div>
+        <p class="lp-external-group-title">{{icon "zenn" 16}}Zenn</p>
+        {{template "articles" dict "Articles" .Data.Zenn "Priority" false}}
+        <a href="/writings/zenn" class="lp-articles-more">もっと見る<span class="lp-cta-arrow" aria-hidden="true">→</span></a>
+      </div>
+      {{- end}}
+      {{- if .Data.Note}}
+      <div>
+        <p class="lp-external-group-title">{{icon "note" 16}}note</p>
+        {{template "articles" dict "Articles" .Data.Note "Priority" false}}
+        <a href="/writings/note" class="lp-articles-more">もっと見る<span class="lp-cta-arrow" aria-hidden="true">→</span></a>
+      </div>
+      {{- end}}
+    </div>
+  </section>
+  {{- end}}
+
+  <section class="lp-section lp-section-end{{if not .Data.HasArticles}} lp-after-band{{end}}">
+    {{template "section-head" dict "Number" .Data.ContactNumber "Label" "contact" "Title" "Contact"}}
+    <ul class="lp-contact">
+      {{- range .Data.Contacts}}
+      <li class="lp-contact-row"><a href="{{.Href}}" class="lp-contact-link"{{if .External}} target="_blank" rel="noopener noreferrer"{{end}}><span class="lp-contact-label">{{if .Icon}}{{icon .Icon 16}}{{end}}{{.Label}}</span><span class="lp-contact-value">{{.Display}}</span></a></li>
+      {{- end}}
+    </ul>
+  </section>
+</main>
+{{end}}

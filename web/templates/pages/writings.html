@@ -1,0 +1,28 @@
+{{/* /writings(すべて)・/writings/zenn・/writings/note。同じテンプレートから3枚書き出す。
+     Next.js 版は ?source=zenn のクエリで絞り込んでいたが、静的なファイルはクエリを読めないので、
+     絞り込みごとに別のページ(別の URL)にした */}}
+{{define "head"}}
+{{- if eq .Data.Source "all"}}
+{{/* 旧 URL(/writings?source=zenn)で来た人を新しい URL へ送る。
+     Cloudflare の _redirects はクエリ文字列で振り分けられないので、ここだけブラウザ側で転送する */}}
+<script>(function(){var s=new URLSearchParams(location.search).get('source');if(s==='zenn'||s==='note')location.replace('/writings/'+s);})();</script>
+{{- end}}
+{{end}}
+
+{{define "content"}}
+<main class="wr-main">
+  {{template "pagehead" dict "Eyebrow" "( / zenn & note )" "Title" "Zenn / note" "Lead" "Zenn と note で公開しているものの一覧です。記事のほか、Zenn の本も含みます。"}}
+  {{- if .Data.Total}}
+  <nav class="wr-tabs" aria-label="出どころで絞り込み">
+    {{- range .Data.Tabs}}
+    <a href="{{.Href}}" class="wr-tab" data-active="{{.Active}}"{{if .Active}} aria-current="page"{{end}}>{{.Label}}</a>
+    {{- end}}
+  </nav>
+  <p class="wr-count">{{len .Data.Articles}} 件{{if eq .Data.Source "all"}}（Zenn {{.Data.ZennCount}} / note {{.Data.NoteCount}}）{{end}}</p>
+  {{template "articles" dict "Articles" .Data.Articles "Priority" true}}
+  {{- else}}
+  {{- /* -allow-empty-feeds でビルドしたときだけ出る(本番のビルドは取得に失敗したら止まる) */}}
+  <p class="wr-empty">いまフィードを取得できませんでした。時間をおいて再度お試しください。</p>
+  {{- end}}
+</main>
+{{end}}

@@ -1,0 +1,9 @@
+{{/* 存在しないパスで返すページ。Cloudflare は not_found_handling = "404-page" で、
+     dist/404.html を 404 のステータス付きで返す */}}
+{{define "content"}}
+<div class="nf-container">
+  <p class="nf-code">404 — not found</p>
+  <p class="nf-text">お探しのページは見つかりませんでした。</p>
+  <a href="/" class="nf-home">トップへ戻る <span class="nf-arrow">→</span></a>
+</div>
+{{end}}

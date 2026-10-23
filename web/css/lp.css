@@ -1,0 +1,852 @@
+/* Next.js 版(CSS Modules)の app/(lp)/page.module.css から移植。クラス名には接頭辞 lp- を付け、ファイル間の衝突を避ける */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lp-hero-outer {
+  position: relative;
+  /* 図版がこのセクションの外の要素の背面へ潜らないよう、
+     スタッキング文脈をここで閉じる */
+  isolation: isolate;
+
+  /* 右下に置くキャラクター(バスト)の幅。1:1 なのでこの値が高さでもある。
+     タイトルの下・リード文の右に空く帯(実測 約287px高)に収まる範囲で決める。
+     ここを大きくしすぎるとタイトル2行目の下端に頭がぶつかる */
+  --hero-figure-w: min(24vw, 280px);
+  /* 右へ意図的にはみ出すリボンを刈る。スクロールコンテナを作らない clip を使う
+     (hidden での刈り取りは横はみ出し・スクロール連鎖の原因になるため禁止。Issue #21) */
+  overflow: clip;
+}
+
+/* 左寄せ2カラム構図: 左にテキストブロック、右下にキャラクター(.lp-hero-visual は
+   .heroOuter 基準の絶対配置なので、ここは positioned にしないこと) */
+.lp-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 1200px;
+  margin: 0 auto;
+  /* ヘッダー込みで1画面弱(CTAまで見える範囲で上下のゆとりを拡大) */
+  padding: 112px 24px 128px;
+  text-align: left;
+}
+
+.lp-hero-main {
+  min-width: 0;
+}
+
+.lp-hero-item1,
+.lp-hero-item2,
+.lp-hero-item3,
+.lp-hero-item4,
+.lp-hero-item5 {
+  opacity: 0;
+  animation: fadeInUp 0.56s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* 起動直後はフォント到着待ちで初回描画が保留され、その間にアニメの時計だけが
+   進んで入場が飛んで見える。インラインスクリプトが html に付ける js-hero-hold の
+   間は一時停止し、フォント準備完了後に hero.js が外してから再生する(Issue #9)。
+   JS無効環境ではクラスが付かないため通常どおり再生される */
+html.js-hero-hold .lp-hero-item1,
+html.js-hero-hold .lp-hero-item2,
+html.js-hero-hold .lp-hero-item3,
+html.js-hero-hold .lp-hero-item4,
+html.js-hero-hold .lp-hero-item5 {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* 動きを減らす設定ではアニメが実質即完了するため、保留せずすぐ表示する */
+  html.js-hero-hold .lp-hero-item1,
+  html.js-hero-hold .lp-hero-item2,
+  html.js-hero-hold .lp-hero-item3,
+  html.js-hero-hold .lp-hero-item4,
+  html.js-hero-hold .lp-hero-item5 {
+    animation-play-state: running;
+  }
+}
+
+.lp-hero-item1 {
+  animation-delay: 0ms;
+}
+
+.lp-hero-item2 {
+  animation-delay: 90ms;
+}
+
+.lp-hero-item3 {
+  animation-delay: 180ms;
+}
+
+.lp-hero-item4 {
+  animation-delay: 270ms;
+}
+
+.lp-hero-item5 {
+  animation-delay: 360ms;
+}
+
+.lp-eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  color: var(--color-accent);
+  /* monoラベルの統一値(計器の銘板)。セクション側 .sectionEyebrow と揃える */
+  letter-spacing: 0.05em;
+  margin-bottom: 24px;
+}
+
+.lp-hero-title {
+  /* 改行はテキスト側の \n で2行に固定している(.tt-line が行ごとに nowrap で保持)。
+     2行目「最大化するエンジニアへ」(11文字)がどの画面幅でも折り返さないよう、
+     「11文字 + タイプカーソル約0.3em ≒ 11.4em」が hero の内容幅
+     (100vw - 左右padding 48px)に収まるサイズを直接導出する。
+     分母は必要幅 11.4em に対して 11.6 とし、クラシックスクロールバー環境(Windows等)で
+     100vw が実内容幅よりスクロールバー幅(約15px)ぶん大きくなっても収まる余裕を持たせる。
+     上限は hero の最大内容幅 (1200px - 48px) ÷ 11.4 ≒ 6.3rem
+     (単純な vw 上限だと 11文字 × 9vw ≒ 99vw で収まらないため、この式でフィッティング。
+      palt で詰まるぶんは安全側の余裕になる)
+     ※ 右のキャラクターは 1:1 のバストで、タイトル2行の「下」に収まる高さに
+       抑えてある(--hero-figure-w)。横幅を明け渡す必要がないので、
+       この式は全幅のまま維持する */
+  font-size: min(6.3rem, calc((100vw - 48px) / 11.6));
+  line-height: 1.12;
+  font-weight: 700;
+  font-family: var(--font-serif-stack);
+  font-feature-settings: 'palt';
+  /* body の letter-spacing 0.02em の継承を遮断する保護。
+     フィット式の余裕(11.4em vs 分母11.6)は 0.02em×11文字=0.22em でほぼ食い潰される */
+  letter-spacing: 0;
+  color: var(--color-ink);
+}
+
+.lp-hero-lead {
+  margin-top: 24px;
+  color: var(--color-sub);
+  font-size: var(--fs-lead);
+  /* 長文はゆったり(本文の 1.8 より1段開ける) */
+  line-height: 2;
+  max-width: 40em;
+}
+
+/* 769〜1024pxの帯ではリード1行目の末尾がリボンのクローム曲線の高コントラスト部に
+   重なって騒がしいため、濃部に届く前に折り返す(1280pxと同じ「左端のフェード帯に
+   しか掛からない」見え方に揃える) */
+@media (max-width: 1024px) {
+  .lp-hero-lead {
+    max-width: 32em;
+  }
+}
+
+.lp-hero-cta {
+  display: flex;
+  gap: 16px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+.lp-cta-primary,
+.lp-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  /* 光学補正: フォントサイズを落とすぶん面で保つ */
+  padding: 13px 26px;
+  border-radius: var(--border-radius);
+  /* Plex 500 は字が締まるので 14px でも十分濃い */
+  font-size: var(--fs-ui);
+  font-weight: 500;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.lp-cta-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.lp-cta-primary:hover .lp-cta-arrow,
+.lp-cta-secondary:hover .lp-cta-arrow,
+.lp-articles-more:hover .lp-cta-arrow {
+  transform: translateX(4px);
+}
+
+.lp-cta-primary {
+  background-color: var(--color-accent);
+  color: #fff;
+}
+
+.lp-cta-primary:hover {
+  background-color: var(--color-accent-bright);
+}
+
+.lp-cta-primary:focus-visible {
+  outline-color: var(--color-ink);
+  outline-offset: 3px;
+}
+
+.lp-cta-secondary {
+  border: 1px solid var(--color-line);
+  color: var(--color-ink);
+}
+
+.lp-cta-secondary:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.lp-cta-icons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lp-cta-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--border-radius);
+  color: var(--color-sub);
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.lp-cta-icon:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+}
+
+/* --- chrome ribbon (静的な生成画像。動きは fadeInUp 入場のみ) --- */
+
+/* デスクトップ: テキストの背面(z-index: -1)で .heroOuter の右端に絶対配置し、
+   幅の約12%を意図的に右へはみ出させる(.heroOuter の overflow: clip が刈る)。
+   縦中央合わせを transform でやると fadeInUp の transform に上書きされるため、
+   top を計算で出す(画像高さ = 幅 × 1024/1536 = 幅 ÷ 1.5、その半分 = 幅 ÷ 3) */
+/* 右下。横位置は .hero の内容右端(max-width 1200px + 左右padding 24px)に揃える。
+   縦は下端から積み上げるので、タイトルが大きくなる広い画面でも
+   「タイトルの下」という関係が保たれる */
+.lp-hero-visual {
+  position: absolute;
+  width: var(--hero-figure-w);
+  right: calc(max(0px, (100vw - 1200px) / 2) + 24px);
+  /* 1280px 以上ではタイトルが上限(100.8px)に達して最も背が高くなる。
+     40px だとタイトルの行ボックス下端と 9px 重なったため 24px まで下げた */
+  bottom: 24px;
+  pointer-events: none;
+}
+
+/* 下端(胸で水平に切れている)を紙に溶かす。mask はタイルラスタライズを重くするため
+   全サイトで不使用(Issue #19)。背景が単色 --color-bg である前提に依存する手法で、
+   ヒーローの地は単色なので成立する */
+.lp-hero-visual::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 30%;
+  background: linear-gradient(to bottom, transparent, var(--color-bg) 88%);
+  pointer-events: none;
+}
+
+.lp-hero-figure {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* ドット絵なので補間させない */
+  image-rendering: pixelated;
+}
+
+/* --- hero profile card --- */
+
+.lp-hero-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 400px;
+  text-align: left;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 24px 48px -32px rgba(26, 35, 48, 0.28);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+/* hover(入力駆動)のときだけ浮かせて傾ける。アイドル時は完全静止 */
+.lp-hero-card:hover {
+  transform: translateY(-4px) rotate(-0.6deg);
+  box-shadow: 0 28px 56px -28px rgba(26, 35, 48, 0.38);
+}
+
+.lp-card-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--color-line);
+  background-color: var(--color-code-bg);
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  /* monoラベル統一値 */
+  letter-spacing: 0.05em;
+  color: var(--color-sub);
+}
+
+.lp-card-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  flex-shrink: 0;
+}
+
+/* profile.json カードの avatar フィールド。枠付きの小窓 + ファイル名(mono)で
+   「このレコードの1項目」として扱う。カードの外へはみ出させると、
+   JSON(機械が読むデータ)の見立てとキャラクターの語彙がぶつかる */
+.lp-card-avatar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.lp-card-avatar-thumb {
+  display: block;
+  flex-shrink: 0;
+  width: 88px;
+  height: 88px;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  border-radius: 4px;
+  background-color: var(--color-code-bg);
+}
+
+.lp-card-avatar-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* ドット絵なので補間させない */
+  image-rendering: pixelated;
+}
+
+.lp-card-avatar-name {
+  font-family: var(--font-mono);
+  /* monoデータ段(ファイル名)。ラベルの 12px / 0.05em ではない */
+  font-size: var(--fs-meta);
+  letter-spacing: 0;
+  color: var(--color-sub);
+}
+
+.lp-card-code {
+  margin: 0;
+  padding: 18px 24px;
+  font-family: var(--font-mono);
+  /* letter-spacing は base.css の code,pre で 0 に遮断済み */
+  font-size: var(--fs-meta);
+  line-height: 1.75;
+  color: var(--color-sub);
+  overflow-x: auto;
+}
+
+.lp-card-line {
+  display: block;
+  white-space: pre;
+}
+
+.lp-card-key {
+  color: var(--color-accent);
+}
+
+.lp-card-value {
+  color: var(--color-ink);
+}
+
+.lp-card-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--color-line);
+  font-family: var(--font-mono);
+  /* 中身は URL = monoデータ段(13px / ls 0)。12px段の「フッタ」はサイトFooter(©表記)を指す */
+  font-size: var(--fs-meta);
+  letter-spacing: 0;
+  color: var(--color-sub);
+}
+
+/* Learning Log〜Stack を包む全幅のストリーム帯。中のセクションを前面に出す */
+.lp-mid-band {
+  position: relative;
+  /* はみ出す装飾を刈る保険(hidden ではなく clip。Issue #21)。
+     左端で見切れていたリボン .midGlyph は撤去済みだが、帯の内側で
+     はみ出しが起きたときにページ全体へ波及させないため残す */
+  overflow: clip;
+  /* 淡い銀青の金属面。「面で塗らない」原則の唯一の例外(DESIGN.md 5章・9章)。
+     画像ではなく CSS グラデにして、スクロール中のラスタコストを増やさない */
+  background: var(--bg-metal-band);
+  border-top: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+  /* 帯の境界(hairline)をセクション間の呼吸ゾーン中央に置くため、
+     下側の余白 --space-section を帯の内(pb)と外(articles 側の pt)で折半する。
+     上側の折半は .beforeBand と .midBand .section の padding-top が担う */
+  padding-bottom: calc(var(--space-section) / 2);
+}
+
+.lp-mid-band .lp-section {
+  position: relative;
+  z-index: 1;
+  /* 境界折半の内側ぶん(外側は .beforeBand の padding-bottom) */
+  padding-top: calc(var(--space-section) / 2);
+}
+
+.lp-section {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: var(--space-section) 24px 0;
+}
+
+/* Learning Log と Stack を横並びにして中盤の縦を圧縮する */
+.lp-mid-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 64px;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.lp-mid-grid .lp-section {
+  max-width: none;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .lp-mid-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* 縦積みになったら帯内の2セクション間は通常の律動に戻す
+     (折半の半分だと Log と Stack が近すぎる) */
+  .lp-mid-grid .lp-section + .lp-section {
+    padding-top: var(--space-section);
+  }
+}
+
+/* 04 Apps。帯の中だが、上は 02/03 の2カラムなので帯の境界ではない。
+   折半(.midBand .section の半分)ではなく通常の律動で離す */
+.lp-mid-band .lp-apps-section {
+  padding-top: var(--space-section);
+}
+
+/* Dock(dock.css)の大きさ。Dock 側の .dock(1クラス)に勝たせるため2クラスで指定する。
+   1列に11個 + 間10個(各 icon/9) + トレイの内側(icon×0.32) + hover の拡大ぶん(icon×0.94)
+   ≒ 13.4個ぶんが内容幅(画面幅 − 左右 padding 48px − 余裕 8px)に収まる大きさを導出し、
+   56px で頭打ちにする */
+.lp-apps-section .lp-apps-dock {
+  --icon: min(56px, calc((100vw - 56px) / 13.4));
+
+  /* 拡大したアイコンは上へはみ出すので、そのぶん見出しから離す */
+  margin-top: calc(var(--icon) * 0.5);
+  /* 列(992px)の中に約700pxのトレイを左詰めにすると右に300px以上の空白が残るので、中央に置く */
+  margin-inline: auto;
+}
+
+/* 「大きく見る →」も Dock の真下にそろえる */
+.lp-apps-section .lp-apps-more {
+  display: flex;
+  width: fit-content;
+  margin-inline: auto;
+}
+
+@media (max-width: 640px) {
+  /* スマホは1段4個で折り返す(dock.css)。4個ぶんが内容幅(画面幅 − 左右 padding 48px −
+     間3つ 30px − トレイの内側と枠 26px)に収まる大きさ。
+     拡大ぶんの余白は要らない(タッチでは拡大しない) */
+  .lp-apps-section .lp-apps-dock {
+    --icon: min(64px, calc((100vw - 104px) / 4));
+
+    margin-top: 0;
+  }
+}
+
+/* About本文と profile.json カードの2カラム */
+.lp-about-grid {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 48px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .lp-about-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lp-about-grid .lp-hero-card {
+    justify-self: center;
+  }
+}
+
+.lp-section-end {
+  padding-bottom: var(--space-section);
+}
+
+/* 銀帯の境界(hairline)がセクション間の呼吸ゾーン中央に来るよう、
+   128px(--space-section)の余白を境界の前後で 64/64 に折半する。
+   これがないと境界線が直前のコンテンツに張り付き、帯の中だけが間延びする */
+.lp-before-band {
+  padding-bottom: calc(var(--space-section) / 2);
+}
+
+.lp-after-band {
+  padding-top: calc(var(--space-section) / 2);
+}
+
+/* 液体金属のストリーム。Contact 前の全幅ディバイダ(ページ唯一の全幅音)。
+   横長画像を帯状に切り抜く(object-fit)。overflow は clip(Issue #21) */
+.lp-section-head {
+  margin-bottom: 40px;
+}
+
+/* リーダー罫線: 参照サイトの「( About Us ) ─── 01」と同じ計測線の文法を、
+   既存語彙(ヘアライン+mono+括弧)だけで実現する。
+   ◉ ( 01 / about ) ────────── がカラム右端まで走り、
+   紙面に全セクション貫通の水平基準構造を与える */
+.lp-section-eyebrow {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  color: var(--color-accent);
+  /* monoラベル統一値(ヒーロー .eyebrow と揃える) */
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+/* ヒーローのリングを引き継いだミニダイヤル(輪+中心点) */
+.lp-section-eyebrow::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--color-accent);
+  background: radial-gradient(circle, var(--color-accent) 0 2px, transparent 2.5px);
+  opacity: 0.8;
+  /* ::after(リーダー罫線)が flex:1 のため、狭い幅でダイヤルが潰れないよう固定
+     (Article 側のダイヤル実装と同じ) */
+  flex-shrink: 0;
+}
+
+/* リーダー罫線の線本体。flex gap 10px が加算され始点余白は実効34px
+   (実機スクショで広すぎれば 14px に詰める=実効24px) */
+.lp-section-eyebrow::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-line);
+  margin-left: 24px;
+}
+
+.lp-section-title {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  font-size: var(--fs-h2);
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+/* 番号を独立要素に格上げしたエディトリアルの型(01. About)。
+   Zen Old Mincho は 700 しか読み込んでいないため weight を明示する */
+.lp-section-number {
+  font-family: var(--font-serif-stack);
+  font-size: var(--fs-number);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-accent);
+}
+
+.lp-about-body {
+  font-size: var(--fs-lead);
+  max-width: 34em;
+}
+
+.lp-about-body p {
+  color: var(--color-ink);
+  /* 長文はゆったり(本文の 1.8 より1段開ける) */
+  line-height: 2;
+  margin-bottom: 1.2em;
+}
+
+.lp-about-body p:last-child {
+  margin-bottom: 0;
+}
+
+.lp-log {
+  position: relative;
+  padding-left: 28px;
+  /* ヒーローの破線リングと同じ言語の破線タイムライン */
+  border-left: 1px dashed var(--color-border-dark);
+}
+
+/* スクロール連動のリビール(opacity 0→1 のスタガー)は、スクロール中に
+   「止まって見える」体感の原因になったため廃止。最初から表示する(Issue #13) */
+.lp-log-entry {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 16px;
+  /* 8pxグリッド */
+  padding: 16px 0;
+}
+
+.lp-log-dot {
+  position: absolute;
+  left: -32.5px;
+  /* エントリ中央ではなく1行目(hash行)に固定する。テキストが折り返して2行に
+     なっても点が行間に浮かず、他エントリの点と縦に揃う
+     (上padding 16px + 1行目の行ボックス 13px×1.8 ≒ 23.4px の半分 ≒ 27.7px → 28px) */
+  top: 28px;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  /* ヒーローのノードと同じ「点+リング」 */
+  box-shadow:
+    0 0 0 3px var(--color-bg),
+    0 0 0 4px rgba(0, 135, 168, 0.35);
+}
+
+.lp-log-hash {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  /* monoデータ。body 0.02em の継承を明示遮断 */
+  letter-spacing: 0;
+  color: var(--color-accent);
+}
+
+.lp-log-date {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  letter-spacing: 0;
+  color: var(--color-sub);
+}
+
+.lp-log-text {
+  color: var(--color-ink);
+}
+
+.lp-stack {
+  border-top: 1px solid var(--color-line);
+}
+
+.lp-stack-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 8px;
+  margin: 0 -8px;
+  border-bottom: 1px solid var(--color-line);
+  border-radius: var(--border-radius);
+  transition:
+    background-color 0.15s ease,
+    padding-left 0.15s ease;
+}
+
+.lp-stack-row:hover {
+  background-color: var(--color-code-bg);
+  padding-left: 16px;
+}
+
+.lp-stack-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--color-ink);
+  font-weight: 500;
+}
+
+.lp-stack-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 14px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  /* monoピルは caption 段 + ラベル統一字間 */
+  font-size: var(--fs-caption);
+  letter-spacing: 0.05em;
+  color: var(--color-sub);
+}
+
+.lp-stack-status::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+/* daily = 塗りつぶし、learning = 輪郭のみ。
+   脈動アニメは低電力モード端末で描画コストになり続けるため廃止(Issue #15) */
+.lp-stack-status[data-status='daily']::before {
+  background-color: var(--color-accent);
+}
+
+.lp-stack-status[data-status='learning']::before {
+  border: 1px solid var(--color-accent);
+}
+
+/* Zenn / note を別ブロックで縦に並べる(C案: LP側は分割、詳細は /writings で
+   両方見える)。ソースごとに件数を揃えているため(internal/site/pages.go)、
+   グリッド自体はどちらも1行で揃う */
+.lp-external-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.lp-external-group-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-ui);
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.lp-articles-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 32px;
+  color: var(--color-accent);
+  font-size: var(--fs-ui);
+}
+
+.lp-articles-more:hover {
+  color: var(--color-accent-bright);
+}
+
+/* --- contact --- */
+
+.lp-contact {
+  border-top: 1px solid var(--color-line);
+}
+
+.lp-contact-row {
+  border-bottom: 1px solid var(--color-line);
+}
+
+.lp-contact-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 24px;
+  /* 8pxグリッド・ゆとり方向へ */
+  padding: 32px 8px;
+  margin: 0 -8px;
+  border-radius: var(--border-radius);
+  transition: background-color 0.15s ease;
+}
+
+.lp-contact-link:hover {
+  background-color: var(--color-code-bg);
+}
+
+.lp-contact-link:hover .lp-contact-label {
+  color: var(--color-accent);
+}
+
+.lp-contact-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-ink);
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+
+.lp-contact-value {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  /* monoデータ(URL) */
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-sub);
+}
+
+@media (max-width: 900px) {
+  .lp-hero-card {
+    max-width: 480px;
+  }
+}
+
+/* ヒーロー2カラムをやめて縦積み(タイトル → キャラ52vw → リード → CTA) */
+@media (max-width: 768px) {
+  .lp-hero {
+    padding: 48px 24px 64px;
+  }
+
+  .lp-hero-visual {
+    /* DOM 上タイトル直下に置いてあるため、通常フローに戻すだけで縦積みの正位置に入る */
+    position: relative;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    width: 52vw;
+    /* 縦積みでは右寄せにして、左のテキスト列との軸を作る */
+    margin: 20px 0 4px auto;
+    /* 縦積みでは視覚順がタイトル→キャラ→リード→CTAになるため、入場スタッガも
+       その順(タイトル90msとリード180msの間)に合わせる。デスクトップの360ms
+       (最後に入場)のままだと、表示済み要素の間へ割り込んで見える */
+    animation-delay: 135ms;
+  }
+}
+
+@media (max-width: 640px) {
+  /* 最長見出し「04. Zenn / note の記事」が390pxで2行にぶら下がらないよう一段縮める */
+  .lp-section-title {
+    font-size: 1.8rem;
+    gap: 10px;
+  }
+
+  .lp-section-number {
+    font-size: 2.4rem;
+  }
+
+  .lp-contact-link {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  /* contactValue は URL データなのでモバイルでも 13px(--fs-meta)を維持する
+     (mono 2段規則: データ=13px / ラベル=12px。行は flex-wrap で折り返す) */
+
+  /* 線が短くなりすぎるため始点余白を詰める */
+  .lp-section-eyebrow::after {
+    margin-left: 16px;
+  }
+}

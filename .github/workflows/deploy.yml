@@ -1,0 +1,44 @@
+name: Deploy
+
+# サイトは静的なファイルなので、中身を新しくするには「書き出し直してデプロイ」するしかない。
+#  - main に push されたとき: コードの変更を反映する
+#  - 毎時: Zenn / note の新しい記事を一覧に反映する(Next.js 版の ISR = revalidate 3600 の代わり)
+#  - 手動(Actions の画面の Run workflow)
+# RSS が取れないとビルドが失敗し、デプロイされない。前回のサイトがそのまま出続ける。
+#
+# 注意: public リポジトリでは、60日間リポジトリに動きが無いと、GitHub が schedule を自動で止める。
+# 止まったら GitHub からメールが来るので、Actions の画面で有効に戻す。
+on:
+  push:
+    branches: [main]
+  schedule:
+    # 毎時17分(GitHub は毎時0分に混み、遅れたり飛ばされたりしやすいので、ずらす)
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+# 同時に2つデプロイしない。後から来たものは、前のものが終わるまで待つ
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: サイトを書き出す
+        run: go run ./cmd/build
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+      - run: npm ci
+      - name: Cloudflare にデプロイする
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

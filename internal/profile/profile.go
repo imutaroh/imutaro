@@ -5,6 +5,7 @@ package profile
 
 import (
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -99,6 +100,11 @@ type Link struct {
 	Href string
 	// External は別タブで開くか。mailto は別タブにしない。
 	External bool
+}
+
+// Display はリンク先を画面に出すときの文字列(mailto: は外す)。
+func (l Link) Display() string {
+	return strings.TrimPrefix(l.Href, "mailto:")
 }
 
 // Contacts は LP の Contact に並べるリンク。

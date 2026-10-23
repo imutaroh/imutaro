@@ -1,0 +1,14 @@
+/* Next.js 版(CSS Modules)の components/Date/index.module.css から移植。クラス名には接頭辞 pubdate- を付け、ファイル間の衝突を避ける */
+
+.pubdate-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 16px;
+  margin: 0;
+  font-family: var(--font-mono);
+  /* monoデータ(日付)の統一段 13px。body の ls 0.02em は継承させない(DESIGN.md 3章) */
+  font-size: var(--fs-meta);
+  letter-spacing: 0;
+  color: var(--color-sub);
+}
