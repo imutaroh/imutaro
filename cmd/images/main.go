@@ -1,13 +1,14 @@
-// images は public/ の元画像から、表示する大きさに合わせた軽い版を作る。
+// images は public/ の元画像から、表示する大きさに合わせた軽い WebP を作る。
 //
 //	go run ./cmd/images
 //
 // 出力はリポジトリに入れる(サイトのビルドのたびには作らない)。元画像を差し替えたら、もう一度実行する。
-// 元画像には手を付けず、「元の名前-幅.png」で書き出す。
-// pngquant が入っていれば減色して軽くする(macOS なら brew install pngquant)。
+// 元画像(PNG)には手を付けず、「元の名前-幅.webp」で書き出す。
 //
-// Next.js 版では next/image がこれをリクエストのたびに自動でやっていた。
+// Next.js 版では next/image がこれをリクエストのたびに自動でやっていた(縮小して WebP に変換)。
 // 静的なサイトにはその仕組みが無いので、あらかじめ作っておく。
+// 縮小は Go(golang.org/x/image/draw)で行い、WebP への変換は cwebp に任せる。
+// Go の標準ライブラリは WebP を読めるが、書き出せないため(macOS なら brew install webp)。
 package main
 
 import (
@@ -30,10 +31,10 @@ type job struct {
 	width int
 }
 
-// out は書き出し先(元の名前に幅を付けたもの)。例: apps/arc.png, 176 → apps/arc-176.png
+// out は書き出し先(元の名前に幅を付け、拡張子を .webp にしたもの)。
+// 例: apps/arc.png, 176 → apps/arc-176.webp
 func (j job) out() string {
-	ext := filepath.Ext(j.src)
-	return fmt.Sprintf("%s-%d%s", strings.TrimSuffix(j.src, ext), j.width, ext)
+	return fmt.Sprintf("%s-%d.webp", strings.TrimSuffix(j.src, filepath.Ext(j.src)), j.width)
 }
 
 func jobs() []job {
@@ -53,33 +54,38 @@ func jobs() []job {
 }
 
 func main() {
-	pngquant, err := exec.LookPath("pngquant")
+	cwebp, err := exec.LookPath("cwebp")
 	if err != nil {
-		log.Print("pngquant が無いので、減色せずに縮小だけする")
-		pngquant = ""
+		log.Fatal("cwebp が見つかりません(macOS なら brew install webp)")
 	}
-	for _, j := range jobs() {
-		if err := resize(filepath.Join("public", j.src), filepath.Join("public", j.out()), j.width); err != nil {
+	tmp, err := os.MkdirTemp("", "imutaro-images-")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer os.RemoveAll(tmp)
+
+	for i, j := range jobs() {
+		resized := filepath.Join(tmp, fmt.Sprintf("%d.png", i))
+		if err := resize(filepath.Join("public", j.src), resized, j.width); err != nil {
 			log.Fatalf("%s: %v", j.src, err)
 		}
-		if pngquant != "" {
-			// --skip-if-larger: 減色しても軽くならないなら元のまま。--strip: 撮影情報などを落とす
-			cmd := exec.Command(pngquant, "--quality=70-95", "--strip", "--skip-if-larger", "--force",
-				"--output", filepath.Join("public", j.out()), "--", filepath.Join("public", j.out()))
-			if out, err := cmd.CombinedOutput(); err != nil {
-				// 終了コード 98/99 は「軽くならなかった / 品質を満たせなかった」で、縮小版はそのまま使える
-				log.Printf("%s: pngquant をスキップ(%v %s)", j.out(), err, strings.TrimSpace(string(out)))
-			}
+		dst := filepath.Join("public", j.out())
+		// -q 82: 画質(0〜100)。-m 6: いちばん時間をかけて小さくする。
+		// -sharp_yuv: 色の境目をにじませにくくする(アイコンの輪郭向け)。
+		// -alpha_q 100: 透明度は劣化させない(アイコンの角の抜けが汚れないように)
+		cmd := exec.Command(cwebp, "-quiet", "-q", "82", "-m", "6", "-sharp_yuv", "-alpha_q", "100", resized, "-o", dst)
+		if out, err := cmd.CombinedOutput(); err != nil {
+			log.Fatalf("%s: cwebp: %v %s", j.out(), err, strings.TrimSpace(string(out)))
 		}
-		info, err := os.Stat(filepath.Join("public", j.out()))
+		info, err := os.Stat(dst)
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Printf("%-28s %6.1f KB", j.out(), float64(info.Size())/1024)
+		log.Printf("%-30s %6.1f KB", j.out(), float64(info.Size())/1024)
 	}
 }
 
-// resize は src を幅 width に縮小して dst に書く。縦横比は保つ。
+// resize は src を幅 width に縮小して dst に PNG で書く。縦横比は保つ。
 func resize(src, dst string, width int) error {
 	f, err := os.Open(src)
 	if err != nil {
@@ -101,8 +107,7 @@ func resize(src, dst string, width int) error {
 	if err != nil {
 		return err
 	}
-	enc := png.Encoder{CompressionLevel: png.BestCompression}
-	if err := enc.Encode(w, out); err != nil {
+	if err := png.Encode(w, out); err != nil {
 		w.Close()
 		return err
 	}

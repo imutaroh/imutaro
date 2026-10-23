@@ -2,7 +2,7 @@ package profile
 
 // DockApp は /apps と LP の 04 Apps の Dock に並べるアプリ。並び順がそのまま Dock の並びになる。
 //
-// アイコンは public/apps/<ID>.png(258px)と public/apps/<ID>-176.png(LP 用の縮小版)。
+// アイコンは public/apps/<ID>.png(258px)と public/apps/<ID>-176.webp / <ID>-258.webp(表示用の縮小版)。
 // 手元の Mac にインストールされているアプリから、実際の見た目のまま書き出したもの。
 // macOS のアイコンは本体の周りに透明な余白(キャンバスの約1割ずつ)を持つので、
 // 320px で書き出してから本体の箱 (31, 31)-(289, 289) で切り抜いている。

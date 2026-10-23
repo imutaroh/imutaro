@@ -72,7 +72,7 @@ RSS が取れないとビルドが失敗し、デプロイされない。その�
 - **CSS のクラス名**: ファイルごとに接頭辞を付ける(`lp.css` なら `lp-`)。CSS は1枚につなげて配るので、接頭辞が無いと別のファイルの同名クラスとぶつかる
 - **JS がつかむ要素**: `data-*` 属性で目印を付ける(`data-card-stage` など)。見た目のクラス名を変えても JS が壊れないようにするため
 - **アセットの URL**: テンプレートでは `{{asset "site.css"}}` で引く。中身のハッシュが名前に入るので、中身が変われば URL も変わる。そのため1年キャッシュさせても古いものは出ない
-- **画像**: 元画像は `public/` に置き、表示する大きさに合わせた版を `go run ./cmd/images` で作る。Dock にアプリを足すときは、`internal/profile/apps.go` に行を足し、`public/apps/<id>.png`(258px、macOS アイコンの透明な余白を切り落としたもの)を置いてから実行する
+- **画像**: 元画像(PNG)は `public/` に置き、表示する大きさに合わせた WebP(`<名前>-<幅>.webp`)を `go run ./cmd/images` で作る。縮小は Go、WebP への変換は `cwebp`(`brew install webp`)が行う。Dock にアプリを足すときは、`internal/profile/apps.go` に行を足し、`public/apps/<id>.png`(258px、macOS アイコンの透明な余白を切り落としたもの)を置いてから実行する
 
 ## OGP 画像
 

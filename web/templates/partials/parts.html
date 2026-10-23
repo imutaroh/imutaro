@@ -11,7 +11,7 @@
     <a href="{{.Href}}" class="dock-link" target="_blank" rel="noopener noreferrer">
       {{- /* 名前の吹き出し。読み上げは画像の alt が担うので隠す */}}
       <span class="dock-label" aria-hidden="true">{{.Name}}</span>
-      <img src="/apps/{{.ID}}-258.png" srcset="/apps/{{.ID}}-176.png 176w, /apps/{{.ID}}-258.png 258w" sizes="{{$.Sizes}}" alt="{{.Name}}" width="258" height="258" class="dock-icon" loading="{{$.Loading}}" decoding="async">
+      <img src="/apps/{{.ID}}-258.webp" srcset="/apps/{{.ID}}-176.webp 176w, /apps/{{.ID}}-258.webp 258w" sizes="{{$.Sizes}}" alt="{{.Name}}" width="258" height="258" class="dock-icon" loading="{{$.Loading}}" decoding="async">
     </a>
     {{- /* 起動中を示す Dock の点。ここでは「常用している」の印 */}}
     <span class="dock-dot" aria-hidden="true"></span>
