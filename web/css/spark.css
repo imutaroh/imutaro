@@ -1,0 +1,9 @@
+/* クリックした所に火花を散らす canvas(LP のみ。描くのは web/js/spark.js)。
+   画面(ビューポート)に固定し、クリックは下の要素へ素通しする。
+   ページ全体の大きさにすると巨大な GPU テクスチャになり、低電力モードの端末で
+   スクロールが重くなるため、画面の大きさに留める(Issue #15) */
+.spark-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}

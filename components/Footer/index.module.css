@@ -1,9 +1,0 @@
-.footer {
-  padding: 48px 24px;
-  text-align: center;
-  color: var(--color-sub);
-  font-family: var(--font-mono);
-  /* monoラベル統一段 12px / 0.05em */
-  font-size: var(--fs-caption);
-  letter-spacing: 0.05em;
-}

@@ -1,0 +1,32 @@
+{{/* /uses — 毎日使っている道具と、その使い方。中身は internal/site/uses.go。
+     uses.imutaro.com からもここへ転送する */}}
+{{define "content"}}
+<main class="uses-main">
+  {{template "pagehead" dict "Eyebrow" "( / uses )" "Title" "Uses" "Lead" "毎日使っている道具と、その使い方です。設定はすべて dotfiles で管理しています。"}}
+  {{- range .Data.Groups}}
+  <section class="uses-group">
+    <h2 class="uses-group-title">{{.Title}}</h2>
+    {{- if .Dock}}
+    {{- /* アプリは /apps と同じ Dock で見せる */}}
+    <div class="uses-apps">
+      {{template "dock" dict "Apps" $.Data.Apps "Class" "uses-dock" "Sizes" "84px" "Loading" "lazy"}}
+      <a href="/apps" class="uses-more">大きく見る<span class="uses-more-arrow" aria-hidden="true">→</span></a>
+    </div>
+    {{- else}}
+    <ul class="uses-list">
+      {{- range .Items}}
+      <li class="uses-row">
+        {{- if .Href}}
+        <a href="{{.Href}}" class="uses-name" target="_blank" rel="noopener noreferrer">{{.Name}}</a>
+        {{- else}}
+        <span class="uses-name">{{.Name}}</span>
+        {{- end}}
+        <p class="uses-note">{{.Note}}</p>
+      </li>
+      {{- end}}
+    </ul>
+    {{- end}}
+  </section>
+  {{- end}}
+</main>
+{{end}}

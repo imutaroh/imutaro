@@ -1,102 +1,79 @@
-# シンプルなブログ
+# imutaro.com
 
-![](public/img-cover.png)
-
-microCMS 公式のシンプルなブログのテンプレートです。
-
-## 動作環境
-
-Node.js 24 以上
-
-## 環境変数の設定
-
-ルート直下に`.env`ファイルを作成し、下記の情報を入力してください。
+imutaro のサイト。Go で静的な HTML を書き出し、Cloudflare Workers の静的配信で公開している。
 
 ```
-MICROCMS_API_KEY=xxxxxxxxxx
-MICROCMS_SERVICE_DOMAIN=xxxxxxxxxx
-BASE_URL=xxxxxxxxxx
+go run ./cmd/build
+  ├─ Zenn / note の RSS を取得(internal/feeds)
+  ├─ web/templates に値を流し込んで HTML を書き出す(internal/site)
+  ├─ web/css を1枚につなげ、web/js と一緒にハッシュ付きの名前で assets/ に置く
+  └─ public/ をコピー
+        ↓
+      dist/  ──  npx wrangler deploy  ──>  Cloudflare(imutaro.com)
 ```
 
-`MICROCMS_API_KEY`  
-microCMS 管理画面の「サービス設定 > API キー」から確認することができます。
+デザインの決まりごとは [DESIGN.md](DESIGN.md) にまとめてある。
 
-`MICROCMS_SERVICE_DOMAIN`  
-microCMS 管理画面の URL（https://xxxxxxxx.microcms.io）の xxxxxxxx の部分です。
+## 必要なもの
 
-`BASE_URL`
-デプロイ先の URL です。プロトコルから記載してください。
+- Go 1.26 以上
+- Node.js 24 以上(e2e テストと wrangler だけに使う。サイトのビルドには不要)
 
-例）  
-開発環境 → http://localhost:3000  
-本番環境 → https://xxxxxxxx.vercel.app/ など
+## よく使うコマンド
 
-### GitHub Actionsへの環境変数の設定
+```sh
+go run ./cmd/build                     # dist/ に書き出す(RSS が取れないと失敗する)
+go run ./cmd/build -allow-empty-feeds  # オフラインで書き出す(記事一覧は空になる)
+go run ./cmd/serve                     # dist/ を http://localhost:8788 で配信する
 
-このリポジトリではPlaywrightによるE2Eテストが実装されています。
-GitHubに変更をプッシュする、あるいはPull Requestを作成すると自動でテストが実行されます。
+go test ./...                          # Go のテスト(RSS の解析・年齢・書き出したページ)
+npm run test:e2e                       # ブラウザのテスト(書き出し → 配信 → Playwright)
 
-利用するにはGitHub Actionsのシークレットへの設定が必要です。
-[こちらの手順](https://docs.github.com/ja/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets)に従って、`MICROCMS_API_KEY`と`MICROCMS_SERVICE_DOMAIN`をシークレットに設定してください。
-
-## 開発の仕方
-
-1. パッケージのインストール
-
-```bash
-npm install
+go run ./cmd/images                    # 画像の縮小版を作り直す(元画像を差し替えたとき)
 ```
 
-2. 開発環境の起動
+`cmd/serve` は Cloudflare と同じ URL の解決をする。`/apps` で `apps.html` を返し、`/apps/` と `/apps.html` は `/apps` へ転送し、無いパスには `404.html` を 404 で返す。
 
-```bash
-npm run dev
-```
+## ディレクトリ
 
-3. 開発環境へのアクセス  
-   [http://localhost:3000](http://localhost:3000)にアクセス
+| 場所 | 中身 |
+|---|---|
+| `cmd/build` | サイトを書き出すコマンド |
+| `cmd/serve` | 書き出したサイトを手元で配信するコマンド |
+| `cmd/images` | 画像の縮小版を作るコマンド(出力はリポジトリに入れる) |
+| `internal/feeds` | Zenn / note の RSS の取得と解析 |
+| `internal/profile` | 人物と道具のデータ(年齢・Stack・Learning Log・Contact・Dock のアプリ) |
+| `internal/site` | ページの組み立てと書き出し。`/uses` の中身は `uses.go` |
+| `web/templates` | HTML のテンプレート(`layout.html` が外枠、`pages/` がページ、`partials/` が部品) |
+| `web/css` | CSS。ファイルごとにクラス名の接頭辞を決めている(`lp-` `pc-` `dock-` など) |
+| `web/js` | ブラウザで動く JS(ビルドの道具を通さず、そのまま配る) |
+| `public` | そのまま配る画像・アイコン・QR・OGP 画像 |
+| `e2e` | Playwright のテスト |
 
-## 画面プレビューの設定
+## 更新の仕組み
 
-下書き状態のコンテンツをプレビューするために、microCMS管理画面にて画面プレビューの設定が必要です。
+`.github/workflows/deploy.yml` が、次のときにサイトを書き出し直してデプロイする。
 
-ブログAPIの「API設定 > 画面プレビュー」に下記のように設定してください。  
-※`your-domain`部分はデプロイ先のドメインに置き換えてください。（localhost指定でも動作します）
+- `main` に push されたとき
+- 毎時17分(Zenn / note の新しい記事を一覧に反映するため)
+- Actions の画面から手動で実行したとき
 
-![blog-preview](https://github.com/microcmsio/nextjs-simple-blog-template/assets/4659294/5045ac9e-3699-47b4-8927-4187114d75bd)
+RSS が取れないとビルドが失敗し、デプロイされない。その場合は前回のサイトがそのまま出続ける。
 
-設定後はコンテンツ編集画面にて画面プレビューボタンが利用可能になります。
+このリポジトリは public なので、60日間リポジトリに動きが無いと GitHub が毎時の実行を自動で止める。止まったら GitHub からメールが来るので、Actions の画面で有効に戻す。
 
-## Vercel へのデプロイ
+デプロイには、GitHub の Secrets に次の2つが要る。
 
-[Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme)から簡単にデプロイが可能です。
+- `CLOUDFLARE_API_TOKEN`: Cloudflare で「Edit Cloudflare Workers」のテンプレートから作ったトークン
+- `CLOUDFLARE_ACCOUNT_ID`: Cloudflare のアカウント ID
 
-リポジトリを紐付け、環境変数を `Environment Variables` に登録後、デプロイしてみましょう。
+## 書くときの約束
 
-![](public/img-vercel-settings.png)
+- **CSS のクラス名**: ファイルごとに接頭辞を付ける(`lp.css` なら `lp-`)。CSS は1枚につなげて配るので、接頭辞が無いと別のファイルの同名クラスとぶつかる
+- **JS がつかむ要素**: `data-*` 属性で目印を付ける(`data-card-stage` など)。見た目のクラス名を変えても JS が壊れないようにするため
+- **アセットの URL**: テンプレートでは `{{asset "site.css"}}` で引く。中身のハッシュが名前に入るので、中身が変われば URL も変わる。そのため1年キャッシュさせても古いものは出ない
+- **画像**: 元画像(PNG)は `public/` に置き、表示する大きさに合わせた WebP(`<名前>-<幅>.webp`)を `go run ./cmd/images` で作る。縮小は Go、WebP への変換は `cwebp`(`brew install webp`)が行う。Dock にアプリを足すときは、`internal/profile/apps.go` に行を足し、`public/apps/<id>.png`(258px、macOS アイコンの透明な余白を切り落としたもの)を置いてから実行する
 
-## Node.js のバージョンについて
+## OGP 画像
 
-このテンプレートは **Node.js 24 以上**を前提としています。
-
-Node.js では定期的にセキュリティアップデートが提供されています。  
-安全にご利用いただくため、Node.js を利用する際は
-**利用中のメジャーバージョン（例: 24.x）の最新パッチバージョンを使用することを推奨します。**
-
-最新のセキュリティ情報については、以下をご参照ください。
-https://nodejs.org/ja/blog/vulnerability/
-
-## このテンプレートに含まれる `.npmrc` について
-
-このテンプレートには、npm の `min-release-age` と `registry` 設定を有効にするための `.npmrc` ファイルが含まれています。
-
-```ini
-min-release-age=7
-registry=https://npm.flatt.tech
-```
-
-`min-release-age` はサプライチェーン攻撃対策の一環として設定しているもので、公開から7日未満の npm パッケージバージョンをインストール対象から除外します。これにより、悪意のあるパッケージや改ざんされたパッケージが公開直後に利用されるリスクを軽減できます。
-
-`registry` はレジストリを [Takumi Guard](https://flatt.tech/takumi/features/guard)（GMO Flatt Security が提供する npm セキュリティプロキシ）に向けるもので、`npm install` 時にパッケージを既知の脅威データベースと照合し、悪意のあるパッケージのインストールをブロックします。トークンなしの匿名利用で有効になり、追加の設定は不要です。この設定はローカルだけでなく、GitHub Actions や Dependabot による依存更新にも適用されます。
-
-プロジェクトの要件や運用方針に応じて、これらの値を変更したり、設定を削除したりすることも可能です。
+`public/ogp.png` は完成品の素材として置いている。Next.js 版の時代に `scripts/gen-ogp.mjs`(`next/og` を使う)で作ったもので、そのスクリプトは移行のときに削除した。作り直すときは git の履歴から取り出し、Next.js を使わない形に書き換える。

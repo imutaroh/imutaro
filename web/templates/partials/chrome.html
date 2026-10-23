@@ -1,0 +1,24 @@
+{{/* サイト共通のヘッダーとフッター。
+     Next.js 版では LP 用と下層用の2つのヘッダーを揃えて保守していたが、ここで1つにまとめた */}}
+
+{{define "header"}}
+<header class="hdr-header">
+  <a href="/" class="hdr-logo">imutaro<span class="hdr-logo-tld">.com</span></a>
+  <nav class="hdr-nav">
+    <a href="/writings" class="hdr-nav-link">Writings</a>
+    {{/* 自前の書き物置き場は Obsidian Publish(notes.imutaro.com)。別ホストなので外部リンク扱い。
+         640px 以下で畳まれるのは .hdr-nav-icon だけなので、これはスマホでも残る */}}
+    <a href="https://notes.imutaro.com" class="hdr-nav-link" target="_blank" rel="noopener noreferrer">Notes</a>
+    <a href="https://zenn.dev/imu_imu" class="hdr-nav-icon" target="_blank" rel="noopener noreferrer" aria-label="Zenn" title="Zenn">{{icon "zenn" 16}}</a>
+    <a href="https://note.com/imutaroh" class="hdr-nav-icon" target="_blank" rel="noopener noreferrer" aria-label="note" title="note">{{icon "note" 16}}</a>
+    <a href="https://x.com/imutaroh" class="hdr-nav-icon" target="_blank" rel="noopener noreferrer" aria-label="X" title="X">{{icon "x" 16}}</a>
+    <a href="https://github.com/imutaroh" class="hdr-nav-icon" target="_blank" rel="noopener noreferrer" aria-label="GitHub" title="GitHub">{{icon "github" 16}}</a>
+  </nav>
+</header>
+{{end}}
+
+{{define "footer"}}
+<footer class="ftr-footer">
+  <p>© imutaro.com 2026</p>
+</footer>
+{{end}}

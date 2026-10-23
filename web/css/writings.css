@@ -1,0 +1,57 @@
+/* Next.js 版(CSS Modules)の app/writings/page.module.css から移植。クラス名には接頭辞 wr- を付け、ファイル間の衝突を避ける */
+
+/* カードグリッドが3カラムなので、記事本文用の 768px ではなく
+   LP のセクションと同じ 1040px の版面を使う */
+.wr-main {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 24px var(--space-section);
+}
+
+/* すべて/Zenn/noteの絞り込み。既定は「すべて」= 両方見える状態(トップの分割
+   ブロックとは違い、ここは常に両方へのアクセスを保つ) */
+.wr-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.wr-tab {
+  padding: 6px 16px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  letter-spacing: 0.05em;
+  color: var(--color-sub);
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.wr-tab:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.wr-tab[data-active='true'] {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+
+.wr-count {
+  margin-bottom: 24px;
+  font-family: var(--font-mono);
+  /* monoデータ段(件数)。ラベルの 12px / 0.05em ではない */
+  font-size: var(--fs-meta);
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-sub);
+}
+
+.wr-empty {
+  padding: 48px 0;
+  color: var(--color-sub);
+}

@@ -1,0 +1,14 @@
+{{/* /apps — 使っているアプリの Dock を1画面いっぱいの大きさで見せる */}}
+{{define "content"}}
+<div class="apps-screen">
+  <a href="/" class="apps-home">imutaro<span class="apps-home-tld">.com</span></a>
+
+  <div class="apps-body">
+    <p class="apps-eyebrow">( apps I use )</p>
+    <h1 class="apps-title">imutaro's Dock</h1>
+    {{template "dock" dict "Apps" .Data "Class" "apps-dock" "Sizes" "132px" "Loading" "eager"}}
+  </div>
+
+  <p class="apps-note">Trademarks belong to their owners.</p>
+</div>
+{{end}}

@@ -1,0 +1,62 @@
+{{/* /card — 1画面完結のプロフィールカード。回転・慣性・ダブルタップは card.js。
+     data-card-stage / data-card / data-card-veil は JS がつかむ目印(見た目のクラスとは分けている)。
+     カードの最初の傾きは HTML に直接書いておく。JS が動く前の1コマ目から、立体として見えるようにするため */}}
+{{define "content"}}
+<div class="pc-screen">
+  <div class="pc-stage" data-card-stage role="button" tabindex="0" aria-label="プロフィールカード。ドラッグで回転、ダブルタップで入る、または Enter キー">
+    <div class="pc-card" data-card style="transform: rotateX(3.00deg) rotateY(-8.00deg); --sheen-pos: 43.0%; --sheen-lum: 0.37">
+      {{- /* ---- 表: 中身は全部こちらに置く ---- */}}
+      <div class="pc-face pc-front">
+        <div class="pc-copy">
+          <span class="pc-eyebrow">( imutaro / card )</span>
+          <div class="pc-portrait">
+            <img src="/imutaro-icon-512.webp" alt="" width="512" height="512" fetchpriority="high" class="pc-portrait-img">
+          </div>
+          <div class="pc-identity">
+            <h1 class="pc-name">imutaro</h1>
+            <p class="pc-role">Data Engineer</p>
+          </div>
+          <dl class="pc-facts">
+            {{- range .Data.Facts}}
+            <div class="pc-fact-row"><dt>{{.Key}}</dt><dd>{{.Value}}</dd></div>
+            {{- end}}
+          </dl>
+          {{- /* 使っている技術。リンクではなく表示だけ。カードは回して遊ぶ面なので、
+               面の中にサイト外へ飛ぶ導線を置かない(触った瞬間に離脱する) */}}
+          <ul class="pc-stack">
+            {{- range .Data.Stack}}
+            <li class="pc-stack-item"><span class="pc-stack-name">{{icon .Icon 14}}{{.Name}}</span><span class="pc-stack-status" data-status="{{.Status}}">{{.Status}}</span></li>
+            {{- end}}
+          </ul>
+        </div>
+        <div class="pc-frame" aria-hidden="true"></div>
+        <div class="pc-sheen" aria-hidden="true"></div>
+      </div>
+
+      {{- /* ---- 裏: QR とその行き先だけを置く面。QR は白地でないと読み取り精度が落ちるので、白の板に載せる ---- */}}
+      <div class="pc-face pc-back">
+        <div class="pc-weave" aria-hidden="true"></div>
+        <div class="pc-back-mark">
+          <span class="pc-back-qr"><img src="/qr-imutaro-com.svg" alt="{{.Data.QRLabel}} の QR コード" width="148" height="148" class="pc-back-qr-img"></span>
+          <p class="pc-back-url">{{.Data.QRLabel}}</p>
+        </div>
+        <div class="pc-frame" aria-hidden="true"></div>
+        <div class="pc-sheen" aria-hidden="true"></div>
+      </div>
+
+      {{- /* ---- 厚み(側面4枚) ---- */}}
+      <div class="pc-side pc-side-l"></div>
+      <div class="pc-side pc-side-r"></div>
+      <div class="pc-side pc-side-t"></div>
+      <div class="pc-side pc-side-b"></div>
+    </div>
+  </div>
+
+  {{- /* 「回せる」「ダブルタップで入れる」は自明ではないので必ず言葉で置く */}}
+  <p class="pc-hint"><span>ドラッグで回す</span><span class="pc-hint-sep" aria-hidden="true">/</span><span>ダブルタップで入る</span></p>
+  {{- /* 操作に気づかない人・操作したくない人のための逃げ道 */}}
+  <a href="/" class="pc-fallback">トップページへ <span aria-hidden="true">→</span></a>
+
+  <div class="pc-veil" data-card-veil aria-hidden="true"></div>
+</div>
+{{end}}
