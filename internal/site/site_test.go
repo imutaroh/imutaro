@@ -56,7 +56,7 @@ func TestBuildWritesEveryPage(t *testing.T) {
 	for _, name := range []string{
 		"index.html", "card.html", "apps.html", "uses.html", "404.html",
 		"writings.html", "writings/zenn.html", "writings/note.html",
-		"_headers", "ogp.png", "favicon.ico",
+		"_headers", "ogp.png", "favicon.ico", "obsidian-icon-480.webp",
 	} {
 		if _, err := os.Stat(filepath.Join(out, name)); err != nil {
 			t.Errorf("%s がありません: %v", name, err)
@@ -70,8 +70,11 @@ func TestPagesHaveTheirContent(t *testing.T) {
 	index := read(t, out, "index.html")
 	for _, want := range []string{
 		`aria-label="周りの価値を、最大化するエンジニアへ"`,
-		"diffbase.nvim",             // Zenn の最新記事
-		"( 06 / contact )",          // 記事セクションがあるので Contact は 06
+		"diffbase.nvim",  // Zenn の最新記事
+		"( 05 / notes )", // 技術メモへの入口
+		`href="https://notes.imutaro.com" class="lp-cta-primary"`,
+		"/obsidian-icon-480.webp",
+		"( 07 / contact )",          // 記事セクションがあるので Contact は 07
 		`href="/writings/zenn"`,     // 「もっと見る」は絞り込みページへ
 		`class="dock lp-apps-dock"`, // 04 Apps の Dock
 		"imutaakihiro3@gmail.com",   // Contact の Email(mailto: は外して表示)

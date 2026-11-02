@@ -19,7 +19,7 @@ const (
 	siteDescription = "2026年新卒のデータエンジニアが、データ基盤とAI活用の学びを日々記録していくサイト"
 )
 
-// lpArticlesPerSource は LP の 05 に出す件数。記事カードのグリッドは3列なので、6件で2行に揃う。
+// lpArticlesPerSource は LP の 06 に出す件数。記事カードのグリッドは3列なので、6件で2行に揃う。
 const lpArticlesPerSource = 6
 
 // Meta は <head> に出すページの情報。
@@ -91,7 +91,7 @@ type LPData struct {
 	ContactNumber string
 }
 
-// HasArticles は 05 の記事セクションを出すかどうか。
+// HasArticles は 06 の記事セクションを出すかどうか。
 func (d LPData) HasArticles() bool {
 	return len(d.Zenn)+len(d.Note) > 0
 }
@@ -147,10 +147,10 @@ func pages(opts Options) []Page {
 	for i, f := range profile.AboutFields {
 		lp.About = append(lp.About, AboutLine{Key: f.Key, Value: f.Value, Last: i == len(profile.AboutFields)-1})
 	}
-	// 記事セクション(05)が無い回は、Contact の番号を1つ繰り上げる
-	lp.ContactNumber = "05"
+	// 記事セクション(06)が無い回は、Contact の番号を1つ繰り上げる
+	lp.ContactNumber = "06"
 	if lp.HasArticles() {
-		lp.ContactNumber = "06"
+		lp.ContactNumber = "07"
 	}
 
 	writings := func(source string, articles []feeds.Article) WritingsData {

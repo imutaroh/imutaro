@@ -23,9 +23,24 @@ test.describe('トップページ', () => {
   });
 
   test('主要セクションが表示される', async ({ page }) => {
-    for (const section of ['About', 'Learning Log', 'Stack', 'Apps', 'Contact']) {
+    for (const section of ['About', 'Learning Log', 'Stack', 'Apps', 'Notes', 'Contact']) {
       await expect(page.getByRole('heading', { level: 2, name: section })).toBeVisible();
     }
+  });
+
+  test('Notes から Obsidian の技術メモへ行ける', async ({ page }) => {
+    const notes = page.locator('section', {
+      has: page.getByRole('heading', { level: 2, name: 'Notes' }),
+    });
+    await expect(notes.getByText('僕の技術メモは、')).toBeVisible();
+    await expect(notes.getByRole('link', { name: /メモを読む/ })).toHaveAttribute(
+      'href',
+      'https://notes.imutaro.com',
+    );
+    // 遅延読み込みの画像がスクロール後に読み込めている
+    const icon = notes.locator('img');
+    await icon.scrollIntoViewIfNeeded();
+    await expect.poll(() => icon.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(480);
   });
 
   test('Zenn / note 一覧への導線が機能する', async ({ page }) => {

@@ -1,6 +1,6 @@
 /* Next.js 版(CSS Modules)の components/ExternalArticleList/index.module.css から移植。クラス名には接頭辞 ext- を付け、ファイル間の衝突を避ける */
 
-/* Zenn / note カードグリッド。LP の 05 セクションと /writings の両方で使う */
+/* Zenn / note カードグリッド。LP の 06 セクションと /writings の両方で使う */
 
 .ext-grid {
   display: grid;
