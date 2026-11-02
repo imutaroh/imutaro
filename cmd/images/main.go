@@ -46,7 +46,7 @@ func jobs() []job {
 		// 元画像は Obsidian.app のアイコンから透明な余白を切り落としたもの。色は変えない(Obsidian の規定)
 		{src: "obsidian-icon.png", width: 480},
 	}
-	// Dock のアイコン: LP と /uses(56px 表示 × 拡大 1.5 → 2倍の画面で 168)と /apps(88px × 1.5 → 264)
+	// Dock のアイコン: LP(56px 表示 × 拡大 1.5 → 2倍の画面で 168、3倍の画面で 252)
 	for _, app := range profile.DockApps {
 		js = append(js,
 			job{src: "apps/" + app.ID + ".png", width: 176},

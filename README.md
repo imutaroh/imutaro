@@ -32,7 +32,7 @@ npm run test:e2e                       # ブラウザのテスト(書き出し �
 go run ./cmd/images                    # 画像の縮小版を作り直す(元画像を差し替えたとき)
 ```
 
-`cmd/serve` は Cloudflare と同じ URL の解決をする。`/apps` で `apps.html` を返し、`/apps/` と `/apps.html` は `/apps` へ転送し、無いパスには `404.html` を 404 で返す。
+`cmd/serve` は Cloudflare と同じ URL の解決をする。`/card` で `card.html` を返し、`/card/` と `/card.html` は `/card` へ転送し、無いパスには `404.html` を 404 で返す。
 
 ## ディレクトリ
 
@@ -43,7 +43,7 @@ go run ./cmd/images                    # 画像の縮小版を作り直す(元�
 | `cmd/images` | 画像の縮小版を作るコマンド(出力はリポジトリに入れる) |
 | `internal/feeds` | Zenn / note の RSS の取得と解析 |
 | `internal/profile` | 人物と道具のデータ(年齢・Stack・Learning Log・Contact・Dock のアプリ) |
-| `internal/site` | ページの組み立てと書き出し。`/uses` の中身は `uses.go` |
+| `internal/site` | ページの組み立てと書き出し |
 | `web/templates` | HTML のテンプレート(`layout.html` が外枠、`pages/` がページ、`partials/` が部品) |
 | `web/css` | CSS。ファイルごとにクラス名の接頭辞を決めている(`lp-` `pc-` `dock-` など) |
 | `web/js` | ブラウザで動く JS(ビルドの道具を通さず、そのまま配る) |

@@ -135,6 +135,9 @@ html.js-hero-hold .lp-hero-item5 {
   /* 長文はゆったり(本文の 1.8 より1段開ける) */
   line-height: 2;
   max-width: 40em;
+  /* 単語の途中で折れないよう、テンプレートの <wbr> の位置でだけ折り返す */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
 /* 769〜1024pxの帯ではリード1行目の末尾がリボンのクローム曲線の高コントラスト部に
@@ -213,7 +216,7 @@ html.js-hero-hold .lp-hero-item5 {
 }
 
 /* ロゴを載せる色の面。色は各サービスのロゴの色で、Dock のアイコンと同じく原色のまま出す
-   (モチーフ5の「ロゴは ink 一色」の例外。DESIGN.md の /apps の項) */
+   (モチーフ5の「ロゴは ink 一色」の例外。DESIGN.md のモチーフ10) */
 .lp-hero-dock .lp-hero-tile {
   display: grid;
   place-items: center;
@@ -244,9 +247,10 @@ html.js-hero-hold .lp-hero-item5 {
   background-color: #000;
 }
 
+/* スマホでは「記事を読む」と Dock を出さない。同じ行き先がヘッダーのメニューにある */
 @media (max-width: 640px) {
-  .lp-hero-cta .lp-hero-dock {
-    --gap: 8px;
+  .lp-hero-cta {
+    display: none;
   }
 }
 
@@ -472,30 +476,31 @@ html.js-hero-hold .lp-hero-item5 {
 }
 
 /* Dock(dock.css)の大きさ。Dock 側の .dock(1クラス)に勝たせるため2クラスで指定する。
-   ここに出すのはお気に入りの4個だけなので、スマホより広ければ 56px のまま収まる */
+   ここに出すのはお気に入りの6個だけなので、スマホより広ければ 56px のまま収まる */
 .lp-apps-section .lp-apps-dock {
   --icon: 56px;
 
   /* 拡大したアイコンは上へはみ出すので、そのぶん見出しから離す */
   margin-top: calc(var(--icon) * 0.5);
-  /* 列(992px)の中に約260pxのトレイを左詰めにすると右が大きく空くので、中央に置く */
+  /* 列(992px)の中に約390pxのトレイを左詰めにすると右が大きく空くので、中央に置く */
   margin-inline: auto;
 }
 
-/* 「全部見る →」も Dock の真下にそろえる */
-.lp-apps-section .lp-apps-more {
+/* Dock の下のリンクも中央にそろえる。.lp-articles-more の上の余白はそのまま使う */
+.lp-apps-links {
   display: flex;
-  width: fit-content;
-  margin-inline: auto;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 32px;
 }
 
 @media (max-width: 640px) {
-  /* スマホでは4個を1段に並べる。4個ぶんが内容幅(画面幅 − 左右 padding 48px −
-     間3つ 30px − トレイの内側と枠 26px)に収まる大きさ。
+  /* スマホでは6個を 3・3 で積む(dock.css の既定の5個ぶんだと 5・1 で1個孤立する)。
      拡大ぶんの余白は要らない(タッチでは拡大しない) */
   .lp-apps-section .lp-apps-dock {
-    --icon: min(64px, calc((100vw - 104px) / 4));
+    --icon: 64px;
 
+    max-width: min(100%, calc(var(--icon) * 3 + var(--gap) * 2 + 26px));
     margin-top: 0;
   }
 }
@@ -587,6 +592,8 @@ html.js-hero-hold .lp-hero-item5 {
   font-size: var(--fs-h2);
   font-weight: 700;
   color: var(--color-ink);
+  /* 折り返すときに最後の1語だけが落ちないよう、行の長さをそろえる */
+  text-wrap: balance;
 }
 
 /* 番号を独立要素に格上げしたエディトリアルの型(01. About)。
@@ -609,6 +616,9 @@ html.js-hero-hold .lp-hero-item5 {
   /* 長文はゆったり(本文の 1.8 より1段開ける) */
   line-height: 2;
   margin-bottom: 1.2em;
+  /* 単語の途中で折れないよう、テンプレートの <wbr> の位置でだけ折り返す */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
 .lp-about-body p:last-child {
@@ -904,6 +914,8 @@ html.js-hero-hold .lp-hero-item5 {
   .lp-section-title {
     font-size: 1.8rem;
     gap: 10px;
+    /* 2行になる見出しの行間が開きすぎないように */
+    line-height: 1.3;
   }
 
   .lp-section-number {
@@ -918,6 +930,15 @@ html.js-hero-hold .lp-hero-item5 {
 
   /* contactValue は URL データなのでモバイルでも 13px(--fs-meta)を維持する
      (mono 2段規則: データ=13px / ラベル=12px。行は flex-wrap で折り返す) */
+
+  /* Log の本文は全行そろえて日付の下に置く(長い行だけ落ちると列が崩れて見える) */
+  .lp-log-entry {
+    gap: 4px 16px;
+  }
+
+  .lp-log-text {
+    flex-basis: 100%;
+  }
 
   /* 線が短くなりすぎるため始点余白を詰める */
   .lp-section-eyebrow::after {

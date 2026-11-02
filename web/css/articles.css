@@ -113,8 +113,41 @@
   }
 }
 
+/* スマホも2列。サムネイルの画像に題名が入っているので、文字の題名は見た目からは外す。
+   読み上げのためにリンクの中には残す(display: none にしない) */
 @media (max-width: 560px) {
   .ext-grid {
-    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .ext-body {
+    position: relative;
+    padding: 8px 10px 10px;
+  }
+
+  .ext-title {
+    position: absolute;
+    display: block;
+    width: 1px;
+    height: 1px;
+    min-height: 0;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* 幅が足りないので、日付と出どころは縦に積み、時計のアイコンは外す */
+  .ext-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    margin-top: 0;
+  }
+
+  .ext-meta .pubdate-date img {
+    display: none;
+  }
+
+  .ext-badge {
+    padding: 1px 10px;
   }
 }

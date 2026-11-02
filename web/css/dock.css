@@ -1,6 +1,6 @@
 /* Next.js 版(CSS Modules)の components/Dock/index.module.css から移植。クラス名には接頭辞 dock- を付け、ファイル間の衝突を避ける */
 
-/* Dock 本体。/apps と LP の 04 Apps が共有する。
+/* Dock 本体。LP の hero と 04 が共有する。
    トレイは macOS の Dock に寄せたガラスの板(Issue #40 で5案から選定)。
    アイコンだけは原色のまま出す: アプリの絵柄そのものが情報なので、
    技術スタックのロゴのように ink 一色に落とすと何のアプリか分からなくなる */

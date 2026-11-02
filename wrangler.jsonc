@@ -11,7 +11,7 @@
   "compatibility_date": "2026-10-01",
   "assets": {
     "directory": "./dist",
-    // apps.html を /apps で返し、/apps/ と /apps.html は /apps へ転送する(既定の挙動を明示)
+    // card.html を /card で返し、/card/ と /card.html は /card へ転送する(既定の挙動を明示)
     "html_handling": "auto-trailing-slash",
     // 無いパスには dist/404.html を 404 で返す
     "not_found_handling": "404-page"

@@ -66,8 +66,151 @@
   color: var(--color-accent);
 }
 
+/* スマホ用のメニュー。広い画面では出さない */
+.hdr-menu {
+  display: none;
+}
+
 @media (max-width: 640px) {
   .hdr-header {
+    /* 固定したメニューを、下のセクションより前に出す */
+    position: relative;
+    z-index: 20;
+    flex-wrap: nowrap;
     padding: 16px 24px;
+  }
+
+  .hdr-nav {
+    display: none;
+  }
+
+  /* ボタンだけを画面の右上に固定し、どこまでスクロールしても押せるようにする。
+     名札はページと一緒に流れる。スクロールの監視は要らない(CSS だけで済む) */
+  .hdr-menu {
+    position: fixed;
+    top: 16px;
+    right: 24px;
+    display: block;
+  }
+
+  /* 本文の上に重なっても見えるよう、白い地を敷く。
+     すりガラス(backdrop-filter)はスクロール中の描画が重くなるので使わない */
+  .hdr-menu-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.92);
+    box-shadow:
+      0 0 0 0.5px rgba(26, 35, 48, 0.14),
+      0 4px 12px -4px rgba(26, 35, 48, 0.3);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  /* Safari は list-style では三角を消せない */
+  .hdr-menu-button::-webkit-details-marker {
+    display: none;
+  }
+
+  /* 3本線。開いたら × になる */
+  .hdr-menu-bars,
+  .hdr-menu-bars::before,
+  .hdr-menu-bars::after {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background-color: var(--color-ink);
+    transition:
+      transform 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .hdr-menu-bars {
+    position: relative;
+  }
+
+  .hdr-menu-bars::before,
+  .hdr-menu-bars::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+
+  .hdr-menu-bars::before {
+    transform: translateY(-6px);
+  }
+
+  .hdr-menu-bars::after {
+    transform: translateY(6px);
+  }
+
+  .hdr-menu[open] .hdr-menu-bars {
+    background-color: transparent;
+  }
+
+  .hdr-menu[open] .hdr-menu-bars::before {
+    transform: rotate(45deg);
+  }
+
+  .hdr-menu[open] .hdr-menu-bars::after {
+    transform: rotate(-45deg);
+  }
+
+  /* ボタンの下に開く。横向きなど画面が低いときは、板の中だけスクロールする */
+  .hdr-menu-panel {
+    position: fixed;
+    top: 68px;
+    right: 24px;
+    left: 24px;
+    max-height: calc(100dvh - 84px);
+    border: 1px solid var(--color-line);
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 24px 48px -24px rgba(26, 35, 48, 0.35);
+    overflow-y: auto;
+  }
+
+  .hdr-menu-nav a {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--color-line);
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  /* トップのセクション見出しと同じ番号(serif / accent)。幅をそろえて文字の頭を合わせる */
+  .hdr-menu-num {
+    flex: 0 0 auto;
+    min-width: 1.6em;
+    font-family: var(--font-serif-stack);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-accent);
+  }
+
+  .hdr-menu-sns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    background-color: var(--color-code-bg);
+  }
+
+  .hdr-menu-sns a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 0 20px;
+    font-size: var(--fs-ui);
+    color: var(--color-ink);
+  }
+
+  .hdr-menu-nav a:active,
+  .hdr-menu-sns a:active {
+    color: var(--color-accent);
   }
 }

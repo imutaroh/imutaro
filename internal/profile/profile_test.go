@@ -1,7 +1,6 @@
 package profile
 
 import (
-	"slices"
 	"testing"
 	"time"
 )
@@ -31,16 +30,5 @@ func TestCardFactsStartsWithAge(t *testing.T) {
 	facts := CardFacts(time.Date(2026, 10, 23, 12, 0, 0, 0, Tokyo))
 	if facts[0].Key != "age" || facts[0].Value != "22" {
 		t.Errorf("facts[0] = %+v, want age 22", facts[0])
-	}
-}
-
-func TestFavoriteAppsKeepsDockOrder(t *testing.T) {
-	var got []string
-	for _, app := range FavoriteApps() {
-		got = append(got, app.ID)
-	}
-	want := []string{"arc", "herdr", "obsidian", "raycast"}
-	if !slices.Equal(got, want) {
-		t.Errorf("FavoriteApps = %v, want %v", got, want)
 	}
 }

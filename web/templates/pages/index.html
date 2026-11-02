@@ -21,10 +21,10 @@
         <div class="lp-hero-visual lp-hero-item5" aria-hidden="true">
           <img src="/imutaro-icon-512.webp" alt="" width="512" height="512" fetchpriority="high" class="lp-hero-figure">
         </div>
-        <p class="lp-hero-lead lp-hero-item3">2026年新卒のデータエンジニア。まだ道の途中だからこそ、データ基盤とAI活用に向き合いながら、日々の学びをここに記録しています。</p>
+        <p class="lp-hero-lead lp-hero-item3">2026年新卒の<wbr>データエンジニア。<wbr>まだ道の途中だからこそ、<wbr>データ基盤とAI活用に<wbr>向き合いながら、<wbr>日々の学びを<wbr>ここに記録しています。</p>
         <div class="lp-hero-cta lp-hero-item4">
           <a href="/writings" class="lp-cta-primary">記事を読む<span class="lp-cta-arrow" aria-hidden="true">→</span></a>
-          {{- /* 外へのリンクは 04 Favorite Apps と同じ Dock で見せる。乗せたときの拡大と吹き出しは dock.css */}}
+          {{- /* 外へのリンクは 04 と同じ Dock で見せる。乗せたときの拡大と吹き出しは dock.css */}}
           <ul class="dock lp-hero-dock">
             {{- template "hero-dock-item" dict "Href" "https://github.com/imutaroh" "Name" "GitHub" "Icon" "github"}}
             {{- template "hero-dock-item" dict "Href" "https://zenn.dev/imu_imu" "Name" "Zenn" "Icon" "zenn"}}
@@ -36,12 +36,12 @@
     </div>
   </section>
 
-  <section class="lp-section lp-before-band">
+  <section class="lp-section lp-before-band" id="about">
     {{template "section-head" dict "Number" "01" "Label" "about" "Title" "About"}}
     <div class="lp-about-grid">
       <div class="lp-about-body">
-        <p>福岡で、D2Cのデータ基盤を作って活用しながらAIを推進していくチームで働いています。 Claude Codeのようなエージェント型のツールをどう日々の業務に組み込むかを試行錯誤するのが好きです。</p>
-        <p>学んだことをそのままにせず記録して公開するのは、後から自分で見返せるようにするためと、 同じところでつまずいている誰かの役に立てばという理由からです。</p>
+        <p>福岡で、<wbr>D2Cのデータ基盤を<wbr>作って活用しながら<wbr>AIを推進していく<wbr>チームで働いています。<wbr>Claude&nbsp;Codeのような<wbr>エージェント型のツールを<wbr>どう日々の業務に<wbr>組み込むかを<wbr>試行錯誤するのが<wbr>好きです。</p>
+        <p>学んだことを<wbr>そのままにせず<wbr>記録して公開するのは、<wbr>後から自分で<wbr>見返せるように<wbr>するためと、<wbr>同じところで<wbr>つまずいている<wbr>誰かの役に<wbr>立てばという<wbr>理由からです。</p>
       </div>
       {{- /* 肖像は「このレコードの1フィールド」として扱う。カードの外へはみ出させると
            JSON(機械が読むデータ)の見立てとキャラクターの語彙がぶつかるので、枠付きの小窓 + ファイル名で中に収める。
@@ -58,10 +58,10 @@
     </div>
   </section>
 
-  {{- /* 02 Log / 03 Stack / 04 Favorite Apps を包む銀の帯 */}}
+  {{- /* 02 Log / 03 Stack / 04 Dotfiles & Favorite Apps を包む銀の帯 */}}
   <div class="lp-mid-band">
     <div class="lp-mid-grid">
-      <section class="lp-section">
+      <section class="lp-section" id="log">
         {{template "section-head" dict "Number" "02" "Label" "log" "Title" "Learning Log"}}
         <ol class="lp-log">
           {{- range .Data.Log}}
@@ -70,7 +70,7 @@
         </ol>
       </section>
 
-      <section class="lp-section">
+      <section class="lp-section" id="stack">
         {{template "section-head" dict "Number" "03" "Label" "stack" "Title" "Stack"}}
         <ul class="lp-stack">
           {{- range .Data.Stack}}
@@ -81,18 +81,19 @@
       </section>
     </div>
 
-    {{- /* 技術(03 Stack)の隣に、特に好きな道具だけを置く。/apps と同じ Dock を小さめに出し、
-         全部見たい人は /apps へ。帯の中だが2カラムの外なので全幅 */}}
-    <section class="lp-section lp-apps-section">
-      {{template "section-head" dict "Number" "04" "Label" "favorite apps" "Title" "Favorite Apps"}}
+    {{- /* 技術(03 Stack)の隣に、環境の設定と特に好きな道具を置く。帯の中だが2カラムの外なので全幅 */}}
+    <section class="lp-section lp-apps-section" id="apps">
+      {{template "section-head" dict "Number" "04" "Label" "dotfiles & favorite apps" "Title" "Dotfiles & Favorite Apps"}}
       {{template "dock" dict "Apps" .Data.Apps "Class" "lp-apps-dock" "Sizes" "84px" "Loading" "lazy"}}
-      <a href="/apps" class="lp-articles-more lp-apps-more">全部見る<span class="lp-cta-arrow" aria-hidden="true">→</span></a>
+      <div class="lp-apps-links">
+        <a href="https://github.com/imutaroh/dotfiles" class="lp-articles-more" target="_blank" rel="noopener noreferrer">dotfiles を見る<span class="lp-cta-arrow" aria-hidden="true">→</span></a>
+      </div>
     </section>
   </div>
 
   {{- /* 技術メモの置き場(notes.imutaro.com)への入口。中身は Obsidian で書いている。
        ノートの一覧は出さず、文とボタンだけにする */}}
-  <section class="lp-section lp-after-band">
+  <section class="lp-section lp-after-band" id="notes">
     {{template "section-head" dict "Number" "05" "Label" "notes" "Title" "Notes"}}
     <div class="lp-notes-card">
       <div class="lp-card-tab"><span class="lp-card-dot"></span>notes.imutaro.com</div>
@@ -109,7 +110,7 @@
   {{- /* 記事が1件も無い回(-allow-empty-feeds でのビルド)はセクションごと出さず、
        Contact の番号が繰り上がる */}}
   {{- if .Data.HasArticles}}
-  <section class="lp-section">
+  <section class="lp-section" id="articles">
     {{template "section-head" dict "Number" "06" "Label" "zenn & note" "Title" "Zenn / note の記事"}}
     <div class="lp-external-groups">
       {{- if .Data.Zenn}}

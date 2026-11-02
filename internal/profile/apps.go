@@ -1,6 +1,6 @@
 package profile
 
-// DockApp は /apps と LP の 04 Apps の Dock に並べるアプリ。並び順がそのまま Dock の並びになる。
+// DockApp は LP の 04 の Dock に並べるアプリ。並び順がそのまま Dock の並びになる。
 //
 // アイコンは public/apps/<ID>.png(258px)と public/apps/<ID>-176.webp / <ID>-258.webp(表示用の縮小版)。
 // 手元の Mac にインストールされているアプリから、実際の見た目のまま書き出したもの。
@@ -13,30 +13,14 @@ type DockApp struct {
 	Name string
 	// Href は公式サイト。
 	Href string
-	// Favorite は LP の 04 Favorite Apps に出すか。
-	Favorite bool
 }
 
-// FavoriteApps は LP に出すアプリを、DockApps の並び順で返す。
-func FavoriteApps() []DockApp {
-	var favorites []DockApp
-	for _, app := range DockApps {
-		if app.Favorite {
-			favorites = append(favorites, app)
-		}
-	}
-	return favorites
-}
-
-// DockApps は Dock に並べるアプリ。
+// DockApps は Dock に並べるアプリ(特に好きなものだけ)。
 var DockApps = []DockApp{
-	{ID: "arc", Name: "Arc", Href: "https://arc.net/", Favorite: true},
-	{ID: "herdr", Name: "Herdr", Href: "https://herdr.dev/", Favorite: true},
-	{ID: "obsidian", Name: "Obsidian", Href: "https://obsidian.md/", Favorite: true},
-	{ID: "notion", Name: "Notion", Href: "https://www.notion.com/"},
-	{ID: "notion-calendar", Name: "Notion Calendar", Href: "https://www.notion.com/product/calendar"},
-	{ID: "slack", Name: "Slack", Href: "https://slack.com/"},
-	{ID: "raycast", Name: "Raycast", Href: "https://www.raycast.com/", Favorite: true},
-	{ID: "nani", Name: "Nani", Href: "https://nani.now/"},
+	{ID: "arc", Name: "Arc", Href: "https://arc.net/"},
+	{ID: "herdr", Name: "Herdr", Href: "https://herdr.dev/"},
+	{ID: "obsidian", Name: "Obsidian", Href: "https://obsidian.md/"},
+	{ID: "raycast", Name: "Raycast", Href: "https://www.raycast.com/"},
 	{ID: "typeless", Name: "Typeless", Href: "https://www.typeless.com/"},
+	{ID: "notion-calendar", Name: "Notion Calendar", Href: "https://www.notion.com/product/calendar"},
 }

@@ -14,9 +14,30 @@
     {{/* 技術メモの置き場は notes.imutaro.com(中身は Obsidian)。別ホストなので外部リンク扱い */}}
     <a href="https://notes.imutaro.com" class="hdr-nav-link" target="_blank" rel="noopener noreferrer">技術メモ</a>
     <a href="/writings" class="hdr-nav-link">記事</a>
-    <a href="/uses" class="hdr-nav-link">道具</a>
     <a href="/#contact" class="hdr-nav-link">連絡</a>
   </nav>
+  {{/* スマホではナビの代わりにこのメニューを出す(header.css)。閉じ方の補助は web/js/menu.js */}}
+  <details class="hdr-menu" data-menu>
+    <summary class="hdr-menu-button" aria-label="メニュー"><span class="hdr-menu-bars" aria-hidden="true"></span></summary>
+    <div class="hdr-menu-panel">
+      {{/* トップの目次。番号はトップのセクション見出し(pages/index.html)とそろえる */}}
+      <nav class="hdr-menu-nav" aria-label="トップの目次">
+        <a href="/#about"><span class="hdr-menu-num" aria-hidden="true">01.</span>About</a>
+        <a href="/#log"><span class="hdr-menu-num" aria-hidden="true">02.</span>Learning Log</a>
+        <a href="/#stack"><span class="hdr-menu-num" aria-hidden="true">03.</span>Stack</a>
+        <a href="/#apps"><span class="hdr-menu-num" aria-hidden="true">04.</span>Dotfiles &amp; Favorite Apps</a>
+        <a href="/#notes"><span class="hdr-menu-num" aria-hidden="true">05.</span>Notes</a>
+        <a href="/#articles"><span class="hdr-menu-num" aria-hidden="true">06.</span>Zenn / note の記事</a>
+        <a href="/#contact"><span class="hdr-menu-num" aria-hidden="true">07.</span>Contact</a>
+      </nav>
+      <nav class="hdr-menu-sns" aria-label="外部のサービス">
+        <a href="https://github.com/imutaroh" target="_blank" rel="noopener noreferrer">{{icon "github" 18}}GitHub</a>
+        <a href="https://zenn.dev/imu_imu" target="_blank" rel="noopener noreferrer">{{icon "zenn" 18}}Zenn</a>
+        <a href="https://note.com/imutaroh" target="_blank" rel="noopener noreferrer">{{icon "note" 18}}note</a>
+        <a href="https://x.com/imutaroh" target="_blank" rel="noopener noreferrer">{{icon "x" 18}}X</a>
+      </nav>
+    </div>
+  </details>
 </header>
 {{end}}
 
