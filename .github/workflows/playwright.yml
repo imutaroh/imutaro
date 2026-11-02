@@ -9,7 +9,9 @@ on:
 jobs:
   test:
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    # ubuntu-latest(26.04)には Playwright 1.59 がブラウザの依存を入れられず、テストの前に落ちる。
+    # Playwright を対応版へ上げたら ubuntu-latest に戻せる
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
