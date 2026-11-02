@@ -23,7 +23,7 @@ test.describe('トップページ', () => {
   });
 
   test('主要セクションが表示される', async ({ page }) => {
-    for (const section of ['About', 'Learning Log', 'Stack', 'Apps', 'Notes', 'Contact']) {
+    for (const section of ['About', 'Learning Log', 'Stack', 'Favorite Apps', 'Notes', 'Contact']) {
       await expect(page.getByRole('heading', { level: 2, name: section })).toBeVisible();
     }
   });
@@ -88,13 +88,17 @@ test.describe('トップページ', () => {
     await expect(page).toHaveURL(/\/writings/);
   });
 
-  test('Apps に Dock が出て、/apps へ大きく見に行ける', async ({ page }) => {
+  test('Favorite Apps に4個だけ出て、/apps で全部見られる', async ({ page }) => {
     const apps = page.locator('section', {
-      has: page.getByRole('heading', { level: 2, name: 'Apps' }),
+      has: page.getByRole('heading', { level: 2, name: 'Favorite Apps' }),
     });
-    await expect(apps.getByRole('link', { name: 'Herdr', exact: true })).toBeVisible();
+    const dock = apps.locator('.lp-apps-dock');
+    await expect(dock.getByRole('link')).toHaveCount(4);
+    for (const name of ['Arc', 'Herdr', 'Obsidian', 'Raycast']) {
+      await expect(dock.getByRole('link', { name, exact: true })).toBeVisible();
+    }
 
-    await apps.getByRole('link', { name: /大きく見る/ }).click();
+    await apps.getByRole('link', { name: /全部見る/ }).click();
     await expect(page).toHaveURL(/\/apps$/);
   });
 });

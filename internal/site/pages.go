@@ -133,7 +133,7 @@ func pages(opts Options) []Page {
 		Title:    strings.Join(titleLines, ""),
 		Log:      profile.Log,
 		Stack:    profile.Stack,
-		Apps:     profile.DockApps,
+		Apps:     profile.FavoriteApps(),
 		Zenn:     firstN(zenn, lpArticlesPerSource),
 		Note:     firstN(note, lpArticlesPerSource),
 		Contacts: profile.Contacts,

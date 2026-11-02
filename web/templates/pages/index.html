@@ -24,7 +24,7 @@
         <p class="lp-hero-lead lp-hero-item3">2026年新卒のデータエンジニア。まだ道の途中だからこそ、データ基盤とAI活用に向き合いながら、日々の学びをここに記録しています。</p>
         <div class="lp-hero-cta lp-hero-item4">
           <a href="/writings" class="lp-cta-primary">記事を読む<span class="lp-cta-arrow" aria-hidden="true">→</span></a>
-          {{- /* 外へのリンクは 04 Apps と同じ Dock で見せる。乗せたときの拡大と吹き出しは dock.css */}}
+          {{- /* 外へのリンクは 04 Favorite Apps と同じ Dock で見せる。乗せたときの拡大と吹き出しは dock.css */}}
           <ul class="dock lp-hero-dock">
             {{- template "hero-dock-item" dict "Href" "https://github.com/imutaroh" "Name" "GitHub" "Icon" "github"}}
             {{- template "hero-dock-item" dict "Href" "https://zenn.dev/imu_imu" "Name" "Zenn" "Icon" "zenn"}}
@@ -58,7 +58,7 @@
     </div>
   </section>
 
-  {{- /* 02 Log / 03 Stack / 04 Apps を包む銀の帯 */}}
+  {{- /* 02 Log / 03 Stack / 04 Favorite Apps を包む銀の帯 */}}
   <div class="lp-mid-band">
     <div class="lp-mid-grid">
       <section class="lp-section">
@@ -81,12 +81,12 @@
       </section>
     </div>
 
-    {{- /* 技術(03 Stack)の隣に、毎日叩いている道具を置く。/apps と同じ Dock を小さめに出し、
-         大きく見たい人は /apps へ。帯の中だが2カラムの外なので全幅 */}}
+    {{- /* 技術(03 Stack)の隣に、特に好きな道具だけを置く。/apps と同じ Dock を小さめに出し、
+         全部見たい人は /apps へ。帯の中だが2カラムの外なので全幅 */}}
     <section class="lp-section lp-apps-section">
-      {{template "section-head" dict "Number" "04" "Label" "apps" "Title" "Apps"}}
+      {{template "section-head" dict "Number" "04" "Label" "favorite apps" "Title" "Favorite Apps"}}
       {{template "dock" dict "Apps" .Data.Apps "Class" "lp-apps-dock" "Sizes" "84px" "Loading" "lazy"}}
-      <a href="/apps" class="lp-articles-more lp-apps-more">大きく見る<span class="lp-cta-arrow" aria-hidden="true">→</span></a>
+      <a href="/apps" class="lp-articles-more lp-apps-more">全部見る<span class="lp-cta-arrow" aria-hidden="true">→</span></a>
     </section>
   </div>
 
