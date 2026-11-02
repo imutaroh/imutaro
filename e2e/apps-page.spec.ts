@@ -3,13 +3,11 @@ import { test, expect } from '@playwright/test';
 // internal/profile/apps.go の DockApps と同じ並び。アプリを足したらここも足す
 const APPS = [
   { name: 'Arc', href: 'https://arc.net/' },
-  { name: 'Ghostty', href: 'https://ghostty.org/' },
+  { name: 'Herdr', href: 'https://herdr.dev/' },
   { name: 'Obsidian', href: 'https://obsidian.md/' },
   { name: 'Notion', href: 'https://www.notion.com/' },
   { name: 'Notion Calendar', href: 'https://www.notion.com/product/calendar' },
   { name: 'Slack', href: 'https://slack.com/' },
-  { name: 'Kindle', href: 'https://www.amazon.com/kindle-dbs/fd/kcp' },
-  { name: 'Music', href: 'https://www.apple.com/apple-music/' },
   { name: 'Raycast', href: 'https://www.raycast.com/' },
   { name: 'Nani', href: 'https://nani.now/' },
   { name: 'Typeless', href: 'https://www.typeless.com/' },

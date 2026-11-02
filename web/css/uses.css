@@ -53,7 +53,7 @@ a.uses-name:hover {
 
 /* アプリの分類は、行の代わりに Dock を置く。LP の 04 Apps と同じ大きさ・同じく中央寄せ */
 .uses-apps .uses-dock {
-  --icon: min(56px, calc((100vw - 56px) / 13.4));
+  --icon: min(56px, calc((100vw - 56px) / 11.2));
 
   /* 拡大したアイコンと名前の吹き出しは上へはみ出すので、そのぶん見出しから離す */
   margin-top: calc(var(--icon) * 0.5 + 16px);
@@ -89,9 +89,9 @@ a.uses-name:hover {
     padding: 16px 0;
   }
 
-  /* スマホの Dock は1段4個で折り返す(dock.css)。4個ぶんが内容幅に収まる大きさ */
+  /* スマホの Dock は1段5個で折り返す(dock.css)。5個ぶんが内容幅に収まる大きさ */
   .uses-apps .uses-dock {
-    --icon: min(64px, calc((100vw - 104px) / 4));
+    --icon: min(64px, calc((100vw - 114px) / 5));
 
     margin-top: 0;
   }

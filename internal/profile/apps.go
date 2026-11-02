@@ -18,13 +18,11 @@ type DockApp struct {
 // DockApps は Dock に並べるアプリ。
 var DockApps = []DockApp{
 	{ID: "arc", Name: "Arc", Href: "https://arc.net/"},
-	{ID: "ghostty", Name: "Ghostty", Href: "https://ghostty.org/"},
+	{ID: "herdr", Name: "Herdr", Href: "https://herdr.dev/"},
 	{ID: "obsidian", Name: "Obsidian", Href: "https://obsidian.md/"},
 	{ID: "notion", Name: "Notion", Href: "https://www.notion.com/"},
 	{ID: "notion-calendar", Name: "Notion Calendar", Href: "https://www.notion.com/product/calendar"},
 	{ID: "slack", Name: "Slack", Href: "https://slack.com/"},
-	{ID: "kindle", Name: "Kindle", Href: "https://www.amazon.com/kindle-dbs/fd/kcp"},
-	{ID: "music", Name: "Music", Href: "https://www.apple.com/apple-music/"},
 	{ID: "raycast", Name: "Raycast", Href: "https://www.raycast.com/"},
 	{ID: "nani", Name: "Nani", Href: "https://nani.now/"},
 	{ID: "typeless", Name: "Typeless", Href: "https://www.typeless.com/"},

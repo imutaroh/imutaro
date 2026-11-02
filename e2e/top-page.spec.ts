@@ -55,7 +55,7 @@ test.describe('トップページ', () => {
     const apps = page.locator('section', {
       has: page.getByRole('heading', { level: 2, name: 'Apps' }),
     });
-    await expect(apps.getByRole('link', { name: 'Ghostty', exact: true })).toBeVisible();
+    await expect(apps.getByRole('link', { name: 'Herdr', exact: true })).toBeVisible();
 
     await apps.getByRole('link', { name: /大きく見る/ }).click();
     await expect(page).toHaveURL(/\/apps$/);

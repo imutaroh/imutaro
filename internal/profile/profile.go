@@ -73,6 +73,7 @@ type StackEntry struct {
 // Stack の「SQL」は言語であってロゴを持たないため、実際に使っている製品名 BigQuery を置く。
 var Stack = []StackEntry{
 	{Name: "BigQuery", Status: "daily", Icon: "bigquery"},
+	{Name: "dbt", Status: "daily", Icon: "dbt"},
 	{Name: "Go", Status: "learning", Icon: "go"},
 	{Name: "Claude Code", Status: "daily", Icon: "claude"},
 }
