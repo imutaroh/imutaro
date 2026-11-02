@@ -49,6 +49,7 @@ go run ./cmd/images                    # 画像の縮小版を作り直す(元�
 | `web/js` | ブラウザで動く JS(ビルドの道具を通さず、そのまま配る) |
 | `public` | そのまま配る画像・アイコン・QR・OGP 画像 |
 | `e2e` | Playwright のテスト |
+| `scripts` | OGP 画像の原稿と生成スクリプト |
 
 ## 更新の仕組み
 
@@ -76,4 +77,10 @@ RSS が取れないとビルドが失敗し、デプロイされない。その�
 
 ## OGP 画像
 
-`public/ogp.png` は完成品の素材として置いている。Next.js 版の時代に `scripts/gen-ogp.mjs`(`next/og` を使う)で作ったもので、そのスクリプトは移行のときに削除した。作り直すときは git の履歴から取り出し、Next.js を使わない形に書き換える。
+`public/ogp.png`(1200×630)は、X などにリンクを貼ったときに出る画像。原稿の `scripts/ogp.html` を Playwright で撮影して作り、出力はリポジトリに入れる(サイトのビルドのたびには作らない)。文言や構図を変えたら、撮り直す。
+
+```sh
+node scripts/gen-ogp.mjs  # Google Fonts を読むのでオフラインでは動かない
+```
+
+原稿をサイトのページにしないのは、画像を作るためだけの URL を本番で公開しないため。見出しの文言はトップページ(`internal/site/pages.go`)と別に持っているので、トップの見出しを変えたら `scripts/ogp.html` も揃える。

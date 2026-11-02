@@ -1,0 +1,91 @@
+<!doctype html>
+<!--
+  public/ogp.png の原稿(1200×630)。トップの hero の構図を、リンクカード向けに組み直したもの。
+  scripts/gen-ogp.mjs がこのファイルを開いて撮影する。文言を変えたら撮り直す。
+  色と書体は base.css のトークンをそのまま使う。
+-->
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>OGP</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;500;700&family=Playfair+Display:wght@700&family=Zen+Old+Mincho:wght@700&display=swap"
+    />
+    <link rel="stylesheet" href="../web/css/base.css" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        width: 1200px;
+        height: 630px;
+        overflow: clip;
+        background: var(--color-bg);
+      }
+
+      .ogp {
+        position: relative;
+        box-sizing: border-box;
+        width: 1200px;
+        height: 630px;
+        padding: 56px 64px 0;
+        overflow: clip;
+      }
+
+      /* X では幅 500px 前後に縮むので、サイトの 13px のままだと読めない */
+      .ogp-eyebrow {
+        margin: 0;
+        font-family: var(--font-mono);
+        font-size: 26px;
+        letter-spacing: 0.05em;
+        color: var(--color-accent);
+      }
+
+      /* 2行目(11文字)の右端が、キャラクターの顔の手前で止まる大きさ */
+      .ogp-title {
+        margin: 96px 0 0;
+        font-family: var(--font-serif-stack);
+        font-size: 66px;
+        font-weight: 700;
+        font-feature-settings: 'palt';
+        letter-spacing: 0;
+        line-height: 1.12;
+        color: var(--color-ink);
+      }
+
+      .ogp-title span {
+        display: block;
+        white-space: nowrap;
+      }
+
+      .ogp-lead {
+        margin: 30px 0 0;
+        font-family: var(--font-body);
+        font-size: 27px;
+        letter-spacing: 0.02em;
+        line-height: 1.7;
+        color: var(--color-sub);
+      }
+
+      /* 元画像と同じ 512px で等倍表示する(ドット絵を崩さない)。
+         胸で切れている下端は画像の下端に合わせるので、サイトのようなフェードは要らない */
+      .ogp-figure {
+        position: absolute;
+        right: 8px;
+        bottom: 0;
+        display: block;
+        width: 512px;
+        height: 512px;
+        image-rendering: pixelated;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ogp">
+      <p class="ogp-eyebrow">( imutaro — data engineer )</p>
+      <h1 class="ogp-title"><span>周りの価値を、</span><span>最大化するエンジニアへ</span></h1>
+      <p class="ogp-lead">データ基盤とAI活用に向き合いながら、<br />日々の学びをここに記録しています。</p>
+      <img class="ogp-figure" src="../public/imutaro-icon.png" alt="" width="512" height="512" />
+    </div>
+  </body>
+</html>
