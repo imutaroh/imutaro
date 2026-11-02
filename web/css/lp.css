@@ -769,13 +769,16 @@ html.js-hero-hold .lp-hero-item5 {
   padding: 56px;
 }
 
-/* 元画像は 480px なので、2倍の画面でも 240px 表示までは滲まない */
+/* 元画像は 480px なので、2倍の画面でも 240px 表示までは滲まない。
+   margin-inline: auto は、文の上に折り返して1つだけ載る幅でアイコンを中央に置く。
+   横に並ぶ幅では文(flex-grow)が余白を使い切るので、左に寄ったままになる */
 .lp-notes-icon {
   display: block;
   flex: 0 0 auto;
   width: 240px;
   max-width: 100%;
   height: auto;
+  margin-inline: auto;
 }
 
 .lp-notes-text {
