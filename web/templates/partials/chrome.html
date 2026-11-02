@@ -3,16 +3,19 @@
 
 {{define "header"}}
 <header class="hdr-header">
-  <a href="/" class="hdr-logo">imutaro<span class="hdr-logo-tld">.com</span></a>
+  <a href="/" class="hdr-who">
+    <img src="/imutaro-icon-176.webp" alt="" width="176" height="176" class="hdr-who-icon">
+    <span>
+      <span class="hdr-who-name">いむたろ</span>
+      <span class="hdr-who-role">data engineer</span>
+    </span>
+  </a>
   <nav class="hdr-nav">
-    <a href="/writings" class="hdr-nav-link">Writings</a>
-    {{/* 自前の書き物置き場は Obsidian Publish(notes.imutaro.com)。別ホストなので外部リンク扱い。
-         640px 以下で畳まれるのは .hdr-nav-icon だけなので、これはスマホでも残る */}}
-    <a href="https://notes.imutaro.com" class="hdr-nav-link" target="_blank" rel="noopener noreferrer">Notes</a>
-    <a href="https://zenn.dev/imu_imu" class="hdr-nav-icon" target="_blank" rel="noopener noreferrer" aria-label="Zenn" title="Zenn">{{icon "zenn" 16}}</a>
-    <a href="https://note.com/imutaroh" class="hdr-nav-icon" target="_blank" rel="noopener noreferrer" aria-label="note" title="note">{{icon "note" 16}}</a>
-    <a href="https://x.com/imutaroh" class="hdr-nav-icon" target="_blank" rel="noopener noreferrer" aria-label="X" title="X">{{icon "x" 16}}</a>
-    <a href="https://github.com/imutaroh" class="hdr-nav-icon" target="_blank" rel="noopener noreferrer" aria-label="GitHub" title="GitHub">{{icon "github" 16}}</a>
+    {{/* 技術メモの置き場は notes.imutaro.com(中身は Obsidian)。別ホストなので外部リンク扱い */}}
+    <a href="https://notes.imutaro.com" class="hdr-nav-link" target="_blank" rel="noopener noreferrer">技術メモ</a>
+    <a href="/writings" class="hdr-nav-link">記事</a>
+    <a href="/uses" class="hdr-nav-link">道具</a>
+    <a href="/#contact" class="hdr-nav-link">連絡</a>
   </nav>
 </header>
 {{end}}

@@ -148,6 +148,8 @@ html.js-hero-hold .lp-hero-item5 {
 
 .lp-hero-cta {
   display: flex;
+  /* 隣の Dock の高さにボタンが引き伸ばされないように */
+  align-items: center;
   gap: 16px;
   margin-top: 40px;
   flex-wrap: wrap;
@@ -205,31 +207,47 @@ html.js-hero-hold .lp-hero-item5 {
   color: var(--color-accent);
 }
 
-.lp-cta-icons {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+/* hero の小さな Dock。dock.css は lp.css より後に読まれるので、2クラスで指定して勝たせる */
+.lp-hero-cta .lp-hero-dock {
+  --icon: 48px;
 }
 
-.lp-cta-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border: 1px solid var(--color-line);
-  border-radius: var(--border-radius);
-  color: var(--color-sub);
-  transition:
-    color 0.15s ease,
-    border-color 0.15s ease,
-    transform 0.15s ease;
+/* ロゴを載せる色の面。色は各サービスのロゴの色で、Dock のアイコンと同じく原色のまま出す
+   (モチーフ5の「ロゴは ink 一色」の例外。DESIGN.md の /apps の項) */
+.lp-hero-dock .lp-hero-tile {
+  display: grid;
+  place-items: center;
+  border-radius: 22.5%;
+  color: #fff;
 }
 
-.lp-cta-icon:hover {
-  color: var(--color-accent);
-  border-color: var(--color-accent);
-  transform: translateY(-2px);
+.lp-hero-tile svg {
+  display: block;
+  width: 56%;
+  height: 56%;
+}
+
+.lp-hero-tile[data-brand='github'] {
+  background-color: #24292f;
+}
+
+.lp-hero-tile[data-brand='zenn'] {
+  background-color: #3ea8ff;
+}
+
+.lp-hero-dock .lp-hero-tile[data-brand='note'] {
+  background-color: #fff;
+  color: var(--color-ink);
+}
+
+.lp-hero-tile[data-brand='x'] {
+  background-color: #000;
+}
+
+@media (max-width: 640px) {
+  .lp-hero-cta .lp-hero-dock {
+    --gap: 8px;
+  }
 }
 
 /* --- chrome ribbon (静的な生成画像。動きは fadeInUp 入場のみ) --- */

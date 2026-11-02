@@ -70,8 +70,12 @@ func TestPagesHaveTheirContent(t *testing.T) {
 	index := read(t, out, "index.html")
 	for _, want := range []string{
 		`aria-label="周りの価値を、最大化するエンジニアへ"`,
-		"diffbase.nvim",  // Zenn の最新記事
-		"( 05 / notes )", // 技術メモへの入口
+		"diffbase.nvim",             // Zenn の最新記事
+		`class="hdr-who"`,           // ヘッダーの名札
+		`href="/#contact"`,          // ヘッダーの「連絡」
+		`id="contact"`,              // その飛び先
+		`class="dock lp-hero-dock"`, // hero の Dock
+		"( 05 / notes )",            // 技術メモへの入口
 		`href="https://notes.imutaro.com" class="lp-cta-primary"`,
 		"/obsidian-icon-480.webp",
 		"( 07 / contact )",          // 記事セクションがあるので Contact は 07
@@ -168,6 +172,7 @@ func TestLocalReferencesResolve(t *testing.T) {
 // exists は、Cloudflare の静的配信と同じ解決(/apps → apps.html)でファイルがあるかを返す。
 func exists(out, urlPath string) bool {
 	p, _, _ := strings.Cut(urlPath, "?")
+	p, _, _ = strings.Cut(p, "#") // /#contact はトップページの中の場所
 	if p == "/" {
 		p = "/index.html"
 	}

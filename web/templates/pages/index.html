@@ -24,12 +24,13 @@
         <p class="lp-hero-lead lp-hero-item3">2026年新卒のデータエンジニア。まだ道の途中だからこそ、データ基盤とAI活用に向き合いながら、日々の学びをここに記録しています。</p>
         <div class="lp-hero-cta lp-hero-item4">
           <a href="/writings" class="lp-cta-primary">記事を読む<span class="lp-cta-arrow" aria-hidden="true">→</span></a>
-          <div class="lp-cta-icons">
-            <a href="https://github.com/imutaroh" class="lp-cta-icon" target="_blank" rel="noopener noreferrer" aria-label="GitHub">{{icon "github" 18}}</a>
-            <a href="https://zenn.dev/imu_imu" class="lp-cta-icon" target="_blank" rel="noopener noreferrer" aria-label="Zenn">{{icon "zenn" 18}}</a>
-            <a href="https://note.com/imutaroh" class="lp-cta-icon" target="_blank" rel="noopener noreferrer" aria-label="note">{{icon "note" 18}}</a>
-            <a href="https://x.com/imutaroh" class="lp-cta-icon" target="_blank" rel="noopener noreferrer" aria-label="X">{{icon "x" 18}}</a>
-          </div>
+          {{- /* 外へのリンクは 04 Apps と同じ Dock で見せる。乗せたときの拡大と吹き出しは dock.css */}}
+          <ul class="dock lp-hero-dock">
+            {{- template "hero-dock-item" dict "Href" "https://github.com/imutaroh" "Name" "GitHub" "Icon" "github"}}
+            {{- template "hero-dock-item" dict "Href" "https://zenn.dev/imu_imu" "Name" "Zenn" "Icon" "zenn"}}
+            {{- template "hero-dock-item" dict "Href" "https://note.com/imutaroh" "Name" "note" "Icon" "note"}}
+            {{- template "hero-dock-item" dict "Href" "https://x.com/imutaroh" "Name" "X" "Icon" "x"}}
+          </ul>
         </div>
       </div>
     </div>
@@ -129,7 +130,7 @@
   </section>
   {{- end}}
 
-  <section class="lp-section lp-section-end">
+  <section class="lp-section lp-section-end" id="contact">
     {{template "section-head" dict "Number" .Data.ContactNumber "Label" "contact" "Title" "Contact"}}
     <ul class="lp-contact">
       {{- range .Data.Contacts}}

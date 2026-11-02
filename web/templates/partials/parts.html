@@ -1,6 +1,17 @@
 {{/* 複数のページで使う部品。呼び出し側は dict で値を渡す。
      例: {{template "dock" dict "Apps" .Data.Apps "Class" "lp-apps-dock" "Sizes" "84px" "Loading" "lazy"}} */}}
 
+{{/* hero の Dock の1個。画像の代わりにロゴを色の面に載せて、アプリのアイコンに見立てる */}}
+{{define "hero-dock-item"}}
+<li class="dock-item">
+  <a href="{{.Href}}" class="dock-link" target="_blank" rel="noopener noreferrer" aria-label="{{.Name}}">
+    <span class="dock-label" aria-hidden="true">{{.Name}}</span>
+    <span class="dock-icon lp-hero-tile" data-brand="{{.Icon}}">{{icon .Icon 24}}</span>
+  </a>
+  <span class="dock-dot" aria-hidden="true"></span>
+</li>
+{{end}}
+
 {{/* 使っているアプリの Dock(/apps と LP の 04 Apps)。
      マウスを乗せたときの拡大は CSS(dock.css)だけで行う。JS は持たない。
      Sizes は「表示上の最大の幅」。ブラウザが画面の解像度と見比べて srcset から画像を選ぶ */}}

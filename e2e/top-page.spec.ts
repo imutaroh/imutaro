@@ -28,6 +28,43 @@ test.describe('トップページ', () => {
     }
   });
 
+  test('ヘッダーの案内で各ページへ行ける', async ({ page }) => {
+    const header = page.locator('header');
+    await expect(header.getByText('いむたろ')).toBeVisible();
+    await expect(header.getByRole('link', { name: '技術メモ' })).toHaveAttribute(
+      'href',
+      'https://notes.imutaro.com',
+    );
+
+    await header.getByRole('link', { name: '連絡' }).click();
+    await expect(page).toHaveURL(/\/#contact$/);
+    await expect(page.getByRole('heading', { level: 2, name: 'Contact' })).toBeInViewport();
+
+    await header.getByRole('link', { name: '道具' }).click();
+    await expect(page).toHaveURL(/\/uses$/);
+
+    await page.locator('header').getByRole('link', { name: '記事' }).click();
+    await expect(page).toHaveURL(/\/writings$/);
+
+    await page
+      .locator('header')
+      .getByRole('link', { name: /いむたろ/ })
+      .click();
+    await expect(page).toHaveURL(/\/$/);
+  });
+
+  test('hero の Dock から外のサービスへ行ける', async ({ page }) => {
+    const dock = page.locator('.lp-hero-dock');
+    for (const [name, href] of [
+      ['GitHub', 'https://github.com/imutaroh'],
+      ['Zenn', 'https://zenn.dev/imu_imu'],
+      ['note', 'https://note.com/imutaroh'],
+      ['X', 'https://x.com/imutaroh'],
+    ]) {
+      await expect(dock.getByRole('link', { name, exact: true })).toHaveAttribute('href', href);
+    }
+  });
+
   test('Notes から Obsidian の技術メモへ行ける', async ({ page }) => {
     const notes = page.locator('section', {
       has: page.getByRole('heading', { level: 2, name: 'Notes' }),
