@@ -8,7 +8,7 @@ import (
 	"github.com/imutaroh/imutaro/internal/profile"
 )
 
-// SiteName は下層ページのタイトル接尾辞(「Apps | imutaro.com」)とフッターの © に使う。
+// SiteName は下層ページのタイトル接尾辞(「Card | imutaro.com」)とフッターの © に使う。
 const SiteName = "imutaro.com"
 
 // トップページの <title> と説明文。検索結果ではドメインがタイトルの上に別に出るため、
@@ -19,7 +19,7 @@ const (
 	siteDescription = "2026年新卒のデータエンジニアが、データ基盤とAI活用の学びを日々記録していくサイト"
 )
 
-// lpArticlesPerSource は LP の 05 に出す件数。記事カードのグリッドは3列なので、6件で2行に揃う。
+// lpArticlesPerSource は LP の 06 に出す件数。記事カードのグリッドは3列なので、6件で2行に揃う。
 const lpArticlesPerSource = 6
 
 // Meta は <head> に出すページの情報。
@@ -27,7 +27,7 @@ type Meta struct {
 	// Title は <title> の全文。og:title / twitter:title にも同じものを使う。
 	Title       string
 	Description string
-	// Path は canonical のパス("/" や "/apps")。
+	// Path は canonical のパス("/" や "/card")。
 	Path string
 	// NoIndex は検索エンジンに載せないページ(404)。
 	NoIndex bool
@@ -43,13 +43,13 @@ func (m Meta) CanonicalURL() string {
 
 // Page は書き出す1ページ。
 type Page struct {
-	// File は dist/ の中の書き出し先("apps.html" なら /apps で配信される)。
+	// File は dist/ の中の書き出し先("card.html" なら /card で配信される)。
 	File string
 	// Template は web/templates/pages/ のファイル名。
 	Template string
 	Meta     Meta
 	// Header / Footer はサイト共通のヘッダー・フッターを出すか。
-	// /card と /apps は1画面で完結させるので、どちらも持たない。
+	// /card は1画面で完結させるので、どちらも持たない。
 	Header bool
 	Footer bool
 	// HeroHold は LP の入場アニメをフォントの到着まで止めておく仕組みを入れるか。
@@ -91,7 +91,7 @@ type LPData struct {
 	ContactNumber string
 }
 
-// HasArticles は 05 の記事セクションを出すかどうか。
+// HasArticles は 06 の記事セクションを出すかどうか。
 func (d LPData) HasArticles() bool {
 	return len(d.Zenn)+len(d.Note) > 0
 }
@@ -147,10 +147,10 @@ func pages(opts Options) []Page {
 	for i, f := range profile.AboutFields {
 		lp.About = append(lp.About, AboutLine{Key: f.Key, Value: f.Value, Last: i == len(profile.AboutFields)-1})
 	}
-	// 記事セクション(05)が無い回は、Contact の番号を1つ繰り上げる
-	lp.ContactNumber = "05"
+	// 記事セクション(06)が無い回は、Contact の番号を1つ繰り上げる
+	lp.ContactNumber = "06"
 	if lp.HasArticles() {
-		lp.ContactNumber = "06"
+		lp.ContactNumber = "07"
 	}
 
 	writings := func(source string, articles []feeds.Article) WritingsData {
@@ -180,7 +180,7 @@ func pages(opts Options) []Page {
 			Header:   true,
 			Footer:   true,
 			HeroHold: true,
-			Scripts:  []string{"hero.js", "spark.js"},
+			Scripts:  []string{"hero.js", "spark.js", "menu.js"},
 			Data:     lp,
 		},
 		{
@@ -195,17 +195,12 @@ func pages(opts Options) []Page {
 			},
 		},
 		{
-			File:     "apps.html",
-			Template: "apps.html",
-			Meta:     Meta{Title: subTitle("Apps"), Description: "imutaro が普段使っているアプリ。", Path: "/apps"},
-			Data:     profile.DockApps,
-		},
-		{
 			File:     "writings.html",
 			Template: "writings.html",
 			Meta:     Meta{Title: subTitle("Zenn / note"), Description: "Zenn と note で公開している記事・本の一覧。", Path: "/writings"},
 			Header:   true,
 			Footer:   true,
+			Scripts:  []string{"menu.js"},
 			Data:     writings("all", all),
 		},
 		{
@@ -214,6 +209,7 @@ func pages(opts Options) []Page {
 			Meta:     Meta{Title: subTitle("Zenn の記事"), Description: "Zenn で公開している記事・本の一覧。", Path: "/writings/zenn"},
 			Header:   true,
 			Footer:   true,
+			Scripts:  []string{"menu.js"},
 			Data:     writings("zenn", zenn),
 		},
 		{
@@ -222,15 +218,8 @@ func pages(opts Options) []Page {
 			Meta:     Meta{Title: subTitle("note の記事"), Description: "note で公開している記事の一覧。", Path: "/writings/note"},
 			Header:   true,
 			Footer:   true,
+			Scripts:  []string{"menu.js"},
 			Data:     writings("note", note),
-		},
-		{
-			File:     "uses.html",
-			Template: "uses.html",
-			Meta:     Meta{Title: subTitle("Uses"), Description: "imutaro が毎日使っている道具と、その使い方。", Path: "/uses"},
-			Header:   true,
-			Footer:   true,
-			Data:     usesData(),
 		},
 		{
 			File:     "404.html",

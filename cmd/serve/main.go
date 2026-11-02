@@ -4,9 +4,9 @@
 //	go run ./cmd/serve -addr :3000
 //
 // Cloudflare の既定の挙動(html_handling = "auto-trailing-slash"、not_found_handling = "404-page")を真似る:
-//   - /apps      → apps.html を返す
-//   - /apps.html → /apps へ転送(307)
-//   - /apps/     → /apps へ転送(307)
+//   - /card      → card.html を返す
+//   - /card.html → /card へ転送(307)
+//   - /card/     → /card へ転送(307)
 //   - 無いパス   → 404.html を 404 で返す
 package main
 

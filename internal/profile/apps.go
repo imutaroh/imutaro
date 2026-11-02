@@ -1,6 +1,6 @@
 package profile
 
-// DockApp は /apps と LP の 04 Apps の Dock に並べるアプリ。並び順がそのまま Dock の並びになる。
+// DockApp は LP の 04 の Dock に並べるアプリ。並び順がそのまま Dock の並びになる。
 //
 // アイコンは public/apps/<ID>.png(258px)と public/apps/<ID>-176.webp / <ID>-258.webp(表示用の縮小版)。
 // 手元の Mac にインストールされているアプリから、実際の見た目のまま書き出したもの。
@@ -15,17 +15,12 @@ type DockApp struct {
 	Href string
 }
 
-// DockApps は Dock に並べるアプリ。
+// DockApps は Dock に並べるアプリ(特に好きなものだけ)。
 var DockApps = []DockApp{
 	{ID: "arc", Name: "Arc", Href: "https://arc.net/"},
-	{ID: "ghostty", Name: "Ghostty", Href: "https://ghostty.org/"},
+	{ID: "herdr", Name: "Herdr", Href: "https://herdr.dev/"},
 	{ID: "obsidian", Name: "Obsidian", Href: "https://obsidian.md/"},
-	{ID: "notion", Name: "Notion", Href: "https://www.notion.com/"},
-	{ID: "notion-calendar", Name: "Notion Calendar", Href: "https://www.notion.com/product/calendar"},
-	{ID: "slack", Name: "Slack", Href: "https://slack.com/"},
-	{ID: "kindle", Name: "Kindle", Href: "https://www.amazon.com/kindle-dbs/fd/kcp"},
-	{ID: "music", Name: "Music", Href: "https://www.apple.com/apple-music/"},
 	{ID: "raycast", Name: "Raycast", Href: "https://www.raycast.com/"},
-	{ID: "nani", Name: "Nani", Href: "https://nani.now/"},
 	{ID: "typeless", Name: "Typeless", Href: "https://www.typeless.com/"},
+	{ID: "notion-calendar", Name: "Notion Calendar", Href: "https://www.notion.com/product/calendar"},
 }

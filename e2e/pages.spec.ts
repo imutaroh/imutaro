@@ -23,19 +23,6 @@ test.describe('/writings', () => {
   });
 });
 
-test.describe('/uses', () => {
-  test('道具の一覧と、アプリの Dock が出る', async ({ page }) => {
-    await page.goto('/uses');
-    await expect(page.getByRole('heading', { level: 1, name: 'Uses' })).toBeVisible();
-    for (const group of ['マシン', 'アプリ', 'エディタ', 'AI']) {
-      await expect(page.getByRole('heading', { level: 2, name: group })).toBeVisible();
-    }
-    await expect(page.getByRole('link', { name: 'Ghostty', exact: true }).first()).toBeVisible();
-    await page.getByRole('link', { name: /大きく見る/ }).click();
-    await expect(page).toHaveURL(/\/apps$/);
-  });
-});
-
 test.describe('URL の扱い(Cloudflare と同じ)', () => {
   test('無いページは 404 を返し、トップへ戻る導線を出す', async ({ page }) => {
     const res = await page.goto('/no-such-page');
@@ -44,10 +31,17 @@ test.describe('URL の扱い(Cloudflare と同じ)', () => {
   });
 
   test('末尾のスラッシュや .html 付きの URL は、正規の URL へ送られる', async ({ page }) => {
-    await page.goto('/apps/');
-    await expect(page).toHaveURL(/\/apps$/);
+    await page.goto('/card/');
+    await expect(page).toHaveURL(/\/card$/);
     await page.goto('/card.html');
     await expect(page).toHaveURL(/\/card$/);
+  });
+
+  test('廃止した /apps と /uses は 404 になる', async ({ page }) => {
+    for (const path of ['/apps', '/uses']) {
+      const res = await page.goto(path);
+      expect(res?.status(), path).toBe(404);
+    }
   });
 
   test('廃止した microCMS ブログの URL は 404 になる', async ({ page }) => {

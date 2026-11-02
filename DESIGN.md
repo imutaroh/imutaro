@@ -13,7 +13,7 @@ LP はその上に **「白い紙の上に本人が立つ」** を重ねる: フ
 > キャラクターを主役にする判断に伴い、生成画像の金属は全点撤去した（モチーフ6）。
 
 - 語り口は静か。装飾は情報を運ぶものだけ（罫線=区切り、mono=メタデータ、点=状態）
-- 演出（見出しのタイプ打ち直し・fadeInUp スタッガ・ShinyText・ClickSpark）は **LP専用**。読むページ（/writings・/uses）には持ち込まない
+- 演出（見出しのタイプ打ち直し・fadeInUp スタッガ・ShinyText・ClickSpark）は **LP専用**。読むページ（/writings）には持ち込まない
 - 動きは「初回ロードのヒーロー入場」と「hover / click」のみ。**アイドル時とスクロール中は完全静止**
 - 読むページに持ち込むのは **トーン**（色・書体・余白・罫線・モチーフ）だけ
 
@@ -42,15 +42,15 @@ LP はその上に **「白い紙の上に本人が立つ」** を重ねる: フ
 | Mono | IBM Plex Mono | `--font-mono` | **メタデータ全般**: eyebrow・日付・タグ・ハッシュ・ラベル・パンくず |
 
 原則:
-- **7段タイプスケール**（base.css 定義: `--fs-caption` 12px / `--fs-meta` 13px / `--fs-ui` 14px / `--fs-body` 16px / `--fs-lead` 1.05rem / `--fs-h2` 2.2rem / `--fs-number` 3rem）。UI・ナビ・メタ・ラベルのフォントサイズはこの7段から選び、**これ以外を新設しない**。例外は2系統のみ: ①ブランドロゴ `.hdr-logo` 0.95rem（共通ヘッダー） ②ディスプレイ文字（下層ページ見出し `.ph-title` の `clamp()` とリード 0.95rem、`/apps` の見出し、`/uses` の分類見出し 1.5rem）— 7段の対象外とする
-- **mono の使用規則**: mono は 13px（データ: 日付・hash・URL・件数。letter-spacing 0）と 12px（ラベル/ピル/キャプション: タブ・バッジ・ステータス・サイトフッタの©表記・図注。letter-spacing 0.05em）の**2段のみ**。profile.json カードの脚注は中身が URL なので 13px 段。eyebrow は 13px / ls 0.05em。**700 にしない**。色は sub か accent のみ。例外はブランドロゴ `.hdr-logo`（0.95rem）
+- **7段タイプスケール**（base.css 定義: `--fs-caption` 12px / `--fs-meta` 13px / `--fs-ui` 14px / `--fs-body` 16px / `--fs-lead` 1.05rem / `--fs-h2` 2.2rem / `--fs-number` 3rem）。UI・ナビ・メタ・ラベルのフォントサイズはこの7段から選び、**これ以外を新設しない**。例外はディスプレイ文字のみ（下層ページ見出し `.ph-title` の `clamp()` とリード 0.95rem、05 Notes の文）— 7段の対象外とする
+- **mono の使用規則**: mono は 13px（データ: 日付・hash・URL・件数。letter-spacing 0）と 12px（ラベル/ピル/キャプション: タブ・バッジ・ステータス・サイトフッタの©表記・図注。letter-spacing 0.05em）の**2段のみ**。profile.json カードの脚注は中身が URL なので 13px 段。eyebrow は 13px / ls 0.05em。**700 にしない**。色は sub か accent のみ
 - body は `letter-spacing: 0.02em`（Plex は字面がやや締まるため）。桁揃えが命の等幅には継承させず、`code, pre { letter-spacing: 0 }` で遮断する
 - palt は全見出し（h1-h6、base.css で一括適用）。`.lp-hero-title` はフィット式の余裕を守るため `letter-spacing: 0` で body の字間継承から保護する
 - **mono = 機械が読む情報**（日付、タグ、ステータス、ID）。人間向けの文は body
 - **serif = 見出しと構図を作るディスプレイ文字**。本文や小さなメタ情報には使わない。Playfair は欧文グリフのみ持ち、和文は自動的に Zen Old Mincho へフォールバックする（欧文=高コントラスト・和文=明朝の混植が意図）。どちらも 700 しか読み込んでいないため、見出しの `font-weight` を 700 未満にしない
 - ヒーロータイトルは `--font-serif-stack` + `font-feature-settings: 'palt'`、`line-height: 1.12`。サイズは「最長行の文字数がどの画面幅でも1行に収まる」よう `calc()` で導出する（web/css/lp.css のコメント参照）
 - 見出しは `font-weight: 700`、本文リンクやリスト項目タイトルは `500`
-- 日本語見出しは `word-break: keep-all` + `text-wrap: balance` を検討
+- 日本語の改行: 見出しは `text-wrap: balance`。リード文と About の本文は `word-break: keep-all` にして、文節の切れ目に `<wbr>` を入れる（`word-break: auto-phrase` は Safari で効かないため手で入れる）。文を変えたら `<wbr>` も置き直す
 
 ## 4. モチーフ（このサイトの署名）
 
@@ -70,14 +70,15 @@ LP はその上に **「白い紙の上に本人が立つ」** を重ねる: フ
 6. **液体金属（撤去済み・復活させない）**: 白×青のクロームを描いた静的な生成画像ファミリー。かつてはこのサイトのキービジュアルで、リボン（`ribbon-hero.png` / `ribbon-glyph-b.png`）とストリーム（`metal-stream.png`）、予備の `metal-drops.png` / `ribbon-glyph-a.png` があった。**キャラクター（モチーフ8）を主役にする判断に伴い、2026-08-14 に全点を削除した。**金属とキャラクターは同じ画面で主役を取り合うため、混ぜない。いま残っている「銀」は §5 のミッド帯 `--bg-metal-band`（CSS グラデーション）だけで、これは画像ではなく面の例外。生成画像としての金属は**復活させない**（戻すなら DESIGN.md のコンセプトから書き直すこと）
 7. **エディトリアルの括弧**: eyebrow を `( 01 / about )` の括弧形式で書く。ミニダイヤル ◉ とセットで使う
 
-8. **キャラクター（サイトの顔）**: ドット絵の本人像。`imutaro-icon.png`（バスト・背景を抜いた透過PNG）を**全面で使い回す**（LPヒーロー右下 / About の profile.json カードの avatar フィールド / `/card` の表 / OGP 画像（`scripts/ogp.html`）/ ファビコン・apple-icon は顔だけのカット）。同じ絵を複数箇所で使うことで「これがこの人」の対応を1つに束ねる。必ず `image-rendering: pixelated`（ドット絵を補間させない）。**バストは胸で水平に切れている**ため、枠に入れない場所では下端を背景色グラデーションで紙に溶かす（`.lp-hero-visual::after`。mask は禁止）。切り抜きは `assets/` の原画に対し、外周からの連結成分フラッドフィル（色距離しきい値34）で背景クリームを抜いて作る。配信には縮小版（`imutaro-icon-512.webp` / `imutaro-icon-176.webp`。`go run ./cmd/images` で作る）を使う
+8. **キャラクター（サイトの顔）**: ドット絵の本人像。`imutaro-icon.png`（バスト・背景を抜いた透過PNG）を**全面で使い回す**（LPヒーロー右下 / 共通ヘッダーの名札 / About の profile.json カードの avatar フィールド / `/card` の表 / OGP 画像（`scripts/ogp.html`）/ ファビコン・apple-icon は顔だけのカット）。同じ絵を複数箇所で使うことで「これがこの人」の対応を1つに束ねる。必ず `image-rendering: pixelated`（ドット絵を補間させない）。**バストは胸で水平に切れている**ため、枠に入れない場所では下端を背景色グラデーションで紙に溶かす（`.lp-hero-visual::after`。mask は禁止）。切り抜きは `assets/` の原画に対し、外周からの連結成分フラッドフィル（色距離しきい値34）で背景クリームを抜いて作る。配信には縮小版（`imutaro-icon-512.webp` / `imutaro-icon-176.webp`。`go run ./cmd/images` で作る）を使う
 9. **クロームの帯（`/card` 専用）**: 立体カードの面を斜めに走る銀の帯。回転角 θ から `--sheen-pos`（`sin θ`）と `--sheen-lum`（`|sin 2θ|`）を JS が流し込み、`mix-blend-mode: multiply` で白い面に落とす。**白地では `screen` が効かない**（白 × screen = 白）ため、トレカのホログラム箔ではなく multiply の銀に翻訳している = 6 の「白い紙の上をクロームが流れる」の運動版。面色は `--color-bg` のままで新しい面を作らず、中間グレー2色は `web/css/card.css` の `.pc-screen` に閉じたローカル変数にする（`--bg-metal-band` は流用しない）
+10. **Dock（LP の hero と 04）**: アプリのアイコンを macOS の Dock 風のトレイに並べる。**トレイはガラスの板**（2026-10 に5案から選定。Issue #40）: 半透明の白の重ね塗り＋上辺の光の線（inset の白）＋外側の輪郭は border ではなく 0.5px の影＋重ねた影。**`backdrop-filter` は使わない**（下が滑らかな銀の帯なので、ぼかしても見た目はほぼ変わらず、スクロール中の描画コストだけが増える）。拡大は hover のみで CSS だけ（本体 ×1.5・左右の隣 ×1.22、`:has()` で隣を選ぶ。タッチ環境では拡大しない）。アイコンの影は `filter: drop-shadow` ではなく、後ろに角丸 22.5% の下敷き（`.dock-link::before`）を置いて `box-shadow` で付け、絵と同じ拡大を当てる。**アイコンは原色のまま**（モチーフ5の「ロゴは ink 一色」の例外。絵柄そのものが情報なので、単色にすると判別できない）。トレイの角丸はアイコンの大きさに比例（`--icon × 0.36`。カードの 8px の例外）。アイコン下の点は「常用している」の印（4px、ink の 60%）。名前は hover / focus で mono ピルの吹き出し。部品は `dock`（web/templates/partials/parts.html + web/css/dock.css。大きさは呼び出し側が `--icon` で決める）、中身は `internal/profile/apps.go`、画像の元は `public/apps/<id>.png`（手元の Mac のアプリから書き出した実物。透明な余白を切り落としてある — 残すと枠より絵が2割小さく見える）。配信には縮小版の `<id>-176.webp` / `<id>-258.webp` を srcset で出し分ける（`go run ./cmd/images` で作る）
 
 ## 5. レイアウト・余白
 
-- コンテンツ最大幅: LP・/writings・/uses=1040px（hero=1200px）
+- コンテンツ最大幅: LP・/writings=1040px（hero=1200px）
 - セクション間: `--space-section`（128px、モバイル 80px。base.css のトークンで一元管理）、見出しとコンテンツ間: 40px
-- ヘアライン行リストの行 padding: LP の記事・Contact 行のみ 32px（ゆとり優先・8pxグリッド）。Stack 行は 16px、/uses の行は 20px（どちらも 32px に統一しない）
+- ヘアライン行リストの行 padding: LP の記事・Contact 行のみ 32px（ゆとり優先・8pxグリッド）。Stack 行は 16px（32px に統一しない）
 - ミッド帯の境界（hairline）は**呼吸ゾーンの中央**に置く: `--space-section` を境界の前後で折半し、帯の直前セクションに `padding-bottom: calc(var(--space-section) / 2)`（`.lp-before-band`）、帯内セクションに同値の `padding-top`、帯自身に同値の `padding-bottom`、帯直後のセクションに同値の `padding-top`（`.lp-after-band`）を与える。境界線がコンテンツに張り付く／帯の中だけ間延びする、を防ぐ
 - 角丸: `--border-radius`(4px)。カードのみ 8px
 - 影は原則使わない。使うのは浮いているカードだけ（`0 24px 48px -32px rgba(26,35,48,.28)`）
@@ -106,11 +107,9 @@ LP はその上に **「白い紙の上に本人が立つ」** を重ねる: フ
 
 | ページ | 演出 | 構成 |
 |---|---|---|
-| `/`（LP） | 有限・入力駆動のみ（見出しのタイプ打ち直し[クリック駆動・web/js/hero.js], fadeInUp スタッガ, ShinyText[3回で停止], ClickSpark[クリック駆動]） | **最初から LP を出す。** 2026-08〜10 は読み込みのたびにカード（`/card`）を幕としてかぶせていたが、「カードから始まる」のが不評だったため 2026-10 に撤去した。カードは `/card` でだけ見せる<br>セクション: `01 about / 02 log / 03 stack / 04 apps / 05 zenn & note / 06 contact`。**04 Apps** は銀の帯の中、02/03 の2カラムの下に全幅で置く（技術=Stack の隣に道具=Apps）。中身は `/apps` と同じ Dock（`dock` 部品）をアイコン 56px で出し、「大きく見る →」で `/apps` へ。Dock と「大きく見る」は**中央寄せ**（列 992px に約700pxのトレイを左詰めにすると右に300px以上空く）<br>本体: hero（左テキスト + 右下にキャラクターのバスト）+ セクション。**キャラクターは 1:1 なのでタイトル2行の「下」に収まり、タイトルのフィット式から横幅を奪わない**（立ち姿=縦1.9倍だとタイトルを3割削る必要があった） |
+| `/`（LP） | 有限・入力駆動のみ（見出しのタイプ打ち直し[クリック駆動・web/js/hero.js], fadeInUp スタッガ, ShinyText[3回で停止], ClickSpark[クリック駆動]） | **最初から LP を出す。** 2026-08〜10 は読み込みのたびにカード（`/card`）を幕としてかぶせていたが、「カードから始まる」のが不評だったため 2026-10 に撤去した。カードは `/card` でだけ見せる<br>セクション: `01 about / 02 log / 03 stack / 04 dotfiles & favorite apps / 05 notes / 06 zenn & note / 07 contact`。**05 Notes** は技術メモの置き場（`notes.imutaro.com`。中身は Obsidian）への入口で、タブ付きカード（モチーフ4）に Obsidian のアイコン（240px）と文とボタンだけを置く。ノートの一覧は出さない。**アイコンは純正の色のまま使う**（Obsidian のブランド規定が色の変更を禁じている。トーンに合わせて青くしない）。文の大きさはディスプレイ文字扱いで7段の対象外。**04 Dotfiles & Favorite Apps** は銀の帯の中、02/03 の2カラムの下に全幅で置く（技術=Stack の隣に道具）。Dock（モチーフ10）をアイコン 56px で出す。中身は特に好きな6個（Arc / Herdr / Obsidian / Raycast / Typeless / Notion Calendar。`internal/profile/apps.go`）。スマホは 3・3 で積む。下に「dotfiles を見る →」（GitHub）。Dock とリンクは**中央寄せ**<br>共通ヘッダーは「誰のサイトか」（顔・いむたろ・data engineer の名札）と「どこへ行けるか」（技術メモ / 記事 / 連絡）だけを言う。SNS のアイコンは hero と Contact にあるので置かない。スマホ（≤640px）は名札とハンバーガーメニューで、ボタンだけを画面の右上に固定する（名札は流れる。「行きたいときに無い」を避けるため。上スクロールで戻す方式はスクロールの監視が要るので採らない）。開くとトップの目次（`01. About` 〜 `07. Contact`。セクション見出しと同じ番号）と GitHub / Zenn / note / X が出る（`<details>` + web/js/menu.js）。hero の「記事を読む」と Dock はスマホでは出さない<br>本体: hero（左テキスト + 右下にキャラクターのバスト）+ セクション。hero の GitHub / Zenn / note / X は 04 Apps と同じ語彙の小さな Dock（アイコン 48px）で、ロゴを各サービスの色の面に載せてアプリのアイコンに見立てる。**キャラクターは 1:1 なのでタイトル2行の「下」に収まり、タイトルのフィット式から横幅を奪わない**（立ち姿=縦1.9倍だとタイトルを3割削る必要があった） |
 | `/card` | 有限・入力駆動のみ（ドラッグで回転、離したあとの慣性は摩擦で必ず停止。ダブルタップ / Enter で遷移演出） | 1画面完結（`100dvh` + `overflow: clip`、ヘッダー・フッターなし）。3Dカード1枚 — **情報は全部表**（アイコン＋名前(serif)＋役割＋profile行＋技術スタックのピル）。**表にリンクを置かない** — カードは回して遊ぶ面なので、面の中にサイト外へ飛ぶ導線があると触った瞬間に離脱する、**裏は QR 面**（ヘアラインの織り地＋ `public/qr-imutaro-com.svg` ＋行き先の文字列）。QR は白い板に載せ、`.pc-back-mark` を `translateZ(4px)` でクロームの帯（モチーフ9）より前に出す — 帯が重なると読み取り精度が落ちる。板の隣に出す文字列は環境変数ではなく **QR の中身と一致させる**（`profile.QRTargetLabel`）。回転・慣性・「入る」は web/js/card.js。ブラウザの「戻る」で戻ったとき（bfcache から復元されたとき）は、幕と拡大を解除して元のカードに戻す |
-| `/apps` | hover のみ（CSS だけの Dock 拡大。本体 ×1.5・左右の隣 ×1.22、`:has()` で隣を選ぶ。タッチ環境では拡大しない）。JS なし | 1画面完結（`/card` と同じく LP の外、ヘッダー・フッターなし）。普段使っているアプリを macOS の Dock 風のトレイに並べる。参照元（mydock）のパステルのグラデ背景は持ち込まない。**トレイは macOS の Dock に寄せたガラスの板**（2026-10 に5案から選定。Issue #40）: 半透明の白の重ね塗り＋上辺の光の線（inset の白）＋外側の輪郭は border ではなく 0.5px の影＋重ねた影。**`backdrop-filter` は使わない**（下が滑らかな銀の帯なので、ぼかしても見た目はほぼ変わらず、スクロール中の描画コストだけが増える）。アイコンの影は `filter: drop-shadow` ではなく、後ろに角丸 22.5% の下敷き（`.dock-link::before`）を置いて `box-shadow` で付け、img と同じ拡大を当てる（画像はアイコン固有の影を含む透明な余白ごと切り落としてあるため、影はここで戻す）。**アイコンは原色のまま**（モチーフ5の「ロゴは ink 一色」の例外。アプリの絵柄そのものが情報なので、単色にすると判別できない）。トレイの角丸はアイコンの大きさに比例（`--icon × 0.36`。カードの 8px の例外。アイコンの squircle と揃えないと Dock に見えない）。アイコン下の点は Dock の起動中インジケータ＝「常用している」の印（4px、ink の 60%）。名前は hover / focus で mono ピルの吹き出し。**大きさ**: アイコンは最大 88px（1列11個＋拡大ぶんが画面幅に収まるよう `vw` から導出）、見出しはディスプレイ扱いの `clamp(2.2rem, 4.4vw, 3.6rem)`。スマホ（≤640px）は1段4個で折り返す（幅任せだと 5・5・1 で1個孤立する）。Dock 本体は `dock` 部品（web/templates/partials/parts.html + web/css/dock.css。LP の 04 Apps・`/uses` と共有。大きさは呼び出し側が `--icon` で決める）、中身は `internal/profile/apps.go`、画像の元は `public/apps/<id>.png`（手元の Mac のアプリから書き出した実物。macOS アイコンの透明な余白を切り落としてある — 残すと枠より絵が2割小さく見える）。配信には縮小版の `<id>-176.webp`（LP・/uses）と `<id>-258.webp`（/apps）を srcset で出し分ける（`go run ./cmd/images` で作る） |
-| `/writings`（`/writings/zenn`・`/writings/note`） | 演出なし | eyebrow付きページ見出し（`( / zenn & note )`）+ 絞り込みタブ（monoピル。タブごとに別のページ）+ 記事カードのグリッド。旧 URL の `?source=` は `/writings` のインラインスクリプトで新しい URL へ転送する（Cloudflare の `_redirects` はクエリで振り分けられないため） |
-| `/uses` | 演出なし（Dock の hover 拡大のみ） | eyebrow付きページ見出し + 分類ごとのヘアライン行リスト（名前 \| 使い方）。アプリの分類だけは行の代わりに Dock を中央に置く。中身は設定ファイルと実機で裏が取れた事実だけ（`internal/site/uses.go`）。「なぜ選んだか」は本人の言葉が要るので書かない |
+| `/writings`（`/writings/zenn`・`/writings/note`） | 演出なし | eyebrow付きページ見出し（`( / zenn & note )`）+ 絞り込みタブ（monoピル。タブごとに別のページ）+ 記事カードのグリッド。カードは広い画面で3列、スマホでも2列で、スマホでは文字の題名を見た目から外す（サムネイルに題名が入っているため。読み上げ用には残す。LP の 06 も同じカード）。旧 URL の `?source=` は `/writings` のインラインスクリプトで新しい URL へ転送する（Cloudflare の `_redirects` はクエリで振り分けられないため） |
 | 404 | なし | mono `404` + 一言 + 帰りのリンク |
 
 ※ かつて LP にあった DotGrid・FluidCursor・SplashCursor（常駐 canvas）と SplitText（スクロール発火）は

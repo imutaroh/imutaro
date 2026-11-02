@@ -1,38 +1,64 @@
-/* Next.js 版(CSS Modules)の components/Header/index.module.css から移植。クラス名には接頭辞 hdr- を付け、ファイル間の衝突を避ける */
+/* サイト共通のヘッダー。クラス名には接頭辞 hdr- を付け、ファイル間の衝突を避ける。
+   役割は2つだけ: 「誰のサイトか」(名札)と「どこへ行けるか」(言葉の案内)。
+   SNS のアイコンは hero と Contact にあるので、ここには置かない */
 
 .hdr-header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
+  gap: 8px 16px;
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
 }
 
-.hdr-logo {
-  font-family: var(--font-mono);
-  font-size: 0.95rem;
-  font-weight: 500;
+.hdr-who {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   color: var(--color-ink);
-  letter-spacing: 0.02em;
 }
 
-.hdr-logo-tld {
-  color: var(--color-accent);
+.hdr-who-icon {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--color-line);
+  border-radius: 50%;
+  background-color: var(--color-code-bg);
+  object-fit: cover;
+  object-position: 50% 0;
+  image-rendering: pixelated;
+}
+
+.hdr-who-name {
+  display: block;
+  font-size: var(--fs-ui);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.hdr-who-role {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+  color: var(--color-sub);
 }
 
 .hdr-nav {
   display: flex;
-  gap: 24px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 28px;
 }
 
 .hdr-nav-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
   /* ナビは UI 段 14px */
   font-size: var(--fs-ui);
-  color: var(--color-sub);
+  font-weight: 500;
+  color: var(--color-ink);
   transition: color 0.15s ease;
 }
 
@@ -40,35 +66,151 @@
   color: var(--color-accent);
 }
 
-.hdr-nav-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  color: var(--color-sub);
-  transition: color 0.15s ease;
-}
-
-.hdr-nav-icon:hover {
-  color: var(--color-accent);
+/* スマホ用のメニュー。広い画面では出さない */
+.hdr-menu {
+  display: none;
 }
 
 @media (max-width: 640px) {
   .hdr-header {
-    flex-wrap: wrap;
-    gap: 8px 16px;
+    /* 固定したメニューを、下のセクションより前に出す */
+    position: relative;
+    z-index: 20;
+    flex-wrap: nowrap;
     padding: 16px 24px;
   }
 
   .hdr-nav {
-    gap: 16px;
-    flex-wrap: wrap;
+    display: none;
   }
 
-  /* スマホでは SNS アイコンを畳む。同じリンクが LP の Contact セクションにあり、
-     狭いヘッダーで重複させる価値がない。Blog は重複ではないので残す */
-  .hdr-nav-icon {
+  /* ボタンだけを画面の右上に固定し、どこまでスクロールしても押せるようにする。
+     名札はページと一緒に流れる。スクロールの監視は要らない(CSS だけで済む) */
+  .hdr-menu {
+    position: fixed;
+    top: 16px;
+    right: 24px;
+    display: block;
+  }
+
+  /* 本文の上に重なっても見えるよう、白い地を敷く。
+     すりガラス(backdrop-filter)はスクロール中の描画が重くなるので使わない */
+  .hdr-menu-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.92);
+    box-shadow:
+      0 0 0 0.5px rgba(26, 35, 48, 0.14),
+      0 4px 12px -4px rgba(26, 35, 48, 0.3);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  /* Safari は list-style では三角を消せない */
+  .hdr-menu-button::-webkit-details-marker {
     display: none;
+  }
+
+  /* 3本線。開いたら × になる */
+  .hdr-menu-bars,
+  .hdr-menu-bars::before,
+  .hdr-menu-bars::after {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background-color: var(--color-ink);
+    transition:
+      transform 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .hdr-menu-bars {
+    position: relative;
+  }
+
+  .hdr-menu-bars::before,
+  .hdr-menu-bars::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+
+  .hdr-menu-bars::before {
+    transform: translateY(-6px);
+  }
+
+  .hdr-menu-bars::after {
+    transform: translateY(6px);
+  }
+
+  .hdr-menu[open] .hdr-menu-bars {
+    background-color: transparent;
+  }
+
+  .hdr-menu[open] .hdr-menu-bars::before {
+    transform: rotate(45deg);
+  }
+
+  .hdr-menu[open] .hdr-menu-bars::after {
+    transform: rotate(-45deg);
+  }
+
+  /* ボタンの下に開く。横向きなど画面が低いときは、板の中だけスクロールする */
+  .hdr-menu-panel {
+    position: fixed;
+    top: 68px;
+    right: 24px;
+    left: 24px;
+    max-height: calc(100dvh - 84px);
+    border: 1px solid var(--color-line);
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 24px 48px -24px rgba(26, 35, 48, 0.35);
+    overflow-y: auto;
+  }
+
+  .hdr-menu-nav a {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--color-line);
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  /* トップのセクション見出しと同じ番号(serif / accent)。幅をそろえて文字の頭を合わせる */
+  .hdr-menu-num {
+    flex: 0 0 auto;
+    min-width: 1.6em;
+    font-family: var(--font-serif-stack);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-accent);
+  }
+
+  .hdr-menu-sns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    background-color: var(--color-code-bg);
+  }
+
+  .hdr-menu-sns a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 0 20px;
+    font-size: var(--fs-ui);
+    color: var(--color-ink);
+  }
+
+  .hdr-menu-nav a:active,
+  .hdr-menu-sns a:active {
+    color: var(--color-accent);
   }
 }

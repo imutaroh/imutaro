@@ -135,6 +135,9 @@ html.js-hero-hold .lp-hero-item5 {
   /* 長文はゆったり(本文の 1.8 より1段開ける) */
   line-height: 2;
   max-width: 40em;
+  /* 単語の途中で折れないよう、テンプレートの <wbr> の位置でだけ折り返す */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
 /* 769〜1024pxの帯ではリード1行目の末尾がリボンのクローム曲線の高コントラスト部に
@@ -148,6 +151,8 @@ html.js-hero-hold .lp-hero-item5 {
 
 .lp-hero-cta {
   display: flex;
+  /* 隣の Dock の高さにボタンが引き伸ばされないように */
+  align-items: center;
   gap: 16px;
   margin-top: 40px;
   flex-wrap: wrap;
@@ -205,31 +210,48 @@ html.js-hero-hold .lp-hero-item5 {
   color: var(--color-accent);
 }
 
-.lp-cta-icons {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+/* hero の小さな Dock。dock.css は lp.css より後に読まれるので、2クラスで指定して勝たせる */
+.lp-hero-cta .lp-hero-dock {
+  --icon: 48px;
 }
 
-.lp-cta-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border: 1px solid var(--color-line);
-  border-radius: var(--border-radius);
-  color: var(--color-sub);
-  transition:
-    color 0.15s ease,
-    border-color 0.15s ease,
-    transform 0.15s ease;
+/* ロゴを載せる色の面。色は各サービスのロゴの色で、Dock のアイコンと同じく原色のまま出す
+   (モチーフ5の「ロゴは ink 一色」の例外。DESIGN.md のモチーフ10) */
+.lp-hero-dock .lp-hero-tile {
+  display: grid;
+  place-items: center;
+  border-radius: 22.5%;
+  color: #fff;
 }
 
-.lp-cta-icon:hover {
-  color: var(--color-accent);
-  border-color: var(--color-accent);
-  transform: translateY(-2px);
+.lp-hero-tile svg {
+  display: block;
+  width: 56%;
+  height: 56%;
+}
+
+.lp-hero-tile[data-brand='github'] {
+  background-color: #24292f;
+}
+
+.lp-hero-tile[data-brand='zenn'] {
+  background-color: #3ea8ff;
+}
+
+.lp-hero-dock .lp-hero-tile[data-brand='note'] {
+  background-color: #fff;
+  color: var(--color-ink);
+}
+
+.lp-hero-tile[data-brand='x'] {
+  background-color: #000;
+}
+
+/* スマホでは「記事を読む」と Dock を出さない。同じ行き先がヘッダーのメニューにある */
+@media (max-width: 640px) {
+  .lp-hero-cta {
+    display: none;
+  }
 }
 
 /* --- chrome ribbon (静的な生成画像。動きは fadeInUp 入場のみ) --- */
@@ -454,32 +476,31 @@ html.js-hero-hold .lp-hero-item5 {
 }
 
 /* Dock(dock.css)の大きさ。Dock 側の .dock(1クラス)に勝たせるため2クラスで指定する。
-   1列に11個 + 間10個(各 icon/9) + トレイの内側(icon×0.32) + hover の拡大ぶん(icon×0.94)
-   ≒ 13.4個ぶんが内容幅(画面幅 − 左右 padding 48px − 余裕 8px)に収まる大きさを導出し、
-   56px で頭打ちにする */
+   ここに出すのはお気に入りの6個だけなので、スマホより広ければ 56px のまま収まる */
 .lp-apps-section .lp-apps-dock {
-  --icon: min(56px, calc((100vw - 56px) / 13.4));
+  --icon: 56px;
 
   /* 拡大したアイコンは上へはみ出すので、そのぶん見出しから離す */
   margin-top: calc(var(--icon) * 0.5);
-  /* 列(992px)の中に約700pxのトレイを左詰めにすると右に300px以上の空白が残るので、中央に置く */
+  /* 列(992px)の中に約390pxのトレイを左詰めにすると右が大きく空くので、中央に置く */
   margin-inline: auto;
 }
 
-/* 「大きく見る →」も Dock の真下にそろえる */
-.lp-apps-section .lp-apps-more {
+/* Dock の下のリンクも中央にそろえる。.lp-articles-more の上の余白はそのまま使う */
+.lp-apps-links {
   display: flex;
-  width: fit-content;
-  margin-inline: auto;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 32px;
 }
 
 @media (max-width: 640px) {
-  /* スマホは1段4個で折り返す(dock.css)。4個ぶんが内容幅(画面幅 − 左右 padding 48px −
-     間3つ 30px − トレイの内側と枠 26px)に収まる大きさ。
+  /* スマホでは6個を 3・3 で積む(dock.css の既定の5個ぶんだと 5・1 で1個孤立する)。
      拡大ぶんの余白は要らない(タッチでは拡大しない) */
   .lp-apps-section .lp-apps-dock {
-    --icon: min(64px, calc((100vw - 104px) / 4));
+    --icon: 64px;
 
+    max-width: min(100%, calc(var(--icon) * 3 + var(--gap) * 2 + 26px));
     margin-top: 0;
   }
 }
@@ -571,6 +592,8 @@ html.js-hero-hold .lp-hero-item5 {
   font-size: var(--fs-h2);
   font-weight: 700;
   color: var(--color-ink);
+  /* 折り返すときに最後の1語だけが落ちないよう、行の長さをそろえる */
+  text-wrap: balance;
 }
 
 /* 番号を独立要素に格上げしたエディトリアルの型(01. About)。
@@ -593,6 +616,9 @@ html.js-hero-hold .lp-hero-item5 {
   /* 長文はゆったり(本文の 1.8 より1段開ける) */
   line-height: 2;
   margin-bottom: 1.2em;
+  /* 単語の途中で折れないよう、テンプレートの <wbr> の位置でだけ折り返す */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
 .lp-about-body p:last-child {
@@ -749,6 +775,64 @@ html.js-hero-hold .lp-hero-item5 {
   color: var(--color-accent-bright);
 }
 
+/* --- notes --- */
+
+/* タブは profile.json カードと同じ(.lp-card-tab)。中にボタンがあるので、
+   profile.json のように hover で傾けない */
+.lp-notes-card {
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 24px 48px -32px rgba(26, 35, 48, 0.28);
+  overflow: clip;
+}
+
+.lp-notes-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 56px;
+  padding: 56px;
+}
+
+/* 元画像は 480px なので、2倍の画面でも 240px 表示までは滲まない。
+   margin-inline: auto は、文の上に折り返して1つだけ載る幅でアイコンを中央に置く。
+   横に並ぶ幅では文(flex-grow)が余白を使い切るので、左に寄ったままになる */
+.lp-notes-icon {
+  display: block;
+  flex: 0 0 auto;
+  width: 240px;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+.lp-notes-text {
+  flex: 1 1 340px;
+  min-width: 0;
+}
+
+.lp-notes-lead {
+  margin-bottom: 32px;
+  font-family: var(--font-serif-stack);
+  font-size: clamp(1.75rem, 3vw, 2.4rem);
+  font-weight: 700;
+  font-feature-settings: 'palt';
+  line-height: 1.4;
+  color: var(--color-ink);
+}
+
+@media (max-width: 640px) {
+  .lp-notes-body {
+    gap: 32px;
+    padding: 32px 24px;
+  }
+
+  .lp-notes-icon {
+    width: 160px;
+  }
+}
+
 /* --- contact --- */
 
 .lp-contact {
@@ -830,6 +914,8 @@ html.js-hero-hold .lp-hero-item5 {
   .lp-section-title {
     font-size: 1.8rem;
     gap: 10px;
+    /* 2行になる見出しの行間が開きすぎないように */
+    line-height: 1.3;
   }
 
   .lp-section-number {
@@ -844,6 +930,15 @@ html.js-hero-hold .lp-hero-item5 {
 
   /* contactValue は URL データなのでモバイルでも 13px(--fs-meta)を維持する
      (mono 2段規則: データ=13px / ラベル=12px。行は flex-wrap で折り返す) */
+
+  /* Log の本文は全行そろえて日付の下に置く(長い行だけ落ちると列が崩れて見える) */
+  .lp-log-entry {
+    gap: 4px 16px;
+  }
+
+  .lp-log-text {
+    flex-basis: 100%;
+  }
 
   /* 線が短くなりすぎるため始点余白を詰める */
   .lp-section-eyebrow::after {

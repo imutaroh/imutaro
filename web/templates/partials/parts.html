@@ -1,7 +1,18 @@
 {{/* 複数のページで使う部品。呼び出し側は dict で値を渡す。
      例: {{template "dock" dict "Apps" .Data.Apps "Class" "lp-apps-dock" "Sizes" "84px" "Loading" "lazy"}} */}}
 
-{{/* 使っているアプリの Dock(/apps と LP の 04 Apps)。
+{{/* hero の Dock の1個。画像の代わりにロゴを色の面に載せて、アプリのアイコンに見立てる */}}
+{{define "hero-dock-item"}}
+<li class="dock-item">
+  <a href="{{.Href}}" class="dock-link" target="_blank" rel="noopener noreferrer" aria-label="{{.Name}}">
+    <span class="dock-label" aria-hidden="true">{{.Name}}</span>
+    <span class="dock-icon lp-hero-tile" data-brand="{{.Icon}}">{{icon .Icon 24}}</span>
+  </a>
+  <span class="dock-dot" aria-hidden="true"></span>
+</li>
+{{end}}
+
+{{/* 使っているアプリの Dock(LP の 04)。
      マウスを乗せたときの拡大は CSS(dock.css)だけで行う。JS は持たない。
      Sizes は「表示上の最大の幅」。ブラウザが画面の解像度と見比べて srcset から画像を選ぶ */}}
 {{define "dock"}}
@@ -20,7 +31,7 @@
 </ul>
 {{end}}
 
-{{/* Zenn / note の記事カード(LP の 05 と /writings)。
+{{/* Zenn / note の記事カード(LP の 06 と /writings)。
      サムネイルは外部(Zenn / note の CDN)の画像なので、そのまま読み込む。
      width/height はレイアウトのずれを防ぐための比率の宣言で、CSS の aspect-ratio と必ず揃える */}}
 {{define "articles"}}

@@ -1,5 +1,5 @@
 // Package profile はサイトに出す人物とその道具のデータを持つ。
-// LP・/card・/apps・/uses が同じ値を読むよう、ここに集約する。
+// LP と /card が同じ値を読むよう、ここに集約する。
 // 2箇所に書くと、片方だけ直して「ページによって言っていることが違う」が起きる。
 package profile
 
@@ -73,6 +73,7 @@ type StackEntry struct {
 // Stack の「SQL」は言語であってロゴを持たないため、実際に使っている製品名 BigQuery を置く。
 var Stack = []StackEntry{
 	{Name: "BigQuery", Status: "daily", Icon: "bigquery"},
+	{Name: "dbt", Status: "daily", Icon: "dbt"},
 	{Name: "Go", Status: "learning", Icon: "go"},
 	{Name: "Claude Code", Status: "daily", Icon: "claude"},
 }

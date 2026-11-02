@@ -6,9 +6,9 @@
 //  3. web/templates/ のテンプレートに値を流し込み、ページごとに HTML を書く
 //  4. Cloudflare 用の _headers を書く
 //
-// ページは「名前.html」で書き出す(apps.html → /apps)。
-// Cloudflare Workers の静的配信は、apps/index.html だと /apps を /apps/ へ転送してしまうが、
-// apps.html なら /apps をそのまま返すため(2026-10 に wrangler dev で実測)。
+// ページは「名前.html」で書き出す(card.html → /card)。
+// Cloudflare Workers の静的配信は、card/index.html だと /card を /card/ へ転送してしまうが、
+// card.html なら /card をそのまま返すため(2026-10 に wrangler dev で実測)。
 package site
 
 import (
@@ -57,9 +57,7 @@ var cssOrder = []string{
 	"pagehead.css",
 	"writings.css",
 	"dock.css",
-	"apps.css",
 	"card.css",
-	"uses.css",
 	"notfound.css",
 }
 
